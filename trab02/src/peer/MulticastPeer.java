@@ -13,20 +13,21 @@
 
 package peer;
 
+import connection.Connection;
 import message.JoinMessage;
 
-import java.net.*;
+import java.io.IOException;
 import java.security.*;
 import java.util.Scanner;
-import java.io.*;
 
 /*============================================================================*/
 
 public class MulticastPeer {
 
     // Variáveis do Multicast
-    private InetAddress group;
-    private MulticastSocket socket;
+    private Connection conn;
+
+    // Thread que recebe mensagem dos outros processos
     private MulticastRecvThread recvThread;
 
     // Variáveis de autenticação
@@ -46,13 +47,11 @@ public class MulticastPeer {
     /*------------------------------------------------------------------------*/
 
 	public MulticastPeer() throws IOException, NoSuchAlgorithmException {
-	    // Cria o socket Multicast
-	    this.group = InetAddress.getByName(MULTICAST_IP);
-	    this.socket = new MulticastSocket(MULTICAST_PORT);
-	    this.socket.joinGroup(this.group);
+	    // Cria o objeto de conexão multicast
+	    this.conn = new Connection(MULTICAST_IP, MULTICAST_PORT);
 
 	    // Cria a thread que recebe mensagens e as trata (não a inicia)
-	    this.recvThread = new MulticastRecvThread(this.socket);
+	    this.recvThread = new MulticastRecvThread(conn);
 
 	    // Gera chaves RSA
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
@@ -79,11 +78,7 @@ public class MulticastPeer {
         // Todos os processos que já estão na rede vão responder.
         // Essas mensagens serão recebidas e processadas pela thread recvThread.
         JoinMessage joinMessage = new JoinMessage(publicKey);
-        byte[] joinBytes = joinMessage.getBytes();
-        socket.send(new DatagramPacket(
-                joinBytes, joinBytes.length,
-                group, MULTICAST_PORT
-        ));
+        conn.send(joinMessage);
 
         // Loop principal: processa comandos de input
         // TODO: Fazer funções privadas para cada comando
@@ -95,10 +90,12 @@ public class MulticastPeer {
             }
 
             // FIXME: Remover o envio de texto puro
+            /*
             byte[] msg = input.getBytes();
             DatagramPacket packet = new DatagramPacket(msg, msg.length,
                     group, MULTICAST_PORT);
             socket.send(packet);
+            */
         }
 
         close();
@@ -108,7 +105,7 @@ public class MulticastPeer {
 
     public void close() {
         if (scanner != null) scanner.close();
-        if (socket != null) socket.close();
+        if (conn != null) conn.close();
     }
 
 }
