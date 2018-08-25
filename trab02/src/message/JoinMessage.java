@@ -1,17 +1,16 @@
 package message;
 
 import org.json.JSONObject;
-
-import java.security.PublicKey;
+import peer.MulticastPeer;
 
 public class JoinMessage extends Message {
 
-    public JoinMessage(PublicKey publicKey) {
+    public JoinMessage(MulticastPeer selfPeer) {
         JSONObject jsonMsg = new JSONObject();
 
-        // TODO: Adicionar ProcessID ao JSON
-        jsonMsg.put("StatusCode", 100);
-        jsonMsg.put("PublicKey", bytesToHexString(publicKey.getEncoded()));
+        jsonMsg.put("MessageType", "join");
+        jsonMsg.put("Sender", selfPeer.getPeerId());
+        jsonMsg.put("PublicKey", bytesToHexString(selfPeer.getPublicKey().getEncoded()));
 
         msg = jsonMsg.toString().getBytes();
     }

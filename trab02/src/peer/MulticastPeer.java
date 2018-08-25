@@ -24,6 +24,8 @@ import java.util.Scanner;
 
 public class MulticastPeer {
 
+    private int peerId;
+
     // Variáveis do Multicast
     private Connection conn;
 
@@ -32,6 +34,7 @@ public class MulticastPeer {
 
     // Variáveis de autenticação
     private PrivateKey privateKey;
+
     private PublicKey publicKey;
 
     // Variáveis de input
@@ -51,7 +54,7 @@ public class MulticastPeer {
         this.conn = new Connection(MULTICAST_IP, MULTICAST_PORT);
 
         // Cria a thread que recebe mensagens e as trata (não a inicia)
-        this.recvThread = new MulticastRecvThread(conn);
+        this.recvThread = new MulticastRecvThread(this, conn);
 
         // Gera chaves RSA
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
@@ -68,6 +71,10 @@ public class MulticastPeer {
     /*------------------------------------------------------------------------*/
 
     public void run() throws IOException {
+        // FIXME: Como gerar IDs únicos para cada processo?
+        System.out.print("Digite um ID para o processo: ");
+        peerId = scanner.nextInt();
+
         // Inicia a thread
         recvThread.start();
 
@@ -77,7 +84,7 @@ public class MulticastPeer {
         // Envia a chave pública quando entra na rede
         // Todos os processos que já estão na rede vão responder.
         // Essas mensagens serão recebidas e processadas pela thread recvThread.
-        JoinMessage joinMessage = new JoinMessage(publicKey);
+        JoinMessage joinMessage = new JoinMessage(this);
         conn.send(joinMessage);
 
         // Loop principal: processa comandos de input
@@ -106,6 +113,16 @@ public class MulticastPeer {
     public void close() {
         if (scanner != null) scanner.close();
         if (conn != null) conn.close();
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public int getPeerId() {
+        return peerId;
+    }
+
+    public PublicKey getPublicKey() {
+        return publicKey;
     }
 
 }
