@@ -29,27 +29,27 @@ import java.security.spec.X509EncodedKeySpec;
 
 public class MulticastRecvThread extends Thread {
 
-	private Connection conn;
-
-    /*------------------------------------------------------------------------*/
-	
-	public MulticastRecvThread(Connection conn) {
-		this.conn = conn;
-	}
+    private Connection conn;
 
     /*------------------------------------------------------------------------*/
 
-	@Override
-	public void run() {
-		try {
-		    // Executa essa thread enquanto não for interrompida
-			while (!Thread.currentThread().isInterrupted()) {
-			    // Recebe mensagem pelo socket Multicast
-				byte[] msgBytes = conn.recv();
+    public MulticastRecvThread(Connection conn) {
+        this.conn = conn;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    @Override
+    public void run() {
+        try {
+            // Executa essa thread enquanto não for interrompida
+            while (!Thread.currentThread().isInterrupted()) {
+                // Recebe mensagem pelo socket Multicast
+                byte[] msgBytes = conn.recv();
 
                 String messageStr = new String(msgBytes);
 
-				// TODO: Lançamento de uma thread para tratar a mensagem.
+                // TODO: Lançamento de uma thread para tratar a mensagem.
 
                 BufferedReader reader = new BufferedReader(new StringReader(messageStr));
 
@@ -79,13 +79,13 @@ public class MulticastRecvThread extends Thread {
 
                     if (pk != null) System.out.println(pk.toString());
                 }
-			}
-		}
-		catch (SocketException e) {
-			System.err.println("Socket: " + e.getMessage());
-		}
-		catch (IOException e) {
-			System.err.println("IO: " + e.getMessage());
-		}
-	}
+            }
+        }
+        catch (SocketException e) {
+            System.err.println("Socket: " + e.getMessage());
+        }
+        catch (IOException e) {
+            System.err.println("IO: " + e.getMessage());
+        }
+    }
 }

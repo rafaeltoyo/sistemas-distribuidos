@@ -39,21 +39,21 @@ public class MulticastPeer {
 
     // IP e porta do Socket Multicast
     private final static String MULTICAST_IP = "232.232.232.232";
-	private final static short MULTICAST_PORT = 6789;
+    private final static short MULTICAST_PORT = 6789;
 
-	// Tamanho da chave RSA em bits
+    // Tamanho da chave RSA em bits
     private final static int KEYSIZE_BITS = 512;
 
     /*------------------------------------------------------------------------*/
 
-	public MulticastPeer() throws IOException, NoSuchAlgorithmException {
-	    // Cria o objeto de conexão multicast
-	    this.conn = new Connection(MULTICAST_IP, MULTICAST_PORT);
+    public MulticastPeer() throws IOException, NoSuchAlgorithmException {
+        // Cria o objeto de conexão multicast
+        this.conn = new Connection(MULTICAST_IP, MULTICAST_PORT);
 
-	    // Cria a thread que recebe mensagens e as trata (não a inicia)
-	    this.recvThread = new MulticastRecvThread(conn);
+        // Cria a thread que recebe mensagens e as trata (não a inicia)
+        this.recvThread = new MulticastRecvThread(conn);
 
-	    // Gera chaves RSA
+        // Gera chaves RSA
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
         keyGen.initialize(KEYSIZE_BITS);
 
