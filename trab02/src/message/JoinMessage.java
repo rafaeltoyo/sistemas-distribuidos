@@ -9,6 +9,7 @@ public class JoinMessage extends Message {
     public JoinMessage(PublicKey publicKey) {
         JSONObject jsonMsg = new JSONObject();
 
+        // TODO: Adicionar ProcessID ao JSON
         jsonMsg.put("StatusCode", 100);
         jsonMsg.put("PublicKey", bytesToHexString(publicKey.getEncoded()));
 

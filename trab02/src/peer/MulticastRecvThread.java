@@ -43,34 +43,37 @@ public class MulticastRecvThread extends Thread {
 
     @Override
     public void run() {
-        try {
-            // Executa essa thread enquanto não for interrompida
-            while (!Thread.currentThread().isInterrupted()) {
-                // Recebe mensagem pelo socket Multicast
-                byte[] msgBytes = conn.recv();
+        // Executa essa thread enquando não for interrompida
+        while (!Thread.currentThread().isInterrupted()) {
+            // Recebe uma mensagem por multicast. Se der erro, interrompe a thread.
+            byte[] msgBytes;
+            try {
+                msgBytes = conn.recv();
+            }
+            catch (SocketException e) {
+                System.err.println("Socket: " + e.getMessage());
+                break;
+            }
+            catch (IOException e) {
+                System.err.println("IO: " + e.getMessage());
+                break;
+            }
 
-                String messageStr = new String(msgBytes);
+            // TODO: (Alternativa) Lançamento de uma thread para tratar a mensagem.
 
-                // TODO: Lançamento de uma thread para tratar a mensagem.
+            // Cria uma string a partir dos dados recebidos, e interpreta o JSON
+            String msgString = new String(msgBytes);
+            try {
+                JSONObject jsonMsg = new JSONObject(msgString);
+                int statusCode = jsonMsg.getInt("StatusCode");
 
-                try {
-                    JSONObject jsonMsg = new JSONObject(messageStr);
-                    int statusCode = jsonMsg.getInt("StatusCode");
-
-                    if (statusCode == 100) {
-                        processJoinMessage(jsonMsg);
-                    }
-                }
-                catch (JSONException e) {
-                    System.err.println("JSON: mensagem inválida recebida");
+                if (statusCode == 100) {
+                    processJoinMessage(jsonMsg);
                 }
             }
-        }
-        catch (SocketException e) {
-            System.err.println("Socket: " + e.getMessage());
-        }
-        catch (IOException e) {
-            System.err.println("IO: " + e.getMessage());
+            catch (JSONException e) {
+                System.err.println("JSON: mensagem inválida recebida");
+            }
         }
     }
 
