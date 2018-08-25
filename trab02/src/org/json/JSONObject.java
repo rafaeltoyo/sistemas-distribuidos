@@ -1603,9 +1603,6 @@ public class JSONObject {
      * implementations and interfaces has the annotation. Returns the depth of the
      * annotation in the hierarchy.
      *
-     * @param <A>
-     *            type of the annotation
-     *
      * @param m
      *            method to check
      * @param annotationClass
