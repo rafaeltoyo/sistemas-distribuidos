@@ -12,51 +12,44 @@
 
 package peer;
 
+import connection.Connection;
 import message.Message;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.DatagramPacket;
-import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
 
 /*============================================================================*/
 
 public class MulticastRecvThread extends Thread {
 
-	private MulticastSocket socket;
-
-    /*------------------------------------------------------------------------*/
-	
-	public MulticastRecvThread(MulticastSocket ms) {
-		this.socket = ms;
-	}
+    private Connection conn;
 
     /*------------------------------------------------------------------------*/
 
-	@Override
-	public void run() {
-		byte[] buffer = new byte[4096];
-		
-		try {
-		    // Executa essa thread enquanto não for interrompida
-			while (!Thread.currentThread().isInterrupted()) {
-			    // Recebe mensagem pelo socket Multicast
-				DatagramPacket messageIn = new DatagramPacket(buffer,
-                        buffer.length);
-				socket.receive(messageIn);
+    public MulticastRecvThread(Connection conn) {
+        this.conn = conn;
+    }
 
-                String messageStr = new String(messageIn.getData());
+    /*------------------------------------------------------------------------*/
 
-				// TODO: Lançamento de uma thread para tratar a mensagem.
+    @Override
+    public void run() {
+        try {
+            // Executa essa thread enquanto não for interrompida
+            while (!Thread.currentThread().isInterrupted()) {
+                // Recebe mensagem pelo socket Multicast
+                byte[] msgBytes = conn.recv();
+
+                String messageStr = new String(msgBytes);
+
+                // TODO: Lançamento de uma thread para tratar a mensagem.
 
                 BufferedReader reader = new BufferedReader(new StringReader(messageStr));
 
@@ -86,15 +79,13 @@ public class MulticastRecvThread extends Thread {
 
                     if (pk != null) System.out.println(pk.toString());
                 }
-
-				Arrays.fill(buffer, (byte) 0);
-			}
-		}
-		catch (SocketException e) {
-			System.err.println("Socket: " + e.getMessage());
-		}
-		catch (IOException e) {
-			System.err.println("IO: " + e.getMessage());
-		}
-	}
+            }
+        }
+        catch (SocketException e) {
+            System.err.println("Socket: " + e.getMessage());
+        }
+        catch (IOException e) {
+            System.err.println("IO: " + e.getMessage());
+        }
+    }
 }
