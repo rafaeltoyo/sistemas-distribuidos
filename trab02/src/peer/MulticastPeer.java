@@ -15,9 +15,11 @@ package peer;
 
 import connection.Connection;
 import message.JoinMessage;
+import message.LeaveMessage;
 
 import java.io.IOException;
 import java.security.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /*============================================================================*/
@@ -34,8 +36,9 @@ public class MulticastPeer {
 
     // Variáveis de autenticação
     private PrivateKey privateKey;
-
     private PublicKey publicKey;
+
+    private ArrayList<Peer> onlinePeerList;
 
     // Variáveis de input
     private Scanner scanner;
@@ -46,6 +49,20 @@ public class MulticastPeer {
 
     // Tamanho da chave RSA em bits
     private final static int KEYSIZE_BITS = 512;
+
+    /*------------------------------------------------------------------------*/
+
+    public int getPeerId() {
+        return peerId;
+    }
+
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    public PrivateKey getPrivateKey() {
+        return privateKey;
+    }
 
     /*------------------------------------------------------------------------*/
 
@@ -63,6 +80,9 @@ public class MulticastPeer {
         KeyPair keyPair = keyGen.generateKeyPair();
         privateKey = keyPair.getPrivate();
         publicKey = keyPair.getPublic();
+
+        // Inicializa a lista de peers online
+        onlinePeerList = new ArrayList<>();
 
         // Cria scanner para ler input
         this.scanner = new Scanner(System.in);
@@ -88,24 +108,56 @@ public class MulticastPeer {
         conn.send(joinMessage);
 
         // Loop principal: processa comandos de input
-        // TODO: Fazer funções privadas para cada comando
         while (true) {
             String input = scanner.nextLine();
             if (input.startsWith("!q")) {
-                recvThread.interrupt();
+                quit();
                 break;
             }
 
-            // FIXME: Remover o envio de texto puro
-            /*
-            byte[] msg = input.getBytes();
-            DatagramPacket packet = new DatagramPacket(msg, msg.length,
-                    group, MULTICAST_PORT);
-            socket.send(packet);
-            */
+            // TODO: Adicionar comandos para acessar os recursos
         }
 
         close();
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public boolean isPeerOnline(int id) {
+        for (Peer peer : onlinePeerList) {
+            if (peer.peerId == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public PublicKey getPeerPublicKey(int id) {
+        for (Peer peer : onlinePeerList) {
+            if (peer.peerId == id) {
+                return peer.publicKey;
+            }
+        }
+        return null;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public void addOnlinePeer(Peer peer) {
+        onlinePeerList.add(peer);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public void removeOnlinePeer(int id) {
+        for (Peer peer : onlinePeerList) {
+            if (peer.peerId == id) {
+                onlinePeerList.remove(peer);
+                break;
+            }
+        }
     }
 
     /*------------------------------------------------------------------------*/
@@ -117,12 +169,16 @@ public class MulticastPeer {
 
     /*------------------------------------------------------------------------*/
 
-    public int getPeerId() {
-        return peerId;
-    }
+    private void quit() throws IOException {
+        try {
+            LeaveMessage leaveMessage = new LeaveMessage(this);
+            conn.send(leaveMessage);
+        }
+        catch (GeneralSecurityException e) {
+            System.err.println("Security: " + e);
+        }
 
-    public PublicKey getPublicKey() {
-        return publicKey;
+        recvThread.interrupt();
     }
 
 }

@@ -18,8 +18,10 @@ import message.Message;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.crypto.Cipher;
 import java.io.IOException;
 import java.net.SocketException;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -68,11 +70,17 @@ public class MulticastRecvThread extends Thread {
                 JSONObject jsonMsg = new JSONObject(msgString);
                 String messageType = jsonMsg.getString("MessageType");
 
-                if (messageType.equals("join")) {
-                    processJoinMessage(jsonMsg);
-                }
-                else if (messageType.equals("joinResponse")) {
-                    processJoinResponse(jsonMsg);
+                // Switch usa equals() para strings
+                switch (messageType) {
+                    case "join":
+                        processJoinMessage(jsonMsg);
+                        break;
+                    case "joinResponse":
+                        processJoinResponse(jsonMsg);
+                        break;
+                    case "leave":
+                        processLeaveMessage(jsonMsg);
+                        break;
                 }
             }
             catch (JSONException e) {
@@ -92,12 +100,17 @@ public class MulticastRecvThread extends Thread {
     /*------------------------------------------------------------------------*/
 
     private void processJoinMessage(JSONObject jsonMsg) throws JSONException, IOException {
-        // Ignora a mensagem se tiver sido enviada pelo próprio processo
         int senderId = jsonMsg.getInt("Sender");
+
+        // Ignora a mensagem se tiver sido enviada pelo próprio processo
         if (senderId == selfPeer.getPeerId()) {
             return;
         }
-        // TODO: Verificar se já há um processo online com esse ID
+
+        // Ignora a mensagem se já houver um peer online com aquele ID
+        if (selfPeer.isPeerOnline(senderId)) {
+            return;
+        }
 
         String keyString = jsonMsg.getString("PublicKey");
         byte[] keyBytes = Message.hexStringToBytes(keyString);
@@ -112,7 +125,10 @@ public class MulticastRecvThread extends Thread {
         }
 
         if (pk != null) {
-            // TODO: Adiciona o par ID + PK à lista de peers online
+            // Adiciona o par ID + PK à lista de peers online
+            selfPeer.addOnlinePeer(new Peer(senderId, pk));
+
+            // FIXME: Debug
             System.out.println("Novo peer online: ID " + senderId);
         }
 
@@ -123,14 +139,19 @@ public class MulticastRecvThread extends Thread {
     /*------------------------------------------------------------------------*/
 
     private void processJoinResponse(JSONObject jsonMsg) throws JSONException {
-        // Ignora a mensagem se não tiver sido enviada para o próprio processo
         int destPeerId = jsonMsg.getInt("DestinatedTo");
+
+        // Ignora a mensagem se não tiver sido enviada para o próprio processo
         if (destPeerId != selfPeer.getPeerId()) {
             return;
         }
 
         int senderId = jsonMsg.getInt("Sender");
-        // TODO: Verificar se já há um processo online com esse ID
+
+        // Ignora a mensagem se esse ID já estiver na lista de peers online
+        if (selfPeer.isPeerOnline(senderId)) {
+            return;
+        }
 
         String keyString = jsonMsg.getString("PublicKey");
         byte[] keyBytes = Message.hexStringToBytes(keyString);
@@ -145,8 +166,45 @@ public class MulticastRecvThread extends Thread {
         }
 
         if (pk != null) {
-            // TODO: Adiciona o par ID + PK à lista de peers online
+            // Adiciona o par ID + PK à lista de peers online
+            selfPeer.addOnlinePeer(new Peer(senderId, pk));
+
+            // FIXME: Debug
             System.out.println("Peer já online: ID " + senderId);
+        }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    private void processLeaveMessage(JSONObject jsonMsg) throws JSONException {
+        int senderId = jsonMsg.getInt("Sender");
+
+        // Ignora a mensagem se esse ID não estiver na lista de peers online
+        if (!selfPeer.isPeerOnline(senderId)) {
+            return;
+        }
+
+        // Lê o campo "Auth", que deve conter a string "LEAVE" cifrada com a chave privada do peer.
+        String authHexStr = jsonMsg.getString("Auth");
+        byte[] authBytes = Message.hexStringToBytes(authHexStr);
+
+        // Decifra o campo com a chave pública do peer.
+        String leaveMsg = "";
+        try {
+            PublicKey peerPublicKey = selfPeer.getPeerPublicKey(senderId);
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.DECRYPT_MODE, peerPublicKey);
+            leaveMsg = new String(cipher.doFinal(authBytes));
+        }
+        catch (GeneralSecurityException e) {
+            System.err.println("Security: " + e);
+        }
+
+        if (leaveMsg.equals("LEAVE")) {
+            selfPeer.removeOnlinePeer(senderId);
+
+            // FIXME: Debug
+            System.out.println("Peer saiu: ID " + senderId);
         }
     }
 
