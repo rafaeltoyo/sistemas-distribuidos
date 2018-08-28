@@ -16,6 +16,7 @@ package app.peer;
 import app.connection.Connection;
 import app.message.JoinMessage;
 import app.message.LeaveMessage;
+import app.resource.Resource;
 
 import java.io.IOException;
 import java.security.*;
@@ -42,6 +43,10 @@ public class MulticastPeer {
 
     // Variáveis de input
     private Scanner scanner;
+    
+    // Duas belas lolis
+    private Resource madoka;
+    private Resource homura;
 
     // IP e porta do Socket Multicast
     private final static String MULTICAST_IP = "232.232.232.232";
@@ -63,10 +68,18 @@ public class MulticastPeer {
     public PrivateKey getPrivateKey() {
         return privateKey;
     }
+    
+    public Resource getMadoka() {
+    	return madoka;
+    }
+    
+    public Resource getHomura() {
+    	return homura;
+    }    
 
     /*------------------------------------------------------------------------*/
 
-    public MulticastPeer() throws IOException, NoSuchAlgorithmException {
+	public MulticastPeer() throws IOException, NoSuchAlgorithmException {
         // Cria o objeto de conexão multicast
         this.conn = new Connection(MULTICAST_IP, MULTICAST_PORT);
 
@@ -80,6 +93,10 @@ public class MulticastPeer {
         KeyPair keyPair = keyGen.generateKeyPair();
         privateKey = keyPair.getPrivate();
         publicKey = keyPair.getPublic();
+        
+        // Inicializa os recursos
+        madoka = new Resource(this);
+        homura = new Resource(this);
 
         // Inicializa a lista de peers online
         onlinePeerList = new ArrayList<>();
@@ -122,6 +139,17 @@ public class MulticastPeer {
         close();
     }
 
+    /*------------------------------------------------------------------------*/
+    
+    public Peer getPeerById(int id) {
+    	for (Peer peer : onlinePeerList) {
+            if (peer.peerId == id) {
+                return peer;
+            }
+        }
+    	return null;
+    }
+    
     /*------------------------------------------------------------------------*/
 
     public boolean isPeerOnline(int id) {

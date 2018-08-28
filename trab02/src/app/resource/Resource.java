@@ -1,14 +1,76 @@
 package app.resource;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
+import app.peer.MulticastPeer;
+import app.peer.Peer;
 
 public class Resource {
+	
     public ResourceState state;
-    public Queue<ResourceQueueItem> requestQueue;
-
-    public Resource() {
+    public PriorityQueue<ResourceQueueItem> requestQueue;
+    
+    private long timestamp = 0;
+    
+    private MulticastPeer selfPeer;
+    
+    public Resource(MulticastPeer selfPeer) {
         state = ResourceState.RELEASED;
-        requestQueue = new LinkedList<>();
+        
+        this.selfPeer = selfPeer;
+        
+        requestQueue = new PriorityQueue<>(new Comparator<ResourceQueueItem>() {
+        	@Override
+        	public int compare(ResourceQueueItem o1, ResourceQueueItem o2) {
+        		if (o1.getTimestamp() > o2.getTimestamp()) {
+        			return 1;
+        		}
+        		if (o1.getTimestamp() < o2.getTimestamp()) {
+        			return -1;
+        		}
+        		return 0;
+        	}
+		});
+    }
+    
+    public boolean accept(Peer peer, long timestamp) {
+    	if (state == ResourceState.HELD || (state == ResourceState.WANTED && this.timestamp < timestamp)) {
+    		requestQueue.add(new ResourceQueueItem(peer, timestamp));
+    		// TODO Enviar resposta de recurso ocupado
+    		return false;
+    	}
+    	// TODO Enviar resposta de recurso livre
+    	return true;
+    }
+    
+    public boolean hold() {
+    	if (state != ResourceState.RELEASED) {
+    		return false;
+    	}
+    	
+    	// TODO Enviar pedido
+    	
+    	timestamp = System.currentTimeMillis();
+    	state = ResourceState.WANTED;
+    	
+    	// TODO Esperar respostas (N - 1)
+    	
+    	state = ResourceState.HELD;
+    	timestamp = 0;
+    	
+    	return true;
+    }
+    
+    public boolean release() {
+    	if (state != ResourceState.HELD) {
+    		return false;
+    	}
+    	
+    	state = ResourceState.RELEASED;
+    	
+    	// TODO Enviar aviso aos peers adicionados a fila de espera
+    	
+    	return true;
     }
 }

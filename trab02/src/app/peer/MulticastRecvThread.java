@@ -15,6 +15,9 @@ package app.peer;
 import app.connection.Connection;
 import app.message.JoinResponse;
 import app.message.Message;
+import app.resource.Resource;
+import app.resource.ResourceState;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -214,7 +217,7 @@ public class MulticastRecvThread extends Thread {
         }
 
         // Lê qual recurso o processo remetente quer, e qual seu timestamp
-        short resource = (short) jsonMsg.getInt("Resource");
+        short resourceId = (short) jsonMsg.getInt("Resource");
         long timestamp = jsonMsg.getBigInteger("Timestamp").longValue();
 
         // TODO
@@ -223,6 +226,17 @@ public class MulticastRecvThread extends Thread {
         //     Coloca o pedido na fila, e responde com uma mensagem negativa.
         // Caso contrário:
         //     Responde com uma mensagem positiva.
+        Resource resource = null;
+        
+        if (resourceId == 1) {
+        	resource = selfPeer.getMadoka();
+        } else if (resourceId == 2) {
+        	resource = selfPeer.getHomura();
+        }
+        
+        if (resource != null) {
+        	resource.accept(selfPeer.getPeerById(senderId), timestamp);
+        }
     }
 
     /*------------------------------------------------------------------------*/
