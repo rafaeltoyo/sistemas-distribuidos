@@ -11,11 +11,11 @@
 // multicast para se comunicar com o restante dos processos.
 /*============================================================================*/
 
-package peer;
+package app.peer;
 
-import connection.Connection;
-import message.JoinMessage;
-import message.LeaveMessage;
+import app.connection.Connection;
+import app.message.JoinMessage;
+import app.message.LeaveMessage;
 
 import java.io.IOException;
 import java.security.*;

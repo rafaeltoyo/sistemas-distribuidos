@@ -10,11 +10,11 @@
 // Esta classe é uma thread que recebe dados do socket multicast em loop.
 /*============================================================================*/
 
-package peer;
+package app.peer;
 
-import connection.Connection;
-import message.JoinResponse;
-import message.Message;
+import app.connection.Connection;
+import app.message.JoinResponse;
+import app.message.Message;
 import org.json.JSONException;
 import org.json.JSONObject;
 

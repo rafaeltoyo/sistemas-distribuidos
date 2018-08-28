@@ -14,9 +14,9 @@
 // entre threads usando o mesmo socket.
 /*============================================================================*/
 
-package connection;
+package app.connection;
 
-import message.Message;
+import app.message.Message;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

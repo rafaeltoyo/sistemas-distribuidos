@@ -12,7 +12,7 @@
 
 package app;
 
-import peer.MulticastPeer;
+import app.peer.MulticastPeer;
 
 import java.io.IOException;
 import java.net.SocketException;
