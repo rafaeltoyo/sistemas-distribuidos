@@ -3,7 +3,7 @@
 /*                                                                            */
 /* TOP-LEVEL MAIN                                                             */
 /*============================================================================*/
-/* Autor: Victor Barpp Gomes                                                  */
+/* Autores: Rafael Hideo Toyomoto e Victor Barpp Gomes                        */
 /*                                                                            */
 /* 2018-08-23                                                                 */
 /*============================================================================*/
@@ -12,7 +12,7 @@
 
 package app;
 
-import peer.MulticastPeer;
+import app.peer.MulticastPeer;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -20,10 +20,20 @@ import java.security.NoSuchAlgorithmException;
 
 /*============================================================================*/
 
+/**
+ * A classe Main é apenas o ponto de entrada da aplicação. Cria um objeto da
+ * classe MulticastPeer e chama seu método run.
+ *
+ * @since 2018-08-23
+ */
 public class Main {
 
+    /**
+     * Método que é executado ao iniciar a aplicação.
+     *
+     * @param args argumentos de linha de comando.
+     */
     public static void main(String[] args) {
-
         MulticastPeer peer = null;
 
         try {
@@ -42,7 +52,6 @@ public class Main {
         finally {
             if (peer != null) peer.close();
         }
-
     }
 }
 

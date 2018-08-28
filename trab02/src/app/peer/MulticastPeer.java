@@ -11,11 +11,11 @@
 // multicast para se comunicar com o restante dos processos.
 /*============================================================================*/
 
-package peer;
+package app.peer;
 
-import connection.Connection;
-import message.JoinMessage;
-import message.LeaveMessage;
+import app.connection.Connection;
+import app.message.JoinMessage;
+import app.message.LeaveMessage;
 
 import java.io.IOException;
 import java.security.*;
@@ -116,6 +116,7 @@ public class MulticastPeer {
             }
 
             // TODO: Adicionar comandos para acessar os recursos
+            // Disparar timer? (para dar timeout nos processos que não responderem)
         }
 
         close();
@@ -170,6 +171,7 @@ public class MulticastPeer {
     /*------------------------------------------------------------------------*/
 
     private void quit() throws IOException {
+        // TODO: liberar todos os recursos que o processo está usando
         try {
             LeaveMessage leaveMessage = new LeaveMessage(this);
             conn.send(leaveMessage);

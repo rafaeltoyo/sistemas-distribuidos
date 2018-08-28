@@ -1,7 +1,7 @@
-package message;
+package app.message;
 
+import app.peer.MulticastPeer;
 import org.json.JSONObject;
-import peer.MulticastPeer;
 
 import javax.crypto.Cipher;
 import java.security.GeneralSecurityException;

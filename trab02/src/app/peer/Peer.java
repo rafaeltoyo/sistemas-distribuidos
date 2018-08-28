@@ -1,4 +1,4 @@
-package peer;
+package app.peer;
 
 import java.security.PublicKey;
 

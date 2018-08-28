@@ -10,11 +10,11 @@
 // Esta classe é uma thread que recebe dados do socket multicast em loop.
 /*============================================================================*/
 
-package peer;
+package app.peer;
 
-import connection.Connection;
-import message.JoinResponse;
-import message.Message;
+import app.connection.Connection;
+import app.message.JoinResponse;
+import app.message.Message;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,25 +48,14 @@ public class MulticastRecvThread extends Thread {
     public void run() {
         // Executa essa thread enquando não for interrompida
         while (!Thread.currentThread().isInterrupted()) {
-            // Recebe uma mensagem por multicast. Se der erro, interrompe a thread.
-            byte[] msgBytes;
             try {
-                msgBytes = conn.recv();
-            }
-            catch (SocketException e) {
-                System.err.println("Socket: " + e.getMessage());
-                break;
-            }
-            catch (IOException e) {
-                System.err.println("IO: " + e.getMessage());
-                break;
-            }
+                // Recebe uma mensagem por multicast. Se der erro, interrompe a thread.
+                byte[] msgBytes = conn.recv();
 
-            // (Alternativa) Lançamento de uma thread para tratar a mensagem.
+                // (Alternativa) Lançar uma thread aqui para tratar a mensagem recebida
+                // Cria uma string a partir dos dados recebidos, e interpreta o JSON
+                String msgString = new String(msgBytes);
 
-            // Cria uma string a partir dos dados recebidos, e interpreta o JSON
-            String msgString = new String(msgBytes);
-            try {
                 JSONObject jsonMsg = new JSONObject(msgString);
                 String messageType = jsonMsg.getString("MessageType");
 
@@ -80,6 +69,12 @@ public class MulticastRecvThread extends Thread {
                         break;
                     case "leave":
                         processLeaveMessage(jsonMsg);
+                        break;
+                    case "resourceAccess":
+                        processResourceAccessMessage(jsonMsg);
+                        break;
+                    case "resourceAccessResponse":
+                        processResourceAccessResponse(jsonMsg);
                         break;
                 }
             }
@@ -139,7 +134,7 @@ public class MulticastRecvThread extends Thread {
     /*------------------------------------------------------------------------*/
 
     private void processJoinResponse(JSONObject jsonMsg) throws JSONException {
-        int destPeerId = jsonMsg.getInt("DestinatedTo");
+        int destPeerId = jsonMsg.getInt("Destinatary");
 
         // Ignora a mensagem se não tiver sido enviada para o próprio processo
         if (destPeerId != selfPeer.getPeerId()) {
@@ -205,6 +200,80 @@ public class MulticastRecvThread extends Thread {
 
             // FIXME: Debug
             System.out.println("Peer saiu: ID " + senderId);
+        }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    private void processResourceAccessMessage(JSONObject jsonMsg) throws JSONException {
+        int senderId = jsonMsg.getInt("Sender");
+
+        // Ignora a mensagem se tiver sido enviada pelo próprio processo
+        if (senderId == selfPeer.getPeerId()) {
+            return;
+        }
+
+        // Lê qual recurso o processo remetente quer, e qual seu timestamp
+        short resource = (short) jsonMsg.getInt("Resource");
+        long timestamp = jsonMsg.getBigInteger("Timestamp").longValue();
+
+        // TODO
+        // Se o estado do recurso para este processo for HELD,
+        // ou se o estado for WANTED e seu próprio timestamp for menor que o timestamp do remetente:
+        //     Coloca o pedido na fila, e responde com uma mensagem negativa.
+        // Caso contrário:
+        //     Responde com uma mensagem positiva.
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    private void processResourceAccessResponse(JSONObject jsonMsg) throws JSONException {
+        // Ignora a mensagem se não tiver sido enviada para o próprio processo
+        int destPeerId = jsonMsg.getInt("Destinatary");
+        if (destPeerId != selfPeer.getPeerId()) {
+            return;
+        }
+
+        // Lê qual processo respondeu
+        int senderId = jsonMsg.getInt("Sender");
+        short resource = (short) jsonMsg.getInt("Resource");
+
+        // Sanity check
+        // TODO: verificar se este processo está realmente no estado WANTED para o recurso.
+
+        // Lê o campo "Auth", que deve conter a string "ALLOW" ou a string "DENY",
+        // cifrada com a chave privada do peer.
+        String authHexStr = jsonMsg.getString("Auth");
+        byte[] authBytes = Message.hexStringToBytes(authHexStr);
+
+        // Decifra o campo com a chave pública do peer.
+        String allowOrDeny = "";
+        try {
+            PublicKey peerPublicKey = selfPeer.getPeerPublicKey(senderId);
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.DECRYPT_MODE, peerPublicKey);
+            allowOrDeny = new String(cipher.doFinal(authBytes));
+        }
+        catch (GeneralSecurityException e) {
+            System.err.println("Security: " + e);
+        }
+
+        // Verifica se o processo liberou o uso do recurso ou não.
+        if (allowOrDeny.equals("ALLOW")) {
+            // TODO
+            // Incrementar o contador de respostas positivas recebidas.
+            // Marcar que aquele processo respondeu à mensagem.
+            // Se esse incremento for o último que faltava, troca o estado do recurso para HELD (e para o timer, se estivermos usando).
+
+            // FIXME: Debug
+            System.out.println("Recebi um ALLOW do processo " + senderId + " para o recurso " + resource);
+        }
+        else if (allowOrDeny.equals("DENY")) {
+            // TODO
+            // Mesmo que o processo esteja usando o recurso, marca que ele respondeu à mensagem.
+
+            // FIXME: Debug
+            System.out.println("Recebi um DENY do processo " + senderId + " para o recurso " + resource);
         }
     }
 
