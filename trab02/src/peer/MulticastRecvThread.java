@@ -48,25 +48,14 @@ public class MulticastRecvThread extends Thread {
     public void run() {
         // Executa essa thread enquando não for interrompida
         while (!Thread.currentThread().isInterrupted()) {
-            // Recebe uma mensagem por multicast. Se der erro, interrompe a thread.
-            byte[] msgBytes;
             try {
-                msgBytes = conn.recv();
-            }
-            catch (SocketException e) {
-                System.err.println("Socket: " + e.getMessage());
-                break;
-            }
-            catch (IOException e) {
-                System.err.println("IO: " + e.getMessage());
-                break;
-            }
+                // Recebe uma mensagem por multicast. Se der erro, interrompe a thread.
+                byte[] msgBytes = conn.recv();
 
-            // (Alternativa) Lançamento de uma thread para tratar a mensagem.
+                // (Alternativa) Lançar uma thread aqui para tratar a mensagem recebida
+                // Cria uma string a partir dos dados recebidos, e interpreta o JSON
+                String msgString = new String(msgBytes);
 
-            // Cria uma string a partir dos dados recebidos, e interpreta o JSON
-            String msgString = new String(msgBytes);
-            try {
                 JSONObject jsonMsg = new JSONObject(msgString);
                 String messageType = jsonMsg.getString("MessageType");
 
