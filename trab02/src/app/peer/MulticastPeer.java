@@ -116,6 +116,7 @@ public class MulticastPeer {
             }
 
             // TODO: Adicionar comandos para acessar os recursos
+            // Disparar timer? (para dar timeout nos processos que não responderem)
         }
 
         close();
@@ -170,6 +171,7 @@ public class MulticastPeer {
     /*------------------------------------------------------------------------*/
 
     private void quit() throws IOException {
+        // TODO: liberar todos os recursos que o processo está usando
         try {
             LeaveMessage leaveMessage = new LeaveMessage(this);
             conn.send(leaveMessage);
