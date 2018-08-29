@@ -19,19 +19,8 @@ public class Resource {
         state = ResourceState.RELEASED;
         
         this.selfPeer = selfPeer;
-        
-        requestQueue = new PriorityQueue<>(new Comparator<ResourceQueueItem>() {
-        	@Override
-        	public int compare(ResourceQueueItem o1, ResourceQueueItem o2) {
-        		if (o1.getTimestamp() > o2.getTimestamp()) {
-        			return 1;
-        		}
-        		if (o1.getTimestamp() < o2.getTimestamp()) {
-        			return -1;
-        		}
-        		return 0;
-        	}
-		});
+
+        requestQueue = new PriorityQueue<>(Comparator.comparingLong(ResourceQueueItem::getTimestamp));
     }
     
     public boolean accept(Peer peer, long timestamp) {
