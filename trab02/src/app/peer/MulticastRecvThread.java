@@ -208,7 +208,7 @@ public class MulticastRecvThread extends Thread {
 
     /*------------------------------------------------------------------------*/
 
-    private void processResourceAccessMessage(JSONObject jsonMsg) throws JSONException {
+    private void processResourceAccessMessage(JSONObject jsonMsg) throws JSONException, IOException {
         int senderId = jsonMsg.getInt("Sender");
 
         // Ignora a mensagem se tiver sido enviada pelo próprio processo
@@ -220,7 +220,6 @@ public class MulticastRecvThread extends Thread {
         short resourceId = (short) jsonMsg.getInt("Resource");
         long timestamp = jsonMsg.getBigInteger("Timestamp").longValue();
 
-        // TODO
         // Se o estado do recurso para este processo for HELD,
         // ou se o estado for WANTED e seu próprio timestamp for menor que o timestamp do remetente:
         //     Coloca o pedido na fila, e responde com uma mensagem negativa.
@@ -233,9 +232,17 @@ public class MulticastRecvThread extends Thread {
         } else if (resourceId == 2) {
         	resource = selfPeer.getHomura();
         }
+
+        // FIXME DEBUG
+        System.out.println("Peer " + senderId + " solicitou o recurso " + resourceId);
         
         if (resource != null) {
-        	resource.accept(selfPeer.getPeerById(senderId), timestamp);
+            try {
+                resource.accept(senderId, timestamp);
+            }
+            catch (GeneralSecurityException e) {
+                System.err.println("Security: " + e);
+            }
         }
     }
 
@@ -250,7 +257,23 @@ public class MulticastRecvThread extends Thread {
 
         // Lê qual processo respondeu
         int senderId = jsonMsg.getInt("Sender");
-        short resource = (short) jsonMsg.getInt("Resource");
+        short resourceId = (short) jsonMsg.getInt("Resource");
+
+        Resource resource = null;
+        if (resourceId == 1) {
+            resource = selfPeer.getMadoka();
+        }
+        else if (resourceId == 2) {
+            resource = selfPeer.getHomura();
+        }
+        else {
+            return;
+        }
+
+        Peer senderPeer = selfPeer.getPeerById(senderId);
+        if (senderPeer == null) {
+            return;
+        }
 
         // Sanity check
         // TODO: verificar se este processo está realmente no estado WANTED para o recurso.
@@ -278,16 +301,18 @@ public class MulticastRecvThread extends Thread {
             // Incrementar o contador de respostas positivas recebidas.
             // Marcar que aquele processo respondeu à mensagem.
             // Se esse incremento for o último que faltava, troca o estado do recurso para HELD (e para o timer, se estivermos usando).
+            resource.receivedResponse(senderPeer, true);
 
             // FIXME: Debug
-            System.out.println("Recebi um ALLOW do processo " + senderId + " para o recurso " + resource);
+            System.out.println("Recebi um ALLOW do processo " + senderId + " para o recurso " + resourceId);
         }
         else if (allowOrDeny.equals("DENY")) {
             // TODO
             // Mesmo que o processo esteja usando o recurso, marca que ele respondeu à mensagem.
+            resource.receivedResponse(senderPeer, false);
 
             // FIXME: Debug
-            System.out.println("Recebi um DENY do processo " + senderId + " para o recurso " + resource);
+            System.out.println("Recebi um DENY do processo " + senderId + " para o recurso " + resourceId);
         }
     }
 
