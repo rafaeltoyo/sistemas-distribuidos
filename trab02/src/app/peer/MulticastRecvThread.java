@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -37,12 +38,26 @@ public class MulticastRecvThread extends Thread {
 
     private MulticastPeer selfPeer;
     private Connection conn;
+    
+    private String allowHash;
+    private String denyHash;
+    private String leaveHash;
 
     /*------------------------------------------------------------------------*/
 
-    public MulticastRecvThread(MulticastPeer selfPeer, Connection conn) {
+    public MulticastRecvThread(MulticastPeer selfPeer, Connection conn) throws NoSuchAlgorithmException {
         this.selfPeer = selfPeer;
         this.conn = conn;
+        
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update("ALLOW".getBytes());
+        allowHash = Message.bytesToHexString(md.digest());
+        
+        md.update("DENY".getBytes());
+        denyHash = Message.bytesToHexString(md.digest());
+        
+        md.update("LEAVE".getBytes());
+        leaveHash = Message.bytesToHexString(md.digest());
     }
 
     /*------------------------------------------------------------------------*/
@@ -192,13 +207,13 @@ public class MulticastRecvThread extends Thread {
             PublicKey peerPublicKey = selfPeer.getPeerPublicKey(senderId);
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, peerPublicKey);
-            leaveMsg = new String(cipher.doFinal(authBytes));
+            leaveMsg = new String(Message.bytesToHexString(cipher.doFinal(authBytes)));
         }
         catch (GeneralSecurityException e) {
             System.err.println("Security: " + e);
         }
-
-        if (leaveMsg.equals("LEAVE")) {
+        
+        if (leaveMsg.equals(leaveHash)) {
             selfPeer.removeOnlinePeer(senderId);
 
             // FIXME: Debug
@@ -289,20 +304,20 @@ public class MulticastRecvThread extends Thread {
             PublicKey peerPublicKey = selfPeer.getPeerPublicKey(senderId);
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, peerPublicKey);
-            allowOrDeny = new String(cipher.doFinal(authBytes));
+            allowOrDeny = new String(Message.bytesToHexString(cipher.doFinal(authBytes)));
         }
         catch (GeneralSecurityException e) {
             System.err.println("Security: " + e);
         }
-
+        
         // Verifica se o processo liberou o uso do recurso ou não.
-        if (allowOrDeny.equals("ALLOW")) {
+        if (allowOrDeny.equals(allowHash)) {
             // Decrementa o contador de respostas positivas faltantes
             // Marca que aquele processo respondeu à mensagem
             // Se esse incremento for o último que faltava, notifica a outra thread
             resource.receivedResponse(senderPeer, true);
         }
-        else if (allowOrDeny.equals("DENY")) {
+        else if (allowOrDeny.equals(denyHash)) {
             // Mesmo que o processo esteja usando o recurso, marca que ele respondeu à mensagem.
             resource.receivedResponse(senderPeer, false);
         }

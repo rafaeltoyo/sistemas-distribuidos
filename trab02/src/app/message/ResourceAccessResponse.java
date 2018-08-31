@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import javax.crypto.Cipher;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
 
 public class ResourceAccessResponse extends Message {
 
@@ -21,12 +22,14 @@ public class ResourceAccessResponse extends Message {
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, selfPeer.getPrivateKey());
         byte[] allowOrDeny;
+        MessageDigest md = MessageDigest.getInstance("MD5");
         if (allow) {
-            allowOrDeny = cipher.doFinal("ALLOW".getBytes());
+        	md.update("ALLOW".getBytes());
         }
         else {
-            allowOrDeny = cipher.doFinal("DENY".getBytes());
+        	md.update("DENY".getBytes());
         }
+        allowOrDeny = cipher.doFinal(md.digest());
 
         jsonMsg.put("Auth", bytesToHexString(allowOrDeny));
 

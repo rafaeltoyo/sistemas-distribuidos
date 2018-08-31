@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import javax.crypto.Cipher;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
 
 public class LeaveMessage extends Message {
 
@@ -17,7 +18,11 @@ public class LeaveMessage extends Message {
         // Adiciona um campo "Auth", que contém a string "LEAVE" cifrada com a chave privada.
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, selfPeer.getPrivateKey());
-        byte[] leaveMsg = cipher.doFinal("LEAVE".getBytes());
+        
+        byte[] leaveMsg;
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update("LEAVE".getBytes());
+        leaveMsg = cipher.doFinal(md.digest());
 
         jsonMsg.put("Auth", bytesToHexString(leaveMsg));
 
