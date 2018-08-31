@@ -123,9 +123,6 @@ public class MulticastPeer {
         // Inicia a thread
         recvThread.start();
 
-        // FIXME: Debug para mostrar a chave quando inicia o programa
-        System.out.println(publicKey.toString());
-
         // Envia a chave pública quando entra na rede
         // Todos os processos que já estão na rede vão responder.
         // Essas mensagens serão recebidas e processadas pela thread recvThread.
@@ -225,6 +222,13 @@ public class MulticastPeer {
                 break;
             }
         }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public void copyOnlineListTo(ArrayList<Peer> list) {
+        list.clear();
+        list.addAll(onlinePeerList);
     }
 
     /*------------------------------------------------------------------------*/

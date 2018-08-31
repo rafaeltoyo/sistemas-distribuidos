@@ -232,9 +232,6 @@ public class MulticastRecvThread extends Thread {
         } else if (resourceId == 2) {
         	resource = selfPeer.getHomura();
         }
-
-        // FIXME DEBUG
-        System.out.println("Peer " + senderId + " solicitou o recurso " + resourceId);
         
         if (resource != null) {
             try {
@@ -276,7 +273,10 @@ public class MulticastRecvThread extends Thread {
         }
 
         // Sanity check
-        // TODO: verificar se este processo está realmente no estado WANTED para o recurso.
+        // Verifica se este processo está realmente no estado WANTED para o recurso.
+        if (resource.getState() != ResourceState.WANTED) {
+            return;
+        }
 
         // Lê o campo "Auth", que deve conter a string "ALLOW" ou a string "DENY",
         // cifrada com a chave privada do peer.
@@ -297,22 +297,14 @@ public class MulticastRecvThread extends Thread {
 
         // Verifica se o processo liberou o uso do recurso ou não.
         if (allowOrDeny.equals("ALLOW")) {
-            // TODO
-            // Incrementar o contador de respostas positivas recebidas.
-            // Marcar que aquele processo respondeu à mensagem.
-            // Se esse incremento for o último que faltava, troca o estado do recurso para HELD (e para o timer, se estivermos usando).
+            // Decrementa o contador de respostas positivas faltantes
+            // Marca que aquele processo respondeu à mensagem
+            // Se esse incremento for o último que faltava, notifica a outra thread
             resource.receivedResponse(senderPeer, true);
-
-            // FIXME: Debug
-            System.out.println("Recebi um ALLOW do processo " + senderId + " para o recurso " + resourceId);
         }
         else if (allowOrDeny.equals("DENY")) {
-            // TODO
             // Mesmo que o processo esteja usando o recurso, marca que ele respondeu à mensagem.
             resource.receivedResponse(senderPeer, false);
-
-            // FIXME: Debug
-            System.out.println("Recebi um DENY do processo " + senderId + " para o recurso " + resourceId);
         }
     }
 

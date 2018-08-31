@@ -21,6 +21,7 @@ public class Resource {
 
     private ArrayList<Peer> peersWhoResponded;
     private ArrayList<Peer> peersWhoRespondedPositively;
+    private ArrayList<Peer> peersWhoAreYetToRespond;
     private int waitNumResponses;
     private int waitNumPositiveResponses;
 
@@ -30,6 +31,10 @@ public class Resource {
 
     public short getResourceId() {
         return resourceId;
+    }
+
+    public ResourceState getState() {
+        return state;
     }
 
     /*------------------------------------------------------------------------*/
@@ -44,6 +49,7 @@ public class Resource {
 
         this.peersWhoResponded = new ArrayList<>();
         this.peersWhoRespondedPositively = new ArrayList<>();
+        this.peersWhoAreYetToRespond = new ArrayList<>();
         this.waitNumResponses = 0;
         this.waitNumPositiveResponses = 0;
     }
@@ -76,6 +82,17 @@ public class Resource {
     	if (state != ResourceState.RELEASED) {
     		return false;
     	}
+
+    	// Alteração 30/08 20:13 - Passei o envio da mensagem para depois da inicialização das variáveis
+        waitNumResponses = selfPeer.getOnlinePeerCount();
+        waitNumPositiveResponses = waitNumResponses;
+        peersWhoResponded.clear();
+        peersWhoRespondedPositively.clear();
+        selfPeer.copyOnlineListTo(peersWhoAreYetToRespond);
+
+        // FIXME: DEBUG
+        System.out.println("Resource: Iniciando requisição do recurso " + resourceId);
+        System.out.println("Resource: Faltam " + waitNumPositiveResponses + " respostas");
     	
     	// Envia pedido do recurso à rede
         ResourceAccessMessage request = new ResourceAccessMessage(selfPeer, resourceId);
@@ -83,18 +100,10 @@ public class Resource {
     	state = ResourceState.WANTED;
         selfPeer.getConn().send(request);
 
-        peersWhoResponded.clear();
-        peersWhoRespondedPositively.clear();
-        waitNumResponses = selfPeer.getOnlinePeerCount();
-        waitNumPositiveResponses = waitNumResponses;
-    	
-    	// TODO Esperar respostas (N - 1)
-        // Como implementar o timeout?
-
-        // Primeira layer de espera: receber todas as mensagens positivas ou timeout
-        //while (waitNumPositiveResponses > 0 || !timeout) {
-        //    Thread.onSpinWait();
-        //}
+        // --- Primeira layer de espera (com timeout) ---
+        // Espera as respostas (que são processadas pela função receivedResponse)
+        // Bloqueia a thread principal por timeoutMs milissegundos, ou até receber todas as respostas
+        // O número de respostas esperado (N) está contido na variável waitNumResponses
         synchronized (selfPeer.getRecvThread()) {
             try {
                 selfPeer.getRecvThread().wait(timeoutMs);
@@ -104,15 +113,23 @@ public class Resource {
             }
         }
 
-        // Se alguém não respondeu, retira da rede
+        // Se alguém não respondeu, retira da lista de peers online
         if (waitNumResponses != 0) {
-            // TODO: Retirar da rede
+            for (Peer p : peersWhoAreYetToRespond) {
+                selfPeer.removeOnlinePeer(p.getPeerId());
+                waitNumResponses--;
+                waitNumPositiveResponses--;
+
+                // FIXME: DEBUG
+                System.out.println("Resource: Peer " + p.getPeerId() + " não respondeu, removido da lista de peers online");
+            }
         }
 
-        // Segunda layer de espera: receber todas as mensagens positivas
-        //while (waitNumPositiveResponses > 0) {
-        //    Thread.onSpinWait();
-        //}
+        // --- Segunda layer de espera ---
+        // Apenas espera aqui caso algum peer tenha dado DENY no acesso ao recurso
+        // Bloqueia a thread até que todos os outros peers permitam o acesso
+        // *** É possível colocar um timeout aqui também, e usar um retorno booleano para
+        // *** simbolizar o acesso ou não ao recurso
         if (waitNumPositiveResponses != 0) {
             synchronized (selfPeer.getRecvThread()) {
                 try {
@@ -124,8 +141,13 @@ public class Resource {
             }
         }
 
-        // FIXME DEBUG
-        System.out.println("Recebi todos os ALLOW, vou acessar o recurso " + resourceId);
+        // Caso utilizemos timeout na segunda layer de espera, vamos retornar falso aqui se algum processo morreu
+        /*
+        if (waitNumPositiveResponses != 0) return false;
+        */
+
+        // FIXME: DEBUG
+        System.out.println("Resource: acesso liberado ao recurso " + resourceId);
     	
     	state = ResourceState.HELD;
     	timestamp = 0;
@@ -142,10 +164,10 @@ public class Resource {
     	
     	state = ResourceState.RELEASED;
 
-        // FIXME DEBUG
+        // FIXME: DEBUG
         System.out.println("Estou largando o recurso " + resourceId);
     	
-    	// TODO Enviar aviso aos peers adicionados a fila de espera
+    	// Envia aviso aos peers adicionados a fila de espera
         for (ResourceQueueItem p = requestQueue.poll(); p != null; p = requestQueue.poll()) {
             ResourceAccessResponse response = new ResourceAccessResponse(selfPeer, p.getPeer().getPeerId(), resourceId, true);
             selfPeer.getConn().send(response);
@@ -160,6 +182,7 @@ public class Resource {
         if (!peersWhoResponded.contains(p)) {
             // Peer ainda não tinha respondido
             peersWhoResponded.add(p);
+            peersWhoAreYetToRespond.remove(p);
             waitNumResponses--;
             if (allow) {
                 peersWhoRespondedPositively.add(p);
@@ -173,8 +196,9 @@ public class Resource {
                 waitNumPositiveResponses--;
             }
         }
-        // FIXME DEBUG
-        System.out.println("Received response: total left = " + waitNumResponses + "; positive left = " + waitNumPositiveResponses);
+        // FIXME: DEBUG
+        System.out.println("Resource: Peer " + p.getPeerId() + ((allow)? " ALLOW" : " DENY") +". total left = " + waitNumResponses + "; positive left = " + waitNumPositiveResponses);
+
         if (waitNumPositiveResponses == 0) {
             synchronized (selfPeer.getRecvThread()) {
                 selfPeer.getRecvThread().notify();
