@@ -75,7 +75,15 @@ public class MulticastPeer {
     
     public Resource getHomura() {
     	return homura;
-    }    
+    }
+
+    public Connection getConn() {
+        return conn;
+    }
+
+    public MulticastRecvThread getRecvThread() {
+        return recvThread;
+    }
 
     /*------------------------------------------------------------------------*/
 
@@ -95,8 +103,8 @@ public class MulticastPeer {
         publicKey = keyPair.getPublic();
         
         // Inicializa os recursos
-        madoka = new Resource(this);
-        homura = new Resource(this);
+        madoka = new Resource(this, (short) 1);
+        homura = new Resource(this, (short) 2);
 
         // Inicializa a lista de peers online
         onlinePeerList = new ArrayList<>();
@@ -115,9 +123,6 @@ public class MulticastPeer {
         // Inicia a thread
         recvThread.start();
 
-        // FIXME: Debug para mostrar a chave quando inicia o programa
-        System.out.println(publicKey.toString());
-
         // Envia a chave pública quando entra na rede
         // Todos os processos que já estão na rede vão responder.
         // Essas mensagens serão recebidas e processadas pela thread recvThread.
@@ -127,13 +132,37 @@ public class MulticastPeer {
         // Loop principal: processa comandos de input
         while (true) {
             String input = scanner.nextLine();
-            if (input.startsWith("!q")) {
+
+            // Comandos
+            // "!quit": finaliza o programa (enviando mensagem de saída à rede)
+            // "!get num": tenta obter o recurso de ID num
+            // "!release num": tenta obter o recurso de ID num
+            if (input.startsWith("!quit")) {
                 quit();
                 break;
             }
-
-            // TODO: Adicionar comandos para acessar os recursos
-            // Disparar timer? (para dar timeout nos processos que não responderem)
+            else if (input.startsWith("!get " + madoka.getResourceId())) {
+                madoka.hold();
+            }
+            else if (input.startsWith("!get " + homura.getResourceId())) {
+                homura.hold();
+            }
+            else if (input.startsWith("!release " + madoka.getResourceId())) {
+                try {
+                    madoka.release();
+                }
+                catch (GeneralSecurityException e) {
+                    System.err.println("Security: " + e);
+                }
+            }
+            else if (input.startsWith("!release " + homura.getResourceId())) {
+                try {
+                    homura.release();
+                }
+                catch (GeneralSecurityException e) {
+                    System.err.println("Security: " + e);
+                }
+            }
         }
 
         close();
@@ -159,6 +188,12 @@ public class MulticastPeer {
             }
         }
         return false;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public int getOnlinePeerCount() {
+        return onlinePeerList.size();
     }
 
     /*------------------------------------------------------------------------*/
@@ -191,6 +226,13 @@ public class MulticastPeer {
 
     /*------------------------------------------------------------------------*/
 
+    public void copyOnlineListTo(ArrayList<Peer> list) {
+        list.clear();
+        list.addAll(onlinePeerList);
+    }
+
+    /*------------------------------------------------------------------------*/
+
     public void close() {
         if (scanner != null) scanner.close();
         if (conn != null) conn.close();
@@ -199,8 +241,11 @@ public class MulticastPeer {
     /*------------------------------------------------------------------------*/
 
     private void quit() throws IOException {
-        // TODO: liberar todos os recursos que o processo está usando
         try {
+            // Libera todos os recursos que o processo está usando
+            madoka.release();
+            homura.release();
+
             LeaveMessage leaveMessage = new LeaveMessage(this);
             conn.send(leaveMessage);
         }

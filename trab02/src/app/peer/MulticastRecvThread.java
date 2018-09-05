@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -37,12 +38,26 @@ public class MulticastRecvThread extends Thread {
 
     private MulticastPeer selfPeer;
     private Connection conn;
+    
+    private String allowHash;
+    private String denyHash;
+    private String leaveHash;
 
     /*------------------------------------------------------------------------*/
 
-    public MulticastRecvThread(MulticastPeer selfPeer, Connection conn) {
+    public MulticastRecvThread(MulticastPeer selfPeer, Connection conn) throws NoSuchAlgorithmException {
         this.selfPeer = selfPeer;
         this.conn = conn;
+        
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update("ALLOW".getBytes());
+        allowHash = Message.bytesToHexString(md.digest());
+        
+        md.update("DENY".getBytes());
+        denyHash = Message.bytesToHexString(md.digest());
+        
+        md.update("LEAVE".getBytes());
+        leaveHash = Message.bytesToHexString(md.digest());
     }
 
     /*------------------------------------------------------------------------*/
@@ -192,13 +207,13 @@ public class MulticastRecvThread extends Thread {
             PublicKey peerPublicKey = selfPeer.getPeerPublicKey(senderId);
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, peerPublicKey);
-            leaveMsg = new String(cipher.doFinal(authBytes));
+            leaveMsg = new String(Message.bytesToHexString(cipher.doFinal(authBytes)));
         }
         catch (GeneralSecurityException e) {
             System.err.println("Security: " + e);
         }
-
-        if (leaveMsg.equals("LEAVE")) {
+        
+        if (leaveMsg.equals(leaveHash)) {
             selfPeer.removeOnlinePeer(senderId);
 
             // FIXME: Debug
@@ -208,7 +223,7 @@ public class MulticastRecvThread extends Thread {
 
     /*------------------------------------------------------------------------*/
 
-    private void processResourceAccessMessage(JSONObject jsonMsg) throws JSONException {
+    private void processResourceAccessMessage(JSONObject jsonMsg) throws JSONException, IOException {
         int senderId = jsonMsg.getInt("Sender");
 
         // Ignora a mensagem se tiver sido enviada pelo próprio processo
@@ -220,7 +235,6 @@ public class MulticastRecvThread extends Thread {
         short resourceId = (short) jsonMsg.getInt("Resource");
         long timestamp = jsonMsg.getBigInteger("Timestamp").longValue();
 
-        // TODO
         // Se o estado do recurso para este processo for HELD,
         // ou se o estado for WANTED e seu próprio timestamp for menor que o timestamp do remetente:
         //     Coloca o pedido na fila, e responde com uma mensagem negativa.
@@ -235,7 +249,12 @@ public class MulticastRecvThread extends Thread {
         }
         
         if (resource != null) {
-        	resource.accept(selfPeer.getPeerById(senderId), timestamp);
+            try {
+                resource.accept(senderId, timestamp);
+            }
+            catch (GeneralSecurityException e) {
+                System.err.println("Security: " + e);
+            }
         }
     }
 
@@ -250,10 +269,29 @@ public class MulticastRecvThread extends Thread {
 
         // Lê qual processo respondeu
         int senderId = jsonMsg.getInt("Sender");
-        short resource = (short) jsonMsg.getInt("Resource");
+        short resourceId = (short) jsonMsg.getInt("Resource");
+
+        Resource resource = null;
+        if (resourceId == 1) {
+            resource = selfPeer.getMadoka();
+        }
+        else if (resourceId == 2) {
+            resource = selfPeer.getHomura();
+        }
+        else {
+            return;
+        }
+
+        Peer senderPeer = selfPeer.getPeerById(senderId);
+        if (senderPeer == null) {
+            return;
+        }
 
         // Sanity check
-        // TODO: verificar se este processo está realmente no estado WANTED para o recurso.
+        // Verifica se este processo está realmente no estado WANTED para o recurso.
+        if (resource.getState() != ResourceState.WANTED) {
+            return;
+        }
 
         // Lê o campo "Auth", que deve conter a string "ALLOW" ou a string "DENY",
         // cifrada com a chave privada do peer.
@@ -266,28 +304,22 @@ public class MulticastRecvThread extends Thread {
             PublicKey peerPublicKey = selfPeer.getPeerPublicKey(senderId);
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, peerPublicKey);
-            allowOrDeny = new String(cipher.doFinal(authBytes));
+            allowOrDeny = new String(Message.bytesToHexString(cipher.doFinal(authBytes)));
         }
         catch (GeneralSecurityException e) {
             System.err.println("Security: " + e);
         }
-
+        
         // Verifica se o processo liberou o uso do recurso ou não.
-        if (allowOrDeny.equals("ALLOW")) {
-            // TODO
-            // Incrementar o contador de respostas positivas recebidas.
-            // Marcar que aquele processo respondeu à mensagem.
-            // Se esse incremento for o último que faltava, troca o estado do recurso para HELD (e para o timer, se estivermos usando).
-
-            // FIXME: Debug
-            System.out.println("Recebi um ALLOW do processo " + senderId + " para o recurso " + resource);
+        if (allowOrDeny.equals(allowHash)) {
+            // Decrementa o contador de respostas positivas faltantes
+            // Marca que aquele processo respondeu à mensagem
+            // Se esse incremento for o último que faltava, notifica a outra thread
+            resource.receivedResponse(senderPeer, true);
         }
-        else if (allowOrDeny.equals("DENY")) {
-            // TODO
+        else if (allowOrDeny.equals(denyHash)) {
             // Mesmo que o processo esteja usando o recurso, marca que ele respondeu à mensagem.
-
-            // FIXME: Debug
-            System.out.println("Recebi um DENY do processo " + senderId + " para o recurso " + resource);
+            resource.receivedResponse(senderPeer, false);
         }
     }
 
