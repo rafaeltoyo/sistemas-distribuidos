@@ -14,28 +14,11 @@ package app;
 
 import app.agent.MulticastPeer;
 import app.agent.OnlinePeers;
-import app.agent.Peer;
-import app.services.Commands;
 import app.services.Connection;
-import app.message.JoinResponse;
-import app.message.Message;
-import app.resource.Resource;
-import app.resource.ResourceState;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.crypto.Cipher;
 import java.io.IOException;
-import java.io.Serializable;
-import java.net.SocketException;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.function.Consumer;
 
 /*============================================================================*/

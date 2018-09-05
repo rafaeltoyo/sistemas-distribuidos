@@ -3,29 +3,25 @@ package app.message;
 import app.agent.MulticastPeer;
 import org.json.JSONObject;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 public class ResourceAccessMessage extends Message {
 
-    private long timestamp;
-
-    /*------------------------------------------------------------------------*/
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    /*------------------------------------------------------------------------*/
+    private short resource;
 
     public ResourceAccessMessage(MulticastPeer user, short resource) {
-        JSONObject jsonMsg = new JSONObject();
-
-        this.timestamp = System.currentTimeMillis();
-
-        jsonMsg.put("MessageType", "resourceAccess");
-        jsonMsg.put("Sender", user.getId());
-        jsonMsg.put("Resource", resource);
-        jsonMsg.put("Timestamp", this.timestamp);
-
-        msg = jsonMsg.toString().getBytes();
+        super(MessageType.RESOURCE_ACCESS_REQUEST.toString(), user);
+        this.resource = resource;
     }
 
+    @Override
+    public JSONObject getJSON() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        JSONObject json = super.getJSON();
+        json.put("resource", resource);
+        return json;
+    }
 }

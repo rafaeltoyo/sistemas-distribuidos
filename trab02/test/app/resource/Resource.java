@@ -2,6 +2,8 @@ package app.resource;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import app.Application;
@@ -10,6 +12,10 @@ import app.agent.OnlinePeers;
 import app.agent.Peer;
 import app.message.ResourceAccessMessage;
 import app.message.ResourceAccessResponse;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class Resource {
 	
@@ -76,13 +82,14 @@ public class Resource {
     	// Envia ALLOW ou DENY de acordo com a flag allow.
         // Se o recurso estiver ocupado, ou se este processo pediu o recurso antes do outro, envia DENY
         // Senão, envia allow.
-        ResourceAccessResponse response = new ResourceAccessResponse(user, peerId, resourceId, allow);
+        ResourceAccessResponse response = new ResourceAccessResponse(user, p, resourceId, allow);
+
         Application.getInstance().getConn().send(response);
     }
 
     /*------------------------------------------------------------------------*/
     
-    public boolean hold() throws IOException {
+    public boolean hold() throws IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
     	if (state != ResourceState.RELEASED) {
     		return false;
     	}
@@ -175,7 +182,7 @@ public class Resource {
     	
     	// Envia aviso aos peers adicionados a fila de espera
         for (ResourceQueueItem p = requestQueue.poll(); p != null; p = requestQueue.poll()) {
-            ResourceAccessResponse response = new ResourceAccessResponse(user, p.getPeer().getId(), resourceId, true);
+            ResourceAccessResponse response = new ResourceAccessResponse(user, p.getPeer(), resourceId, true);
             Application.getInstance().getConn().send(response);
         }
     	

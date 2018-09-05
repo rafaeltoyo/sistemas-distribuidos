@@ -16,12 +16,18 @@ import app.agent.MulticastPeer;
 import app.agent.OnlinePeers;
 import app.message.JoinMessage;
 import app.message.LeaveMessage;
+import app.message.Message;
+import app.message.MessageType;
 import app.resource.Resource;
 import app.services.Commands;
 import app.services.Connection;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
@@ -103,21 +109,21 @@ public class Application {
         });
     }
 
-    public void run() throws IOException {
+    public void run() throws IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
 
         // FIXME: Como gerar IDs únicos para cada processo?
         System.out.print("Digite um ID para o processo: ");
         int peerId = scanner.nextInt();
-
         user.setId(peerId);
 
         // Inicia a thread
+        msgThread.start();
         recvThread.start();
 
         // Envia a chave pública quando entra na rede
         // Todos os processos que já estão na rede vão responder.
         // Essas mensagens serão recebidas e processadas pela thread recvThread.
-        JoinMessage joinMessage = new JoinMessage(user);
+        Message joinMessage = new Message(MessageType.JOIN_REQUEST.toString(), user);
         conn.send(joinMessage);
 
         // Loop principal: processa comandos de input
@@ -158,6 +164,8 @@ public class Application {
 
         close();
     }
+
+    /*------------------------------------------------------------------------*/
 
     public void close() {
         if (scanner != null) scanner.close();

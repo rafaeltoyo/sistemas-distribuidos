@@ -30,13 +30,13 @@ public class Commands {
     public void init() throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
 
-        md.update("ALLOW".getBytes());
+        md.update("allow".getBytes());
         allowHash = Message.bytesToHexString(md.digest());
 
-        md.update("DENY".getBytes());
+        md.update("deny".getBytes());
         denyHash = Message.bytesToHexString(md.digest());
 
-        md.update("LEAVE".getBytes());
+        md.update("leave".getBytes());
         leaveHash = Message.bytesToHexString(md.digest());
     }
 

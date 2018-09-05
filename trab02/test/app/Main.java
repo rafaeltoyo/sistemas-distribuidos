@@ -12,8 +12,12 @@
 
 package app;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /*============================================================================*/
@@ -46,7 +50,9 @@ public class Main {
         catch (NoSuchAlgorithmException e) {
             System.err.println("Security: " + e.getMessage());
         }
-        finally {
+        catch (IllegalBlockSizeException | NoSuchPaddingException | BadPaddingException | InvalidKeyException e) {
+            System.err.println("Other: " + e.getMessage());
+        } finally {
             Application.getInstance().close();
         }
     }
