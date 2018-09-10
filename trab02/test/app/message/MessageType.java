@@ -1,8 +1,6 @@
 package app.message;
 
 public enum MessageType {
-    HAND_SHAKE_REQUEST("handshake-rqt"),
-    HAND_SHAKE_RESPONSE("handshake-rsp"),
     JOIN_REQUEST("join-rqt"),
     JOIN_RESPONSE("join-rsp"),
     LEAVE("leave"),

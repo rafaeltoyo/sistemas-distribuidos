@@ -1,5 +1,5 @@
 /*============================================================================*/
-/* Application.java                                                   */
+/* Application.java                                                           */
 /*                                                                            */
 /* THREAD DE RECEBIMENTO PARA O SOCKET MULTICAST                              */
 /*============================================================================*/
@@ -14,7 +14,6 @@ package app;
 
 import app.agent.MulticastPeer;
 import app.agent.OnlinePeers;
-import app.message.JoinMessage;
 import app.message.LeaveMessage;
 import app.message.Message;
 import app.message.MessageType;

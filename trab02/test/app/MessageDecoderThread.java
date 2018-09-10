@@ -52,8 +52,10 @@ public class MessageDecoderThread extends Thread {
                 continue;
             }
 
+            // Pegar o tipo da mensagem
             String messageType = jsonMsg.getString("type");
 
+            // Destina a tratativa adequada para cada um dos tipos de mensagem
             try {
                 if (messageType.startsWith(MessageType.JOIN_REQUEST.toString())) {
                     processJoinMessage(jsonMsg);
