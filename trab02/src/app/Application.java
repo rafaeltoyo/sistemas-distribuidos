@@ -24,6 +24,9 @@ import app.services.Connection;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -41,7 +44,7 @@ public class Application {
     /*------------------------------------------------------------------------*/
 
     // IP e porta do Socket Multicast
-    private final static String MULTICAST_IP = "232.232.232.232";
+    private final static String MULTICAST_IP = "232.233.234.235";
     private final static short MULTICAST_PORT = 6789;
 
     /*------------------------------------------------------------------------*/
@@ -60,7 +63,7 @@ public class Application {
     // Representação dos demais Peers
     private OnlinePeers peers;
 
-    // Duas belas lolis
+    // Recursos
     private Resource madoka;
     private Resource homura;
 
@@ -124,7 +127,12 @@ public class Application {
         // Essas mensagens serão recebidas e processadas pela thread recvThread.
         Message joinMessage = new Message(MessageType.JOIN_REQUEST.toString(), user);
         conn.send(joinMessage);
-
+        
+        System.out.println("Comandos:");
+        System.out.println("!quit: finaliza o programa (enviando mensagem de saída à rede)");
+        System.out.println("!get num: tenta obter o recurso de ID num");
+        System.out.println("!release num: tenta obter o recurso de ID num");
+        
         // Loop principal: processa comandos de input
         while (true) {
             String input = scanner.nextLine();
@@ -187,6 +195,8 @@ public class Application {
         }
 
         recvThread.interrupt();
+        msgThread.messages.offer(new JSONObject());
+        msgThread.interrupt();
     }
 
     /*------------------------------------------------------------------------*/

@@ -50,6 +50,8 @@ public class MessageDecoderThread extends Thread {
                 jsonMsg = messages.take();
             } catch (InterruptedException e) {
                 continue;
+            } catch (Exception e) {
+            	continue;
             }
 
             // Pegar o tipo da mensagem

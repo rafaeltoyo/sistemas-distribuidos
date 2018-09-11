@@ -1,7 +1,7 @@
-JSON in Java [package org.json]
+JSON in Java [package org.org.json]
 ===============================
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.json/json.svg)](https://mvnrepository.com/artifact/org.json/json)
+[![Maven Central](https://img.shields.io/maven-central/v/org.org.json/org.json.svg)](https://mvnrepository.com/artifact/org.org.json/org.json)
 
 JSON is a light-weight, language independent, data interchange format.
 See http://www.JSON.org/
@@ -131,6 +131,6 @@ as of 29 July, 2015.
 ~~~
 
 
-JSON-java releases can be found by searching the Maven repository for groupId "org.json"
-and artifactId "json". For example:
-https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.json%22%20AND%20a%3A%22json%22
+JSON-java releases can be found by searching the Maven repository for groupId "org.org.json"
+and artifactId "org.json". For example:
+https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.org.json%22%20AND%20a%3A%22json%22
