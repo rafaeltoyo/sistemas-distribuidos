@@ -1,6 +1,6 @@
 package app.resource;
 
-import app.peer.Peer;
+import app.agent.Peer;
 
 public class ResourceQueueItem {
     private Peer peer;

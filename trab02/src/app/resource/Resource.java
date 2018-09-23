@@ -2,12 +2,20 @@ package app.resource;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
+import app.Application;
+import app.agent.MulticastPeer;
+import app.agent.OnlinePeers;
+import app.agent.Peer;
 import app.message.ResourceAccessMessage;
 import app.message.ResourceAccessResponse;
-import app.peer.MulticastPeer;
-import app.peer.Peer;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class Resource {
 	
@@ -16,8 +24,9 @@ public class Resource {
     
     private long timestamp = 0;
     
-    private MulticastPeer selfPeer;
     private short resourceId;
+    private MulticastPeer user;
+    private OnlinePeers peers;
 
     private ArrayList<Peer> peersWhoResponded;
     private ArrayList<Peer> peersWhoRespondedPositively;
@@ -25,7 +34,7 @@ public class Resource {
     private int waitNumResponses;
     private int waitNumPositiveResponses;
 
-    private static final long timeoutMs = 2000; // 1 segundo
+    private static final long timeoutMs = 2000; // 2 segundos
 
     /*------------------------------------------------------------------------*/
 
@@ -39,11 +48,12 @@ public class Resource {
 
     /*------------------------------------------------------------------------*/
     
-    public Resource(MulticastPeer selfPeer, short resourceId) {
+    public Resource(short resourceId, MulticastPeer user, OnlinePeers peers) {
         this.state = ResourceState.RELEASED;
-        
-        this.selfPeer = selfPeer;
         this.resourceId = resourceId;
+
+        this.user = user;
+        this.peers = peers;
 
         this.requestQueue = new PriorityQueue<>(Comparator.comparingLong(ResourceQueueItem::getTimestamp));
 
@@ -57,7 +67,7 @@ public class Resource {
     /*------------------------------------------------------------------------*/
     
     public void accept(int peerId, long timestamp) throws IOException, GeneralSecurityException {
-        Peer p = selfPeer.getPeerById(peerId);
+        Peer p = peers.getPeer(peerId);
         if (p == null) {
             return;
         }
@@ -72,41 +82,44 @@ public class Resource {
     	// Envia ALLOW ou DENY de acordo com a flag allow.
         // Se o recurso estiver ocupado, ou se este processo pediu o recurso antes do outro, envia DENY
         // Senão, envia allow.
-        ResourceAccessResponse response = new ResourceAccessResponse(selfPeer, peerId, resourceId, allow);
-        selfPeer.getConn().send(response);
+        ResourceAccessResponse response = new ResourceAccessResponse(user, p, resourceId, allow);
+
+        Application.getInstance().getConn().send(response);
     }
 
     /*------------------------------------------------------------------------*/
     
-    public boolean hold() throws IOException {
+    public boolean hold() throws IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
     	if (state != ResourceState.RELEASED) {
     		return false;
     	}
 
     	// Alteração 30/08 20:13 - Passei o envio da mensagem para depois da inicialização das variáveis
-        waitNumResponses = selfPeer.getOnlinePeerCount();
+        waitNumResponses = peers.countOnline();
         waitNumPositiveResponses = waitNumResponses;
+
         peersWhoResponded.clear();
         peersWhoRespondedPositively.clear();
-        selfPeer.copyOnlineListTo(peersWhoAreYetToRespond);
+
+        peers.copyOnlineListTo(peersWhoAreYetToRespond);
 
         // FIXME: DEBUG
         System.out.println("Resource: Iniciando requisição do recurso " + resourceId);
         System.out.println("Resource: Faltam " + waitNumPositiveResponses + " respostas");
     	
     	// Envia pedido do recurso à rede
-        ResourceAccessMessage request = new ResourceAccessMessage(selfPeer, resourceId);
+        ResourceAccessMessage request = new ResourceAccessMessage(user, resourceId);
     	timestamp = request.getTimestamp();
     	state = ResourceState.WANTED;
-        selfPeer.getConn().send(request);
+        Application.getInstance().getConn().send(request);
 
         // --- Primeira layer de espera (com timeout) ---
         // Espera as respostas (que são processadas pela função receivedResponse)
         // Bloqueia a thread principal por timeoutMs milissegundos, ou até receber todas as respostas
         // O número de respostas esperado (N) está contido na variável waitNumResponses
-        synchronized (selfPeer.getRecvThread()) {
+        synchronized (Application.getInstance().getRecvThread()) {
             try {
-                selfPeer.getRecvThread().wait(timeoutMs);
+                Application.getInstance().getRecvThread().wait(timeoutMs);
             } catch (InterruptedException e) {
                 System.err.println("Thread: " + e);
                 return false;
@@ -116,12 +129,12 @@ public class Resource {
         // Se alguém não respondeu, retira da lista de peers online
         if (waitNumResponses != 0) {
             for (Peer p : peersWhoAreYetToRespond) {
-                selfPeer.removeOnlinePeer(p.getPeerId());
+                peers.removePeer(p.getId());
                 waitNumResponses--;
                 waitNumPositiveResponses--;
 
                 // FIXME: DEBUG
-                System.out.println("Resource: Peer " + p.getPeerId() + " não respondeu, removido da lista de peers online");
+                System.out.println("Resource: Peer " + p.getId() + " não respondeu, removido da lista de peers online");
             }
         }
 
@@ -131,9 +144,9 @@ public class Resource {
         // *** É possível colocar um timeout aqui também, e usar um retorno booleano para
         // *** simbolizar o acesso ou não ao recurso
         if (waitNumPositiveResponses != 0) {
-            synchronized (selfPeer.getRecvThread()) {
+            synchronized (Application.getInstance().getRecvThread()) {
                 try {
-                    selfPeer.getRecvThread().wait();
+                    Application.getInstance().getRecvThread().wait();
                 } catch (InterruptedException e) {
                     System.err.println("Thread: " + e);
                     return false;
@@ -169,8 +182,8 @@ public class Resource {
     	
     	// Envia aviso aos peers adicionados a fila de espera
         for (ResourceQueueItem p = requestQueue.poll(); p != null; p = requestQueue.poll()) {
-            ResourceAccessResponse response = new ResourceAccessResponse(selfPeer, p.getPeer().getPeerId(), resourceId, true);
-            selfPeer.getConn().send(response);
+            ResourceAccessResponse response = new ResourceAccessResponse(user, p.getPeer(), resourceId, true);
+            Application.getInstance().getConn().send(response);
         }
     	
     	return true;
@@ -197,11 +210,11 @@ public class Resource {
             }
         }
         // FIXME: DEBUG
-        System.out.println("Resource: Peer " + p.getPeerId() + ((allow)? " ALLOW" : " DENY") +". total left = " + waitNumResponses + "; positive left = " + waitNumPositiveResponses);
+        System.out.println("Resource: Peer " + p.getId() + ((allow)? " ALLOW" : " DENY") +". total left = " + waitNumResponses + "; positive left = " + waitNumPositiveResponses);
 
         if (waitNumPositiveResponses == 0) {
-            synchronized (selfPeer.getRecvThread()) {
-                selfPeer.getRecvThread().notify();
+            synchronized (Application.getInstance().getRecvThread()) {
+                Application.getInstance().getRecvThread().notify();
             }
         }
     }

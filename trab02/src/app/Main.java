@@ -12,10 +12,12 @@
 
 package app;
 
-import app.peer.MulticastPeer;
-
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /*============================================================================*/
@@ -34,11 +36,10 @@ public class Main {
      * @param args argumentos de linha de comando.
      */
     public static void main(String[] args) {
-        MulticastPeer peer = null;
 
         try {
-            peer = new MulticastPeer();
-            peer.run();
+            Application.getInstance().start();
+            Application.getInstance().run();
         }
         catch (SocketException e) {
             System.err.println("Socket: " + e.getMessage());
@@ -49,10 +50,10 @@ public class Main {
         catch (NoSuchAlgorithmException e) {
             System.err.println("Security: " + e.getMessage());
         }
-        finally {
-            if (peer != null) peer.close();
+        catch (IllegalBlockSizeException | NoSuchPaddingException | BadPaddingException | InvalidKeyException e) {
+            System.err.println("Other: " + e.getMessage());
+        } finally {
+            Application.getInstance().close();
         }
     }
 }
-
-/*============================================================================*/

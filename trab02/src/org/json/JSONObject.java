@@ -1486,7 +1486,7 @@ public class JSONObject {
                         if (result != null) {
                             this.map.put(key, wrap(result));
                             // we don't use the result anywhere outside of wrap
-                            // if it's a resource we should be sure to close it
+                            // if it's a app.agent.resource we should be sure to close it
                             // after calling toString
                             if (result instanceof Closeable) {
                                 try {

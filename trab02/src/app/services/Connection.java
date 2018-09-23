@@ -14,14 +14,19 @@
 // entre threads usando o mesmo socket.
 /*============================================================================*/
 
-package app.connection;
+package app.services;
 
 import app.message.Message;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.locks.ReentrantLock;
 
 /*============================================================================*/
@@ -89,11 +94,12 @@ public class Connection {
      * @param m mensagem a enviar
      * @throws IOException se ocorrer exceção de I/O ao enviar o datagrama
      */
-    public void send(Message m) throws IOException {
+    public void send(Message m) throws IOException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
         // Sincroniza o socket para evitar condições de disputa entre as threads
         sendLock.lock();
         try {
-            socket.send(new DatagramPacket(m.getBytes(), m.getBytes().length, group, port));
+            byte [] content = m.getBytes();
+            socket.send(new DatagramPacket(content, content.length, group, port));
         }
         finally {
             sendLock.unlock();
