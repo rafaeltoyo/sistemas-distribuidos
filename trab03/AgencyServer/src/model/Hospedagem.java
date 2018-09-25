@@ -1,10 +1,11 @@
 package model;
 
+import model.saldo.ObjComSaldo;
 import model.saldo.Saldo;
 
 import java.util.Date;
 
-public class Hospedagem {
+public class Hospedagem extends ObjComSaldo {
 
     private static int count = 0;
 
@@ -25,12 +26,12 @@ public class Hospedagem {
     }
 
     public Hospedagem(int id, int destino, Date dataEntrada, Date dataSaida, int numQuartos, int numPessoas) {
+        super(numPessoas);
         this.id = id;
         this.destino = destino;
         this.dataEntrada = dataEntrada;
         this.dataSaida = dataSaida;
         this.numQuartos = numQuartos;
-        this.numPessoas = new Saldo(numPessoas);
     }
 
     public int getId() {
