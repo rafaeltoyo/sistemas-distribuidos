@@ -22,43 +22,87 @@ public class AgencyServerImpl extends UnicastRemoteObject implements AgencyServe
         super();
     }
 
+    /**
+     * @todo
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<Passagem> consultarPassagens() throws RemoteException {
         return passagens;
     }
 
+    /**
+     * @todo
+     * @param passagem
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public boolean comprarPassagem(Passagem passagem) throws RemoteException {
         return false;
     }
 
+    /**
+     * @todo
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<Hospedagem> consultarHospedagens() throws RemoteException {
         return hospedagens;
     }
 
+    /**
+     * @todo
+     * @param hospedagem
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public boolean comprarHospedagem(Hospedagem hospedagem) throws RemoteException {
         return false;
     }
 
+    /**
+     * @todo
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public ArrayList<Pacote> consultarPacotes() throws RemoteException {
         return pacotes;
     }
 
+    /**
+     * @todo
+     * @param pacote
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public synchronized boolean comprarPacote(Pacote pacote) throws RemoteException {
         pacote = pacotes.get(pacote.getId());
-        pacote.comprar();
         return true;
     }
 
+    /**
+     * @todo
+     * @param evento
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public boolean registraEvento(Evento evento) throws RemoteException {
         return false;
     }
 
+    /**
+     * @todo
+     * @param evento
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public boolean removerEvento(Evento evento) throws RemoteException {
         return false;

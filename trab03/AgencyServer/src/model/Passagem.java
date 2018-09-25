@@ -1,11 +1,12 @@
 package model;
 
+import model.saldo.ObjComSaldo;
 import model.saldo.Reserva;
 import model.saldo.Saldo;
 
 import java.util.Date;
 
-public class Passagem {
+public class Passagem extends ObjComSaldo {
 
     private static int count = 0;
 
@@ -21,29 +22,22 @@ public class Passagem {
 
     private Date dataVolta;
 
-    Saldo numPessoas;
-
     public Passagem(TipoPassagem tipo, int origem, int destino, Date dataIda, Date dataVolta, int numPessoas) {
         this(count++, tipo, origem, destino, dataIda, dataVolta, numPessoas);
     }
 
     public Passagem(int id, TipoPassagem tipo, int origem, int destino, Date dataIda, Date dataVolta, int numPessoas) {
+        super(numPessoas);
         this.id = id;
         this.tipo = tipo;
         this.origem = origem;
         this.destino = destino;
         this.dataIda = dataIda;
         this.dataVolta = dataVolta;
-        this.numPessoas = new Saldo(numPessoas);
+
     }
 
     public int getId() {
         return id;
-    }
-
-    public boolean reservar(int numPessoas) {
-        synchronized (this.numPessoas) {
-            return this.numPessoas.pegarSaldo(numPessoas) != null;
-        }
     }
 }
