@@ -35,6 +35,32 @@ public class VooImpl extends UnicastRemoteObject implements Voo {
 
     /*------------------------------------------------------------------------*/
 
+    public int getId() {
+        return id;
+    }
+
+    public String getOrigem() {
+        return origem;
+    }
+
+    public String getDestino() {
+        return destino;
+    }
+
+    public Calendar getData() {
+        return data;
+    }
+
+    public int getPoltronasTotal() {
+        return poltronasTotal;
+    }
+
+    public int getPoltronasDisp() {
+        return poltronasDisp;
+    }
+
+    /*------------------------------------------------------------------------*/
+
     /** Construtor para um novo voo.
      * Obtém um identificador com auto-incremento.
      * Considera que todas as poltronas da aeronave estão disponíveis para

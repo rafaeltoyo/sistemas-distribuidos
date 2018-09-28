@@ -54,10 +54,29 @@ public class AgencyServerImpl extends UnicastRemoteObject
     public ArrayList<Voo> consultarPassagens(TipoPassagem tipo,
             String origem, String destino, Calendar dataIda, Calendar dataVolta,
             int numPessoas) throws RemoteException {
-        // TODO
         ArrayList<Voo> result = new ArrayList<>();
         for (VooImpl voo : voos) {
-            result.add(voo);
+            // FIXME: precisa synchronized para ler?
+
+            // Adiciona voos de ida
+            if (origem.equals(voo.getOrigem()) &&
+                    destino.equals(voo.getDestino()) &&
+                    dataIda.get(Calendar.YEAR) == voo.getData().get(Calendar.YEAR) &&
+                    dataIda.get(Calendar.DAY_OF_YEAR) == voo.getData().get(Calendar.DAY_OF_YEAR) &&
+                    numPessoas <= voo.getPoltronasDisp()) {
+                result.add(voo);
+            }
+
+            // Adiciona voos de volta
+            if (tipo == TipoPassagem.IDA_E_VOLTA) {
+                if (origem.equals(voo.getDestino()) &&
+                        destino.equals(voo.getOrigem()) &&
+                        dataVolta.get(Calendar.YEAR) == voo.getData().get(Calendar.YEAR) &&
+                        dataVolta.get(Calendar.DAY_OF_YEAR) == voo.getData().get(Calendar.DAY_OF_YEAR) &&
+                        numPessoas <= voo.getPoltronasDisp()) {
+                    result.add(voo);
+                }
+            }
         }
         return result;
     }
