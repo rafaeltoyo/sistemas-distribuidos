@@ -1,7 +1,7 @@
 package server;
 
 import model.TipoPassagem;
-import model.VooImpl;
+import model.voo.Voo;
 import remote.AgencyServer;
 import remote.Voo;
 
@@ -17,7 +17,7 @@ import java.util.Calendar;
 public class AgencyServerImpl extends UnicastRemoteObject
         implements AgencyServer {
     /** Lista de voos disponíveis */
-    private ArrayList<VooImpl> voos = new ArrayList<>();
+    private ArrayList<Voo> voos = new ArrayList<>();
 
     /*------------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
     /** Adiciona um voo à lista de voos do servidor
      * @param voo voo já instanciado e inicializado
      */
-    public void adicionarVoo(VooImpl voo) {
+    public void adicionarVoo(Voo voo) {
         voos.add(voo);
     }
 
@@ -55,7 +55,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
             String origem, String destino, Calendar dataIda, Calendar dataVolta,
             int numPessoas) throws RemoteException {
         ArrayList<Voo> result = new ArrayList<>();
-        for (VooImpl voo : voos) {
+        for (Voo voo : voos) {
             // FIXME: precisa synchronized para ler?
 
             // Adiciona voos de ida

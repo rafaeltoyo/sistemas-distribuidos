@@ -1,6 +1,6 @@
 package server;
 
-import model.VooImpl;
+import model.voo.Voo;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -29,7 +29,7 @@ public class Main {
             // FIXME: Debug
             Calendar data = Calendar.getInstance();
             data.set(2018, Calendar.SEPTEMBER, 27);
-            VooImpl voo = new VooImpl("CWB", "GRU", data, 80);
+            Voo voo = new Voo("CWB", "GRU", data, 80);
 
             AgencyServerImpl agencyServerImpl = new AgencyServerImpl();
             namingServiceRef.bind("server", agencyServerImpl);

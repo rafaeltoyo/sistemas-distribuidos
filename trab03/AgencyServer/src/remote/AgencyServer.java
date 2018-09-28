@@ -1,7 +1,7 @@
 package remote;
 
 import model.TipoPassagem;
-import model.VooImpl;
+import model.voo.Voo;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
