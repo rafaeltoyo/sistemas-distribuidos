@@ -36,9 +36,9 @@ public class Main {
 
             AgencyClientImpl client = new AgencyClientImpl(serverRef);
 
-            Calendar date = Calendar.getInstance();
-            date.set(2018, Calendar.SEPTEMBER, 27);
-            ArrayList<Voo> voos = serverRef.consultarPassagens(TipoPassagem.SOMENTE_IDA, "CWB", "GRU", date, null, 1);
+            Calendar data = Calendar.getInstance();
+            data.set(2018, Calendar.SEPTEMBER, 27);
+            ArrayList<Voo> voos = serverRef.consultarPassagens(TipoPassagem.SOMENTE_IDA, "CWB", "GRU", data, null, 1);
 
             for (Voo voo : voos) {
                 System.out.println(voo.obterId());
