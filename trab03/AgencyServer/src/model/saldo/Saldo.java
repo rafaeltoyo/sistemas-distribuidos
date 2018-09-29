@@ -32,4 +32,9 @@ public class Saldo {
             return reserva;
         }
     }
+
+    public boolean estornar(Reserva reserva) {
+        return reservas.remove(reserva);
+    }
+
 }
