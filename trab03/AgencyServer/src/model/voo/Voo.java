@@ -45,6 +45,10 @@ public class Voo extends ObjComSaldo {
         return data;
     }
 
+    public int getPoltronasDisp() {
+        return saldo.consultarSaldo();
+    }
+
     /*------------------------------------------------------------------------*/
 
     /** Construtor para um novo voo.

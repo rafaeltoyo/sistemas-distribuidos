@@ -1,6 +1,7 @@
 package model;
 
 import model.saldo.Reserva;
+import model.voo.Passagem;
 
 public class Pacote {
 

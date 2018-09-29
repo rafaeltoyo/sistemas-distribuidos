@@ -3,7 +3,6 @@ package server;
 import model.TipoPassagem;
 import model.voo.Voo;
 import remote.AgencyServer;
-import remote.Voo;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

@@ -2,7 +2,7 @@ package model.saldo;
 
 abstract public class ObjComSaldo {
 
-    Saldo saldo;
+    protected Saldo saldo;
 
     public ObjComSaldo(int numPessoas) {
         this.saldo = new Saldo(numPessoas);
