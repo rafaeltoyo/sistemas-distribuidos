@@ -60,7 +60,6 @@ public class Voo extends ObjComSaldo implements Serializable {
      * @param destino local de destino (chegada)
      * @param data data de partida
      * @param poltronasTotal número total de poltronas da aeronave
-     * @throws RemoteException caso ocorra erro no RMI
      */
     public Voo(Cidade origem, Cidade destino, Calendar data, int poltronasTotal) {
         super(poltronasTotal);

@@ -29,6 +29,9 @@ public interface AgencyServer extends Remote {
             Cidade destino, Calendar dataIda, Calendar dataVolta,
             int numPessoas) throws RemoteException;
 
+    boolean comprarPassagens(TipoPassagem tipo, int idVooIda, int idVooVolta,
+            int numPessoas) throws RemoteException;
+
     //ArrayList<Hospedagem> consultarHospedagens() throws RemoteException;
 
     //boolean comprarHospedagem(Hospedagem hospedagem) throws RemoteException;

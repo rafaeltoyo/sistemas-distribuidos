@@ -51,7 +51,7 @@ public class Main {
             // FIXME: Debug
             data = Calendar.getInstance();
             data.set(2018, Calendar.SEPTEMBER, 28);
-            voo = new Voo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, data, 80);
+            voo = new Voo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, data, 20);
             agencyServerImpl.adicionarVoo(voo);
 
             // FIXME: Debug

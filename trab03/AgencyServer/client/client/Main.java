@@ -52,6 +52,7 @@ public class Main {
             }
             System.out.println("............");
 
+            /*
             // FIXME: Debug
             data = Calendar.getInstance();
             data.set(2018, Calendar.SEPTEMBER, 27);
@@ -62,6 +63,34 @@ public class Main {
                 System.out.println(voo.getOrigem());
                 System.out.println(voo.getDestino());
                 System.out.println(voo.getPoltronasDisp());
+            }
+            */
+
+            // FIXME: Debug
+
+            Voo vooIda = null;
+            Voo vooVolta = null;
+
+            for (Voo voo : voos) {
+                if (voo.getOrigem() == Cidade.CURITIBA && voo.getDestino() == Cidade.FLORIANOPOLIS) {
+                    vooIda = voo;
+                }
+                else if (voo.getOrigem() == Cidade.FLORIANOPOLIS && voo.getDestino() == Cidade.CURITIBA) {
+                    vooVolta = voo;
+                }
+
+                if (vooIda != null && vooVolta != null) {
+                    break;
+                }
+            }
+            if (vooIda != null && vooVolta != null) {
+                for (int i = 0; i < 100; ++i) {
+                    if (serverRef.comprarPassagens(TipoPassagem.IDA_E_VOLTA, vooIda.getId(), vooVolta.getId(), 1)) {
+                        System.out.println("Deu boa");
+                    } else {
+                        System.out.println("Não deu boa");
+                    }
+                }
             }
         }
         catch (RemoteException | NotBoundException e) {
