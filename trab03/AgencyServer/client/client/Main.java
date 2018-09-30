@@ -1,8 +1,8 @@
 package client;
 
 import model.TipoPassagem;
+import model.voo.Voo;
 import remote.AgencyServer;
-import remote.Voo;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -41,12 +41,11 @@ public class Main {
             ArrayList<Voo> voos = serverRef.consultarPassagens(TipoPassagem.SOMENTE_IDA, "CWB", "GRU", data, null, 1);
 
             for (Voo voo : voos) {
-                System.out.println(voo.obterId());
-                System.out.println(voo.obterData());
-                System.out.println(voo.obterOrigem());
-                System.out.println(voo.obterDestino());
-                System.out.println(voo.obterPoltronasDisp());
-                System.out.println(voo.obterPoltronasTotal());
+                System.out.println(voo.getId());
+                System.out.println(voo.getData());
+                System.out.println(voo.getOrigem());
+                System.out.println(voo.getDestino());
+                System.out.println(voo.getPoltronasDisp());
             }
         }
         catch (RemoteException | NotBoundException e) {

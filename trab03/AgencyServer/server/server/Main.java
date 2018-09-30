@@ -1,5 +1,6 @@
 package server;
 
+import model.cidade.Cidade;
 import model.voo.Voo;
 
 import java.rmi.AlreadyBoundException;
@@ -29,7 +30,7 @@ public class Main {
             // FIXME: Debug
             Calendar data = Calendar.getInstance();
             data.set(2018, Calendar.SEPTEMBER, 27);
-            Voo voo = new Voo("CWB", "GRU", data, 80);
+            Voo voo = new Voo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, 80);
 
             AgencyServerImpl agencyServerImpl = new AgencyServerImpl();
             namingServiceRef.bind("server", agencyServerImpl);
