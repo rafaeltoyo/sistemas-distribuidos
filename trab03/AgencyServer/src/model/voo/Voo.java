@@ -3,6 +3,7 @@ package model.voo;
 import model.cidade.Cidade;
 import model.saldo.ObjComSaldo;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
@@ -11,7 +12,7 @@ import java.util.Calendar;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class Voo extends ObjComSaldo {
+public class Voo extends ObjComSaldo implements Serializable {
     /** Contagem de voos para o auto-incremento do identificador */
     private static int count = 0;
 

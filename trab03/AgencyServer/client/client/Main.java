@@ -1,6 +1,7 @@
 package client;
 
 import model.TipoPassagem;
+import model.cidade.Cidade;
 import model.voo.Voo;
 import remote.AgencyServer;
 
@@ -36,10 +37,25 @@ public class Main {
 
             AgencyClientImpl client = new AgencyClientImpl(serverRef);
 
+            // FIXME: Debug
             Calendar data = Calendar.getInstance();
             data.set(2018, Calendar.SEPTEMBER, 27);
-            ArrayList<Voo> voos = serverRef.consultarPassagens(TipoPassagem.SOMENTE_IDA, "CWB", "GRU", data, null, 1);
+            Calendar datavolta = Calendar.getInstance();
+            datavolta.set(2018, Calendar.SEPTEMBER, 28);
+            ArrayList<Voo> voos = serverRef.consultarPassagens(TipoPassagem.IDA_E_VOLTA, Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, datavolta, 1);
+            for (Voo voo : voos) {
+                System.out.println(voo.getId());
+                System.out.println(voo.getData());
+                System.out.println(voo.getOrigem());
+                System.out.println(voo.getDestino());
+                System.out.println(voo.getPoltronasDisp());
+            }
+            System.out.println("............");
 
+            // FIXME: Debug
+            data = Calendar.getInstance();
+            data.set(2018, Calendar.SEPTEMBER, 27);
+            voos = serverRef.consultarPassagens(TipoPassagem.SOMENTE_IDA, Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, null, 1);
             for (Voo voo : voos) {
                 System.out.println(voo.getId());
                 System.out.println(voo.getData());

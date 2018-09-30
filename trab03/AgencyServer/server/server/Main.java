@@ -27,15 +27,43 @@ public class Main {
             Registry namingServiceRef = LocateRegistry.createRegistry(
                     NAMING_SERVICE_PORT);
 
-            // FIXME: Debug
-            Calendar data = Calendar.getInstance();
-            data.set(2018, Calendar.SEPTEMBER, 27);
-            Voo voo = new Voo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, 80);
-
             AgencyServerImpl agencyServerImpl = new AgencyServerImpl();
             namingServiceRef.bind("server", agencyServerImpl);
 
             // FIXME: Debug
+            Calendar data = Calendar.getInstance();
+            data.set(2018, Calendar.SEPTEMBER, 27);
+            Voo voo = new Voo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, 80);
+            agencyServerImpl.adicionarVoo(voo);
+
+            // FIXME: Debug
+            data = Calendar.getInstance();
+            data.set(2018, Calendar.SEPTEMBER, 27);
+            voo = new Voo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, data, 80);
+            agencyServerImpl.adicionarVoo(voo);
+
+            // FIXME: Debug
+            data = Calendar.getInstance();
+            data.set(2018, Calendar.SEPTEMBER, 28);
+            voo = new Voo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, 80);
+            agencyServerImpl.adicionarVoo(voo);
+
+            // FIXME: Debug
+            data = Calendar.getInstance();
+            data.set(2018, Calendar.SEPTEMBER, 28);
+            voo = new Voo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, data, 80);
+            agencyServerImpl.adicionarVoo(voo);
+
+            // FIXME: Debug
+            data = Calendar.getInstance();
+            data.set(2018, Calendar.SEPTEMBER, 27);
+            voo = new Voo(Cidade.CURITIBA, Cidade.SAO_PAULO, data, 80);
+            agencyServerImpl.adicionarVoo(voo);
+
+            // FIXME: Debug
+            data = Calendar.getInstance();
+            data.set(2018, Calendar.SEPTEMBER, 28);
+            voo = new Voo(Cidade.SAO_PAULO, Cidade.CURITIBA, data, 80);
             agencyServerImpl.adicionarVoo(voo);
         }
         catch (RemoteException | AlreadyBoundException e) {

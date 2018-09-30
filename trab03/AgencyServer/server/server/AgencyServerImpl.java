@@ -1,6 +1,7 @@
 package server;
 
 import model.TipoPassagem;
+import model.cidade.Cidade;
 import model.voo.Voo;
 import remote.AgencyServer;
 
@@ -50,8 +51,8 @@ public class AgencyServerImpl extends UnicastRemoteObject
      * @throws RemoteException caso ocorra erro no RMI
      */
     @Override
-    public ArrayList<Voo> consultarPassagens(TipoPassagem tipo,
-            String origem, String destino, Calendar dataIda, Calendar dataVolta,
+    public ArrayList<Voo> consultarPassagens(TipoPassagem tipo, Cidade origem,
+            Cidade destino, Calendar dataIda, Calendar dataVolta,
             int numPessoas) throws RemoteException {
         ArrayList<Voo> result = new ArrayList<>();
         for (Voo voo : voos) {
@@ -67,7 +68,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
             }
 
             // Adiciona voos de volta
-            if (tipo == TipoPassagem.IDA_E_VOLTA) {
+            if (tipo == TipoPassagem.IDA_E_VOLTA && dataVolta != null) {
                 if (origem.equals(voo.getDestino()) &&
                         destino.equals(voo.getOrigem()) &&
                         dataVolta.get(Calendar.YEAR) == voo.getData().get(Calendar.YEAR) &&

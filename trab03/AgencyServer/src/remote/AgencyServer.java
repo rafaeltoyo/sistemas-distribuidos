@@ -1,6 +1,7 @@
 package remote;
 
 import model.TipoPassagem;
+import model.cidade.Cidade;
 import model.voo.Voo;
 
 import java.rmi.Remote;
@@ -24,8 +25,8 @@ public interface AgencyServer extends Remote {
      * @return lista de passagens aéreas disponíveis que atendem aos parâmetros
      * @throws RemoteException caso ocorra erro no RMI
      */
-    ArrayList<Voo> consultarPassagens(TipoPassagem tipo, String origem,
-            String destino, Calendar dataIda, Calendar dataVolta,
+    ArrayList<Voo> consultarPassagens(TipoPassagem tipo, Cidade origem,
+            Cidade destino, Calendar dataIda, Calendar dataVolta,
             int numPessoas) throws RemoteException;
 
     //ArrayList<Hospedagem> consultarHospedagens() throws RemoteException;
