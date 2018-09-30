@@ -1,122 +1,84 @@
 package server;
 
-import model.Hospedagem;
-import model.Pacote;
-import model.Passagem;
-import model.eventos.Evento;
+import model.TipoPassagem;
+import model.cidade.Cidade;
+import model.voo.Voo;
 import remote.AgencyServer;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Calendar;
 
-public class AgencyServerImpl extends UnicastRemoteObject implements AgencyServer {
+/** Representa o servidor da agência.
+ * @author Rafael Hideo Toyomoto
+ * @author Victor Barpp Gomes
+ */
+public class AgencyServerImpl extends UnicastRemoteObject
+        implements AgencyServer {
+    /** Lista de voos disponíveis */
+    private ArrayList<Voo> voos = new ArrayList<>();
 
-    private ArrayList<Passagem> passagens = new ArrayList<>();
+    /*------------------------------------------------------------------------*/
 
-    private ArrayList<Hospedagem> hospedagens = new ArrayList<>();
-
-    private ArrayList<Pacote> pacotes = new ArrayList<>();
-
+    /** Construtor único.
+     * @throws RemoteException caso ocorra erro no RMI
+     */
     public AgencyServerImpl() throws RemoteException {
         super();
     }
 
-    /**
-     * @todo
-     * @return
-     * @throws RemoteException
+    /*------------------------------------------------------------------------*/
+
+    /** Adiciona um voo à lista de voos do servidor
+     * @param voo voo já instanciado e inicializado
+     */
+    public void adicionarVoo(Voo voo) {
+        voos.add(voo);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Retorna uma lista de passagens que atendem aos atributos fornecidos
+     * nos parâmetros.
+     * @param tipo somente ida ou ida e volta
+     * @param origem identificador do local de origem do voo
+     * @param destino identificador do local de destino do voo
+     * @param dataIda data do voo de ida
+     * @param dataVolta data do voo de volta, caso o tipo seja ida e volta
+     * @param numPessoas número de passagens desejadas
+     * @return lista de passagens aéreas disponíveis que atendem aos parâmetros
+     * @throws RemoteException caso ocorra erro no RMI
      */
     @Override
-    public ArrayList<Passagem> consultarPassagens() throws RemoteException {
-        return passagens;
+    public ArrayList<Voo> consultarPassagens(TipoPassagem tipo, Cidade origem,
+            Cidade destino, Calendar dataIda, Calendar dataVolta,
+            int numPessoas) throws RemoteException {
+        ArrayList<Voo> result = new ArrayList<>();
+        for (Voo voo : voos) {
+            // FIXME: precisa synchronized para ler?
+
+            // Adiciona voos de ida
+            if (origem.equals(voo.getOrigem()) &&
+                    destino.equals(voo.getDestino()) &&
+                    dataIda.get(Calendar.YEAR) == voo.getData().get(Calendar.YEAR) &&
+                    dataIda.get(Calendar.DAY_OF_YEAR) == voo.getData().get(Calendar.DAY_OF_YEAR) &&
+                    numPessoas <= voo.getPoltronasDisp()) {
+                result.add(voo);
+            }
+
+            // Adiciona voos de volta
+            if (tipo == TipoPassagem.IDA_E_VOLTA && dataVolta != null) {
+                if (origem.equals(voo.getDestino()) &&
+                        destino.equals(voo.getOrigem()) &&
+                        dataVolta.get(Calendar.YEAR) == voo.getData().get(Calendar.YEAR) &&
+                        dataVolta.get(Calendar.DAY_OF_YEAR) == voo.getData().get(Calendar.DAY_OF_YEAR) &&
+                        numPessoas <= voo.getPoltronasDisp()) {
+                    result.add(voo);
+                }
+            }
+        }
+        return result;
     }
 
-    /**
-     * @todo
-     * @param passagem
-     * @return
-     * @throws RemoteException
-     */
-    @Override
-    public boolean comprarPassagem(Passagem passagem) throws RemoteException {
-        return false;
-    }
-
-    /**
-     * @todo
-     * @return
-     * @throws RemoteException
-     */
-    @Override
-    public ArrayList<Hospedagem> consultarHospedagens() throws RemoteException {
-        return hospedagens;
-    }
-
-    /**
-     * @todo
-     * @param hospedagem
-     * @return
-     * @throws RemoteException
-     */
-    @Override
-    public boolean comprarHospedagem(Hospedagem hospedagem) throws RemoteException {
-        return false;
-    }
-
-    /**
-     * @todo
-     * @return
-     * @throws RemoteException
-     */
-    @Override
-    public ArrayList<Pacote> consultarPacotes() throws RemoteException {
-        return pacotes;
-    }
-
-    /**
-     * @todo
-     * @param pacote
-     * @return
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized boolean comprarPacote(Pacote pacote) throws RemoteException {
-        pacote = pacotes.get(pacote.getId());
-        return true;
-    }
-
-    /**
-     * @todo
-     * @param evento
-     * @return
-     * @throws RemoteException
-     */
-    @Override
-    public boolean registraEvento(Evento evento) throws RemoteException {
-        return false;
-    }
-
-    /**
-     * @todo
-     * @param evento
-     * @return
-     * @throws RemoteException
-     */
-    @Override
-    public boolean removerEvento(Evento evento) throws RemoteException {
-        return false;
-    }
-
-    public void criarPassagem(Passagem passagem) {
-        passagens.add(passagem.getId(), passagem);
-    }
-
-    public void criarHospedagem(Hospedagem hospedagem) {
-        hospedagens.add(hospedagem.getId(), hospedagem);
-    }
-
-    public void criarPacote(Pacote pacote) {
-        pacotes.add(pacote.getId(), pacote);
-    }
 }

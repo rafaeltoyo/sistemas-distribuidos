@@ -1,8 +1,10 @@
 package model.saldo;
 
-abstract public class ObjComSaldo {
+import java.io.Serializable;
 
-    Saldo saldo;
+abstract public class ObjComSaldo implements Serializable {
+
+    protected Saldo saldo;
 
     public ObjComSaldo(int numPessoas) {
         this.saldo = new Saldo(numPessoas);
