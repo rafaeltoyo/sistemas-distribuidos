@@ -5,6 +5,7 @@ import model.saldo.ObjComSaldo;
 import model.saldo.Reserva;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /** Representa um voo e mantém contagem interna do número de vagas
@@ -12,7 +13,13 @@ import java.util.Calendar;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class Voo extends ObjComSaldo implements Serializable {
+public class Voo {
+    private int poltronasTotal;
+
+    private int poltronasDisp;
+
+    private ArrayList<Reserva> reservas = new ArrayList<>();
+
     private InfoVoo infoVoo;
 
     /*------------------------------------------------------------------------*/
@@ -38,7 +45,9 @@ public class Voo extends ObjComSaldo implements Serializable {
     }
 
     public int getPoltronasDisp() {
-        return saldo.consultarSaldo();
+        synchronized (this) {
+            return poltronasDisp;
+        }
     }
 
     /*------------------------------------------------------------------------*/
@@ -53,18 +62,33 @@ public class Voo extends ObjComSaldo implements Serializable {
      * @param poltronasTotal número total de poltronas da aeronave
      */
     public Voo(Cidade origem, Cidade destino, Calendar data, int poltronasTotal) {
-        super(poltronasTotal);
+        this.poltronasTotal = poltronasTotal;
+        this.poltronasDisp = poltronasTotal;
         infoVoo = new InfoVoo(origem, destino, data, poltronasTotal);
     }
 
-    @Override
     public Reserva reservar(int numPessoas) {
-        synchronized (saldo) {
-            Reserva ret = super.reservar(numPessoas);
-            if (ret != null) {
+        synchronized (this) {
+            Reserva reserva = null;
+
+            if (numPessoas <= poltronasDisp) {
+                reservas.add(reserva = new Reserva(numPessoas));
+                poltronasDisp -= numPessoas;
                 infoVoo.poltronasDisp -= numPessoas;
             }
-            return ret;
+
+            return reserva;
+        }
+    }
+
+    public boolean estornar(Reserva reserva) {
+        synchronized (this) {
+            if (reservas.remove(reserva)) {
+                poltronasDisp += reserva.getQuantidade();
+                infoVoo.poltronasDisp += reserva.getQuantidade();
+                return true;
+            }
+            return false;
         }
     }
 }

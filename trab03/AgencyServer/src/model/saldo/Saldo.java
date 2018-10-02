@@ -34,7 +34,7 @@ public class Saldo {
 
     public boolean estornar(Reserva reserva) {
         if (reservas.remove(reserva)) {
-            atual += reserva.quantidade;
+            atual += reserva.getQuantidade();
             return true;
         }
         return false;
