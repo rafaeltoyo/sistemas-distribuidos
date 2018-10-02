@@ -3,6 +3,7 @@ package server;
 import model.TipoPassagem;
 import model.cidade.Cidade;
 import model.saldo.Reserva;
+import model.voo.InfoVoo;
 import model.voo.Voo;
 import remote.AgencyServer;
 
@@ -52,10 +53,10 @@ public class AgencyServerImpl extends UnicastRemoteObject
      * @throws RemoteException caso ocorra erro no RMI
      */
     @Override
-    public ArrayList<Voo> consultarPassagens(TipoPassagem tipo, Cidade origem,
-            Cidade destino, Calendar dataIda, Calendar dataVolta,
+    public ArrayList<InfoVoo> consultarPassagens(TipoPassagem tipo,
+            Cidade origem, Cidade destino, Calendar dataIda, Calendar dataVolta,
             int numPessoas) throws RemoteException {
-        ArrayList<Voo> result = new ArrayList<>();
+        ArrayList<InfoVoo> result = new ArrayList<>();
         for (Voo voo : voos) {
             // FIXME: precisa synchronized para ler?
 
@@ -65,7 +66,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
                     dataIda.get(Calendar.YEAR) == voo.getData().get(Calendar.YEAR) &&
                     dataIda.get(Calendar.DAY_OF_YEAR) == voo.getData().get(Calendar.DAY_OF_YEAR) &&
                     numPessoas <= voo.getPoltronasDisp()) {
-                result.add(voo);
+                result.add(voo.getInfoVoo());
             }
 
             // Adiciona voos de volta
@@ -75,7 +76,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
                         dataVolta.get(Calendar.YEAR) == voo.getData().get(Calendar.YEAR) &&
                         dataVolta.get(Calendar.DAY_OF_YEAR) == voo.getData().get(Calendar.DAY_OF_YEAR) &&
                         numPessoas <= voo.getPoltronasDisp()) {
-                    result.add(voo);
+                    result.add(voo.getInfoVoo());
                 }
             }
         }

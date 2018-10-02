@@ -2,9 +2,9 @@ package model.voo;
 
 import model.cidade.Cidade;
 import model.saldo.ObjComSaldo;
+import model.saldo.Reserva;
 
 import java.io.Serializable;
-import java.rmi.RemoteException;
 import java.util.Calendar;
 
 /** Representa um voo e mantém contagem interna do número de vagas
@@ -13,37 +13,28 @@ import java.util.Calendar;
  * @author Victor Barpp Gomes
  */
 public class Voo extends ObjComSaldo implements Serializable {
-    /** Contagem de voos para o auto-incremento do identificador */
-    private static int count = 0;
-
-    /** Identificador do voo */
-    private int id;
-
-    /** Local de origem (partida) */
-    private Cidade origem;
-
-    /** Local de destino (chegada) */
-    private Cidade destino;
-
-    /** Data do voo */
-    private Calendar data;
+    private InfoVoo infoVoo;
 
     /*------------------------------------------------------------------------*/
 
+    public InfoVoo getInfoVoo() {
+        return infoVoo;
+    }
+
     public int getId() {
-        return id;
+        return infoVoo.getId();
     }
 
     public Cidade getOrigem() {
-        return origem;
+        return infoVoo.getOrigem();
     }
 
     public Cidade getDestino() {
-        return destino;
+        return infoVoo.getDestino();
     }
 
     public Calendar getData() {
-        return data;
+        return infoVoo.getData();
     }
 
     public int getPoltronasDisp() {
@@ -63,9 +54,17 @@ public class Voo extends ObjComSaldo implements Serializable {
      */
     public Voo(Cidade origem, Cidade destino, Calendar data, int poltronasTotal) {
         super(poltronasTotal);
-        this.id = (count++);
-        this.origem = origem;
-        this.destino = destino;
-        this.data = data;
+        infoVoo = new InfoVoo(origem, destino, data, poltronasTotal);
+    }
+
+    @Override
+    public Reserva reservar(int numPessoas) {
+        synchronized (saldo) {
+            Reserva ret = super.reservar(numPessoas);
+            if (ret != null) {
+                infoVoo.poltronasDisp -= numPessoas;
+            }
+            return ret;
+        }
     }
 }

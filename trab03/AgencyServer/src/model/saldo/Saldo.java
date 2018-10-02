@@ -1,9 +1,8 @@
 package model.saldo;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Saldo implements Serializable {
+public class Saldo {
 
     private int max;
     private int atual;

@@ -2,8 +2,6 @@ package model.voo;
 
 import model.TipoPassagem;
 import model.saldo.ObjComSaldo;
-import model.saldo.Reserva;
-import model.saldo.Saldo;
 
 import java.util.Date;
 

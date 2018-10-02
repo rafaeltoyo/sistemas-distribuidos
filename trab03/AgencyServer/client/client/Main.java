@@ -2,7 +2,7 @@ package client;
 
 import model.TipoPassagem;
 import model.cidade.Cidade;
-import model.voo.Voo;
+import model.voo.InfoVoo;
 import remote.AgencyServer;
 
 import java.rmi.NotBoundException;
@@ -42,13 +42,13 @@ public class Main {
             data.set(2018, Calendar.SEPTEMBER, 27);
             Calendar datavolta = Calendar.getInstance();
             datavolta.set(2018, Calendar.SEPTEMBER, 28);
-            ArrayList<Voo> voos = serverRef.consultarPassagens(TipoPassagem.IDA_E_VOLTA, Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, datavolta, 1);
-            for (Voo voo : voos) {
+            ArrayList<InfoVoo> voos = serverRef.consultarPassagens(TipoPassagem.IDA_E_VOLTA, Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, datavolta, 1);
+            for (InfoVoo voo : voos) {
                 System.out.println(voo.getId());
                 System.out.println(voo.getData());
                 System.out.println(voo.getOrigem());
                 System.out.println(voo.getDestino());
-                System.out.println(voo.getPoltronasDisp());
+                System.out.println(voo.poltronasDisp);
             }
             System.out.println("............");
 
@@ -68,10 +68,10 @@ public class Main {
 
             // FIXME: Debug
 
-            Voo vooIda = null;
-            Voo vooVolta = null;
+            InfoVoo vooIda = null;
+            InfoVoo vooVolta = null;
 
-            for (Voo voo : voos) {
+            for (InfoVoo voo : voos) {
                 if (voo.getOrigem() == Cidade.CURITIBA && voo.getDestino() == Cidade.FLORIANOPOLIS) {
                     vooIda = voo;
                 }
