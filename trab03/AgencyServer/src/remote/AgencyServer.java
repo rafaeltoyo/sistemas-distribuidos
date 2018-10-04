@@ -6,8 +6,8 @@ import model.voo.InfoVoo;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /** Interface RMI para o servidor da agência.
  * @author Rafael Hideo Toyomoto
@@ -26,7 +26,7 @@ public interface AgencyServer extends Remote {
      * @throws RemoteException caso ocorra erro no RMI
      */
     ArrayList<InfoVoo> consultarPassagens(TipoPassagem tipo, Cidade origem,
-            Cidade destino, Calendar dataIda, Calendar dataVolta,
+            Cidade destino, LocalDate dataIda, LocalDate dataVolta,
             int numPessoas) throws RemoteException;
 
     boolean comprarPassagens(TipoPassagem tipo, int idVooIda, int idVooVolta,

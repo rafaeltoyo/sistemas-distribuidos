@@ -1,9 +1,8 @@
 package model.hotel;
 
 import model.cidade.Cidade;
-import model.saldo.ObjComSaldo;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 
 public class InfoHotel {
 
@@ -13,7 +12,7 @@ public class InfoHotel {
 
     private Cidade local;
 
-    private Calendar data;
+    private LocalDate data;
 
     private int quartosDisp;
 
@@ -25,7 +24,7 @@ public class InfoHotel {
 
     /*------------------------------------------------------------------------*/
 
-    public InfoHotel(Cidade local, Calendar dataEntrada, Calendar dataSaida,
+    public InfoHotel(Cidade local, LocalDate dataEntrada, LocalDate dataSaida,
                      int numQuartos) {
         this.id = (count++);
         this.local = local;

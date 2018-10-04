@@ -9,8 +9,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /** Representa o ponto de entrada da aplicação cliente.
  * @author Rafael Hideo Toyomoto
@@ -38,10 +38,8 @@ public class Main {
             AgencyClientImpl client = new AgencyClientImpl(serverRef);
 
             // FIXME: Debug
-            Calendar data = Calendar.getInstance();
-            data.set(2018, Calendar.SEPTEMBER, 27);
-            Calendar datavolta = Calendar.getInstance();
-            datavolta.set(2018, Calendar.SEPTEMBER, 28);
+            LocalDate data = LocalDate.of(2018, 9, 27);
+            LocalDate datavolta = LocalDate.of(2018, 9, 28);
             ArrayList<InfoVoo> voos = serverRef.consultarPassagens(TipoPassagem.IDA_E_VOLTA, Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, datavolta, 1);
             for (InfoVoo voo : voos) {
                 System.out.println(voo.getId());

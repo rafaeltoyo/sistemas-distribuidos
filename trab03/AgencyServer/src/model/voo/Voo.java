@@ -1,12 +1,10 @@
 package model.voo;
 
 import model.cidade.Cidade;
-import model.saldo.ObjComSaldo;
 import model.saldo.Reserva;
 
-import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /** Representa um voo e mantém contagem interna do número de vagas
  * disponíveis (passagens) para compra.
@@ -40,7 +38,7 @@ public class Voo {
         return infoVoo.getDestino();
     }
 
-    public Calendar getData() {
+    public LocalDate getData() {
         return infoVoo.getData();
     }
 
@@ -61,7 +59,8 @@ public class Voo {
      * @param data data de partida
      * @param poltronasTotal número total de poltronas da aeronave
      */
-    public Voo(Cidade origem, Cidade destino, Calendar data, int poltronasTotal) {
+    public Voo(Cidade origem, Cidade destino, LocalDate data,
+               int poltronasTotal) {
         this.poltronasTotal = poltronasTotal;
         this.poltronasDisp = poltronasTotal;
         infoVoo = new InfoVoo(origem, destino, data, poltronasTotal);

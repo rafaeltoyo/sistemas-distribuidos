@@ -3,7 +3,7 @@ package model.voo;
 import model.cidade.Cidade;
 
 import java.io.Serializable;
-import java.util.Calendar;
+import java.time.LocalDate;
 
 public class InfoVoo implements Serializable {
     /** Contagem de voos para o auto-incremento do identificador */
@@ -19,7 +19,7 @@ public class InfoVoo implements Serializable {
     private Cidade destino;
 
     /** Data do voo */
-    private Calendar data;
+    private LocalDate data;
 
     /** Poltronas disponíveis */
     public int poltronasDisp;
@@ -38,7 +38,7 @@ public class InfoVoo implements Serializable {
         return destino;
     }
 
-    public Calendar getData() {
+    public LocalDate getData() {
         return data;
     }
 
@@ -52,7 +52,7 @@ public class InfoVoo implements Serializable {
      * @param destino local de destino (chegada)
      * @param data data de partida
      */
-    public InfoVoo(Cidade origem, Cidade destino, Calendar data,
+    public InfoVoo(Cidade origem, Cidade destino, LocalDate data,
                    int poltronasDisp) {
         this.id = (count++);
         this.origem = origem;

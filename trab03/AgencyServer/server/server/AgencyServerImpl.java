@@ -9,8 +9,8 @@ import remote.AgencyServer;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /** Representa o servidor da agência.
  * @author Rafael Hideo Toyomoto
@@ -54,8 +54,8 @@ public class AgencyServerImpl extends UnicastRemoteObject
      */
     @Override
     public ArrayList<InfoVoo> consultarPassagens(TipoPassagem tipo,
-            Cidade origem, Cidade destino, Calendar dataIda, Calendar dataVolta,
-            int numPessoas) throws RemoteException {
+            Cidade origem, Cidade destino, LocalDate dataIda,
+            LocalDate dataVolta, int numPessoas) throws RemoteException {
         ArrayList<InfoVoo> result = new ArrayList<>();
         for (Voo voo : voos) {
             // FIXME: precisa synchronized para ler?
@@ -63,8 +63,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
             // Adiciona voos de ida
             if (origem.equals(voo.getOrigem()) &&
                     destino.equals(voo.getDestino()) &&
-                    dataIda.get(Calendar.YEAR) == voo.getData().get(Calendar.YEAR) &&
-                    dataIda.get(Calendar.DAY_OF_YEAR) == voo.getData().get(Calendar.DAY_OF_YEAR) &&
+                    dataIda.equals(voo.getData()) &&
                     numPessoas <= voo.getPoltronasDisp()) {
                 result.add(voo.getInfoVoo());
             }
@@ -73,8 +72,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
             if (tipo == TipoPassagem.IDA_E_VOLTA && dataVolta != null) {
                 if (origem.equals(voo.getDestino()) &&
                         destino.equals(voo.getOrigem()) &&
-                        dataVolta.get(Calendar.YEAR) == voo.getData().get(Calendar.YEAR) &&
-                        dataVolta.get(Calendar.DAY_OF_YEAR) == voo.getData().get(Calendar.DAY_OF_YEAR) &&
+                        dataVolta.equals(voo.getData()) &&
                         numPessoas <= voo.getPoltronasDisp()) {
                     result.add(voo.getInfoVoo());
                 }
