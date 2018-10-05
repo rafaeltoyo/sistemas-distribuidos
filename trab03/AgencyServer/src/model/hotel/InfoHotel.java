@@ -2,19 +2,19 @@ package model.hotel;
 
 import model.cidade.Cidade;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
-public class InfoHotel {
-
+public class InfoHotel implements Serializable {
+    /** Contagem de hotéis para o auto-incremento do identificador */
     private static int count = 0;
 
     private int id;
 
+    private String nome;
+
     private Cidade local;
 
-    private LocalDate data;
-
-    private int quartosDisp;
+    private int numQuartos;
 
     /*------------------------------------------------------------------------*/
 
@@ -22,14 +22,17 @@ public class InfoHotel {
         return id;
     }
 
+    public int getNumQuartos() {
+        return numQuartos;
+    }
+
     /*------------------------------------------------------------------------*/
 
-    public InfoHotel(Cidade local, LocalDate dataEntrada, LocalDate dataSaida,
-                     int numQuartos) {
+    public InfoHotel(String nome, Cidade local, int numQuartos) {
         this.id = (count++);
+        this.nome = nome;
         this.local = local;
-        this.data = dataEntrada;
-        this.quartosDisp = numQuartos;
+        this.numQuartos = numQuartos;
     }
 
 }

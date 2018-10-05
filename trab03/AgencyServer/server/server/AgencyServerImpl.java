@@ -2,6 +2,10 @@ package server;
 
 import model.TipoPassagem;
 import model.cidade.Cidade;
+import model.hotel.Hospedagem;
+import model.hotel.Hotel;
+import model.hotel.InfoHospedagem;
+import model.hotel.InfoHotel;
 import model.saldo.Reserva;
 import model.voo.InfoVoo;
 import model.voo.Voo;
@@ -11,6 +15,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /** Representa o servidor da agência.
  * @author Rafael Hideo Toyomoto
@@ -20,6 +25,9 @@ public class AgencyServerImpl extends UnicastRemoteObject
         implements AgencyServer {
     /** Lista de voos disponíveis */
     private ArrayList<Voo> voos = new ArrayList<>();
+
+    /** Lista de hotéis cadastrados */
+    private ArrayList<Hotel> hoteis = new ArrayList<>();
 
     /*------------------------------------------------------------------------*/
 
@@ -37,6 +45,12 @@ public class AgencyServerImpl extends UnicastRemoteObject
      */
     public void adicionarVoo(Voo voo) {
         voos.add(voo);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public void adicionarHotel(Hotel hotel) {
+        hoteis.add(hotel);
     }
 
     /*------------------------------------------------------------------------*/
@@ -106,8 +120,6 @@ public class AgencyServerImpl extends UnicastRemoteObject
         return comprarPassagensSomenteIda(idVooIda, numPessoas);
     }
 
-    /*------------------------------------------------------------------------*/
-
     /** Tenta efetuar compra de passagem de ida.
      * Chamada pela função comprarPassagens.
      * @param idVoo identificador do voo de ida
@@ -134,8 +146,6 @@ public class AgencyServerImpl extends UnicastRemoteObject
         // e false caso contrário
         return voo.reservar(numPessoas) != null;
     }
-
-    /*------------------------------------------------------------------------*/
 
     /** Tenta efetuar compra de passagens de ida e volta.
      * Chamada pela função comprarPassagens.
@@ -182,5 +192,34 @@ public class AgencyServerImpl extends UnicastRemoteObject
         }
         // Retorna false se não conseguir comprar o número desejado para a ida
         return false;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public HashMap<InfoHotel, ArrayList<InfoHospedagem>> consultarHospedagens(
+            Cidade local, LocalDate dataIda, LocalDate dataVolta)
+            throws RemoteException {
+        HashMap<InfoHotel, ArrayList<InfoHospedagem>> result = new HashMap<>();
+        LocalDate data = LocalDate.of(dataIda.getYear(), dataIda.getMonth(), dataIda.getDayOfMonth());
+
+        for (Hotel h : hoteis) {
+            ArrayList<InfoHospedagem> hospedagens = new ArrayList<>();
+
+            // Considera-se que o cliente sai na data de volta.
+            // Portanto, não são incluídas hospedagens para o dia de volta.
+            while (data.isBefore(dataVolta)) {
+                Hospedagem hosp = h.getHospedagemData(data);
+                if (hosp == null) {
+                    break;
+                }
+                hospedagens.add(hosp.getInfoHospedagem());
+
+                data = data.plusDays(1);
+            }
+
+            result.put(h.getInfoHotel(), hospedagens);
+        }
+
+        return result;
     }
 }

@@ -1,6 +1,7 @@
 package server;
 
 import model.cidade.Cidade;
+import model.hotel.Hotel;
 import model.voo.Voo;
 
 import java.rmi.AlreadyBoundException;
@@ -59,6 +60,12 @@ public class Main {
             data = LocalDate.of(2018, 9, 28);
             voo = new Voo(Cidade.SAO_PAULO, Cidade.CURITIBA, data, 80);
             agencyServerImpl.adicionarVoo(voo);
+
+            // FIXME: Debug
+            data = LocalDate.of(2018, 10, 4);
+            Hotel hotel = new Hotel("Ibis", Cidade.CURITIBA, 400);
+            hotel.adicionarHospedagem(data, LocalDate.of(2018, 10, 7));
+            agencyServerImpl.adicionarHotel(hotel);
         }
         catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();
