@@ -49,6 +49,9 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
     /*------------------------------------------------------------------------*/
 
+    /** Adiciona um hotel à lista de hotéis do servidor
+     * @param hotel hotel já instanciado e inicializado
+     */
     public void adicionarHotel(Hotel hotel) {
         hoteis.add(hotel);
     }
@@ -196,6 +199,15 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
     /*------------------------------------------------------------------------*/
 
+    /** Retorna um mapa cujas chaves são os hotéis e os valores são listas de
+     * hospedagens (data + número de quartos disponíveis), com base nos
+     * parâmetros fornecidos.
+     * @param local cidade do hotel
+     * @param dataIda data de chegada (primeira diária)
+     * @param dataVolta data de saída (não é inclusa no resultado)
+     * @return mapa com informações de hotel e hospedagem
+     * @throws RemoteException caso ocorra erro no RMI
+     */
     public HashMap<InfoHotel, ArrayList<InfoHospedagem>> consultarHospedagens(
             Cidade local, LocalDate dataIda, LocalDate dataVolta)
             throws RemoteException {

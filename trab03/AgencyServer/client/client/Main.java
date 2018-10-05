@@ -53,6 +53,10 @@ public class Main {
 
     /*------------------------------------------------------------------------*/
 
+    /** Wrapper para o teste dos voos.
+     * @param serverRef referência ao servidor
+     * @throws RemoteException se ocorrer erro no RMI
+     */
     private static void testarVoos(AgencyServer serverRef) throws RemoteException {
         LocalDate data = LocalDate.of(2018, 9, 27);
         LocalDate datavolta = LocalDate.of(2018, 9, 28);
@@ -94,6 +98,10 @@ public class Main {
 
     /*------------------------------------------------------------------------*/
 
+    /** Wrapper para o teste dos hotéis.
+     * @param serverRef referência ao servidor
+     * @throws RemoteException caso ocorra erro no RMI
+     */
     private static void testarHoteis(AgencyServer serverRef) throws RemoteException {
         LocalDate dataIda = LocalDate.of(2018, 10, 5);
         LocalDate dataVolta = LocalDate.of(2018, 10, 7);

@@ -6,19 +6,40 @@ import model.saldo.Reserva;
 import java.time.LocalDate;
 import java.util.HashMap;
 
+/** Representa um hotel.
+ * @author Rafael Hideo Toyomoto
+ * @author Victor Barpp Gomes
+ */
 public class Hotel {
+    /** Informações do hotel */
     private InfoHotel infoHotel;
 
+    /** Mapeamento entre datas e hospedagens */
     private HashMap<LocalDate, Hospedagem> hospedagens = new HashMap<>();
 
     /*------------------------------------------------------------------------*/
 
+    /** Retorna as informações do hotel
+     * @return informações do hotel
+     */
     public InfoHotel getInfoHotel() {
         return infoHotel;
     }
 
+    /** Retorna a cidade do hotel
+     * @return cidade do hotel
+     */
+    public Cidade getLocal() {
+        return infoHotel.getLocal();
+    }
+
     /*------------------------------------------------------------------------*/
 
+    /** Construtor padrão de um hotel.
+     * @param nome nome do hotel
+     * @param local cidade do hotel
+     * @param numQuartos número total de quartos do hotel
+     */
     public Hotel(String nome, Cidade local, int numQuartos) {
         infoHotel = new InfoHotel(nome, local, numQuartos);
     }
@@ -50,12 +71,23 @@ public class Hotel {
 
     /*------------------------------------------------------------------------*/
 
+    /** Retorna o objeto Hospedagem associado a uma data específica.
+     * @param data data da hospedagem
+     * @return o objeto Hospedagem, ou null, se não existir.
+     */
     public Hospedagem getHospedagemData(LocalDate data) {
         return hospedagens.get(data);
     }
 
     /*------------------------------------------------------------------------*/
 
+    /** Faz uma reserva de quartos no hotel durante um período de dias entre
+     * dataIni e dataFim (exclusive).
+     * @param dataIni primeiro dia da reserva
+     * @param dataFim dia de saída (não é incluído no período de reserva)
+     * @param numQuartos número de quartos desejados
+     * @return true se e somente se a reserva foi bem sucedida
+     */
     public boolean reservar(LocalDate dataIni, LocalDate dataFim, int numQuartos) {
         // FIXME: será que tem que por synchronized em tudo isso?
         HashMap<Hospedagem, Reserva> arrayReservas = new HashMap<>();
@@ -86,6 +118,12 @@ public class Hotel {
         return true;
     }
 
+    /** Função interna para fazer "rollback" de uma reserva de quartos, caso
+     * ocorra algum problema (falta de quartos, ou inexistência de um objeto
+     * Hospedagem para alguma data)
+     * @param arrayReservas mapeamento entre hospedagem e reserva, criado pela
+     *                      função reservar
+     */
     private void desfazerReserva(HashMap<Hospedagem, Reserva> arrayReservas) {
         // FIXME: será que tem que por synchronized em tudo isso?
         for (HashMap.Entry<Hospedagem, Reserva> par : arrayReservas.entrySet()) {
