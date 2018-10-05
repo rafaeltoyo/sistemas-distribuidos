@@ -8,7 +8,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class ListagemHotel {
+public class AlertBox {
 
     public static void display(String title, String message) {
         Stage window = new Stage();
