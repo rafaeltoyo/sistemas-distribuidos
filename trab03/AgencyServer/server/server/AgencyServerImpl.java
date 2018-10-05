@@ -203,6 +203,11 @@ public class AgencyServerImpl extends UnicastRemoteObject
         LocalDate data = LocalDate.of(dataIda.getYear(), dataIda.getMonth(), dataIda.getDayOfMonth());
 
         for (Hotel h : hoteis) {
+            // Pula hotéis em outras cidades
+            if (!local.equals(h.getLocal())) {
+                continue;
+            }
+
             ArrayList<InfoHospedagem> hospedagens = new ArrayList<>();
 
             // Considera-se que o cliente sai na data de volta.

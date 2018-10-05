@@ -66,6 +66,12 @@ public class Main {
             Hotel hotel = new Hotel("Ibis", Cidade.CURITIBA, 400);
             hotel.adicionarHospedagem(data, LocalDate.of(2018, 10, 7));
             agencyServerImpl.adicionarHotel(hotel);
+
+            // FIXME: Debug
+            data = LocalDate.of(2018, 10, 4);
+            hotel = new Hotel("Slaviero", Cidade.BELO_HORIZONTE, 400);
+            hotel.adicionarHospedagem(data, LocalDate.of(2018, 10, 7));
+            agencyServerImpl.adicionarHotel(hotel);
         }
         catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();
