@@ -43,7 +43,8 @@ public class ListarHotel {
         final Label label = new Label();
         label.setText("Lista de Hotéis:");
 
-        // TODO: 05/10/18 https://docs.oracle.com/javafx/2/ui_controls/table-view.htm
+        // https://docs.oracle.com/javafx/2/ui_controls/table-view.htm
+        // TODO: 05/10/18 Criar interfaces de armazenamento de dados para utilização na listagem pela TableView()
 
         TableColumn column1 = new TableColumn("ID");
         TableColumn column2 = new TableColumn("ID");

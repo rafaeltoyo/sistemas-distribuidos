@@ -1,5 +1,6 @@
 package client;
 
+import client.controller.ViewController;
 import client.view.ListarHotel;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -10,6 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainScreen extends Application {
+
+    ViewController viewController;
 
     private Stage window;
     private Scene scene1, scene2;
@@ -25,6 +28,10 @@ public class MainScreen extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         window = primaryStage;
+
+        // Iniciar o controlador das telas
+        viewController = ViewController.getInstance();
+        viewController.init(primaryStage);
 
         ListarHotel listarHotel = new ListarHotel(window);
         listarHotel.show();
