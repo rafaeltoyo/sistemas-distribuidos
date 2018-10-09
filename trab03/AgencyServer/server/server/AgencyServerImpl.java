@@ -203,16 +203,20 @@ public class AgencyServerImpl extends UnicastRemoteObject
      * hospedagens (data + número de quartos disponíveis), com base nos
      * parâmetros fornecidos.
      * @param local cidade do hotel
-     * @param dataIda data de chegada (primeira diária)
-     * @param dataVolta data de saída (não é inclusa no resultado)
+     * @param dataIni data de chegada (primeira diária)
+     * @param dataFim data de saída (não é inclusa no resultado)
+     * @param numQuartos número de quartos desejados
+     * @param numPessoas número de pessoas (total, não por quarto)
      * @return mapa com informações de hotel e hospedagem
      * @throws RemoteException caso ocorra erro no RMI
      */
+    @Override
     public HashMap<InfoHotel, ArrayList<InfoHospedagem>> consultarHospedagens(
-            Cidade local, LocalDate dataIda, LocalDate dataVolta)
+            Cidade local, LocalDate dataIni, LocalDate dataFim,
+            int numQuartos, int numPessoas)
             throws RemoteException {
         HashMap<InfoHotel, ArrayList<InfoHospedagem>> result = new HashMap<>();
-        LocalDate data = LocalDate.of(dataIda.getYear(), dataIda.getMonth(), dataIda.getDayOfMonth());
+        LocalDate data = LocalDate.of(dataIni.getYear(), dataIni.getMonth(), dataIni.getDayOfMonth());
 
         for (Hotel h : hoteis) {
             // Pula hotéis em outras cidades
@@ -224,19 +228,65 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
             // Considera-se que o cliente sai na data de volta.
             // Portanto, não são incluídas hospedagens para o dia de volta.
-            while (data.isBefore(dataVolta)) {
+            while (data.isBefore(dataFim)) {
                 Hospedagem hosp = h.getHospedagemData(data);
                 if (hosp == null) {
                     break;
                 }
+
+                if (hosp.getQuartosDisp() < numPessoas) {
+                    // Deu ruim, esse hotel não pode receber o cliente em todos
+                    // os dias do período
+                    hospedagens.clear();
+                    break;
+                }
+
+                // FIXME: vamos só ignorar o número de pessoas?
+
                 hospedagens.add(hosp.getInfoHospedagem());
 
                 data = data.plusDays(1);
             }
 
-            result.put(h.getInfoHotel(), hospedagens);
+            // Apenas envia o hotel se tiver vagas em todos os dias do período
+            if (!hospedagens.isEmpty()) {
+                result.put(h.getInfoHotel(), hospedagens);
+            }
         }
 
         return result;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Tenta comprar hospedagem em um hotel para todas as noites entre as datas
+     * informadas.
+     * @param idHotel identificador do hotel
+     * @param dataIni data de entrada
+     * @param dataFim data de saída (não é incluída na reserva, ou seja, é feita
+     *                reserva somente até o dia anterior à data de saída)
+     * @param numQuartos número de quartos desejados
+     * @return true se e somente se a compra for bem sucedida
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    @Override
+    public boolean comprarHospedagem(int idHotel, LocalDate dataIni,
+            LocalDate dataFim, int numQuartos) throws RemoteException {
+        // Busca o hotel
+        Hotel hotel = null;
+        for (Hotel h : hoteis) {
+            if (h.getId() == idHotel) {
+                hotel = h;
+                break;
+            }
+        }
+
+        if (hotel == null) {
+            // Hotel não existe
+            return false;
+        }
+
+        // Faz a reserva, se possível, e retorna true se bem sucedido
+        return hotel.reservar(dataIni, dataFim, numQuartos);
     }
 }

@@ -125,7 +125,7 @@ public class RemoteController {
         LocalDate dataIda = LocalDate.of(2018, 10, 5);
         LocalDate dataVolta = LocalDate.of(2018, 10, 7);
 
-        HashMap<InfoHotel, ArrayList<InfoHospedagem>> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta);
+        HashMap<InfoHotel, ArrayList<InfoHospedagem>> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta, 1, 2);
 
         for (HashMap.Entry<InfoHotel, ArrayList<InfoHospedagem>> entry : madoka.entrySet()) {
             InfoHotel hotel = entry.getKey();

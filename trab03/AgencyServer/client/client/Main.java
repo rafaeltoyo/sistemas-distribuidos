@@ -106,7 +106,7 @@ public class Main {
         LocalDate dataIda = LocalDate.of(2018, 10, 5);
         LocalDate dataVolta = LocalDate.of(2018, 10, 7);
 
-        HashMap<InfoHotel, ArrayList<InfoHospedagem>> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta);
+        HashMap<InfoHotel, ArrayList<InfoHospedagem>> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta, 100, 2);
 
         for (HashMap.Entry<InfoHotel, ArrayList<InfoHospedagem>> entry : madoka.entrySet()) {
             InfoHotel hotel = entry.getKey();
@@ -116,6 +116,9 @@ public class Main {
             for (InfoHospedagem hosp : hospedagens) {
                 System.out.println(hosp.getData());
             }
+
+            System.out.println(serverRef.comprarHospedagem(hotel.getId(), dataIda, dataVolta, 100));
+            System.out.println(serverRef.comprarHospedagem(hotel.getId(), dataVolta.minusDays(1), dataVolta, 100));
         }
     }
 }

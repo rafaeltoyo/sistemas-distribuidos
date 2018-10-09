@@ -31,6 +31,13 @@ public class Hospedagem {
         return infoHospedagem;
     }
 
+    /** Retorna o número de quartos disponíveis na hospedagem (dia do hotel).
+     * @return número de quartos disponíveis
+     */
+    public int getQuartosDisp() {
+        return quartosDisp;
+    }
+
     /*------------------------------------------------------------------------*/
 
     /** Instancia a hospedagem (dia de um hotel).
@@ -51,6 +58,10 @@ public class Hospedagem {
      */
     public Reserva reservar(int numQuartos) {
         synchronized (this) {
+            // FIXME: Debug
+            System.out.println("Antes: Hospedagem: data: " + infoHospedagem.getData() +
+                    ", quartosDisp: " + quartosDisp);
+
             Reserva reserva = null;
 
             if (numQuartos <= quartosDisp) {
@@ -58,6 +69,10 @@ public class Hospedagem {
                 quartosDisp -= numQuartos;
                 infoHospedagem.quartosDisp -= numQuartos;
             }
+
+            // FIXME: Debug
+            System.out.println("Depois: Hospedagem: data: " + infoHospedagem.getData() +
+                    ", quartosDisp: " + quartosDisp);
 
             return reserva;
         }
