@@ -1,53 +1,51 @@
 package model.voo;
 
 import model.cidade.Cidade;
-import model.saldo.ObjComSaldo;
+import model.saldo.Reserva;
 
-import java.io.Serializable;
-import java.rmi.RemoteException;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 /** Representa um voo e mantém contagem interna do número de vagas
  * disponíveis (passagens) para compra.
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class Voo extends ObjComSaldo implements Serializable {
-    /** Contagem de voos para o auto-incremento do identificador */
-    private static int count = 0;
+public class Voo {
+    private int poltronasTotal;
 
-    /** Identificador do voo */
-    private int id;
+    private int poltronasDisp;
 
-    /** Local de origem (partida) */
-    private Cidade origem;
+    private ArrayList<Reserva> reservas = new ArrayList<>();
 
-    /** Local de destino (chegada) */
-    private Cidade destino;
-
-    /** Data do voo */
-    private Calendar data;
+    private InfoVoo infoVoo;
 
     /*------------------------------------------------------------------------*/
 
+    public InfoVoo getInfoVoo() {
+        return infoVoo;
+    }
+
     public int getId() {
-        return id;
+        return infoVoo.getId();
     }
 
     public Cidade getOrigem() {
-        return origem;
+        return infoVoo.getOrigem();
     }
 
     public Cidade getDestino() {
-        return destino;
+        return infoVoo.getDestino();
     }
 
-    public Calendar getData() {
-        return data;
+    public LocalDate getData() {
+        return infoVoo.getData();
     }
 
     public int getPoltronasDisp() {
-        return saldo.consultarSaldo();
+        synchronized (this) {
+            return poltronasDisp;
+        }
     }
 
     /*------------------------------------------------------------------------*/
@@ -60,13 +58,36 @@ public class Voo extends ObjComSaldo implements Serializable {
      * @param destino local de destino (chegada)
      * @param data data de partida
      * @param poltronasTotal número total de poltronas da aeronave
-     * @throws RemoteException caso ocorra erro no RMI
      */
-    public Voo(Cidade origem, Cidade destino, Calendar data, int poltronasTotal) {
-        super(poltronasTotal);
-        this.id = (count++);
-        this.origem = origem;
-        this.destino = destino;
-        this.data = data;
+    public Voo(Cidade origem, Cidade destino, LocalDate data,
+               int poltronasTotal) {
+        this.poltronasTotal = poltronasTotal;
+        this.poltronasDisp = poltronasTotal;
+        infoVoo = new InfoVoo(origem, destino, data, poltronasTotal);
+    }
+
+    public Reserva reservar(int numPessoas) {
+        synchronized (this) {
+            Reserva reserva = null;
+
+            if (numPessoas <= poltronasDisp) {
+                reservas.add(reserva = new Reserva(numPessoas));
+                poltronasDisp -= numPessoas;
+                infoVoo.poltronasDisp -= numPessoas;
+            }
+
+            return reserva;
+        }
+    }
+
+    public boolean estornar(Reserva reserva) {
+        synchronized (this) {
+            if (reservas.remove(reserva)) {
+                poltronasDisp += reserva.getQuantidade();
+                infoVoo.poltronasDisp += reserva.getQuantidade();
+                return true;
+            }
+            return false;
+        }
     }
 }

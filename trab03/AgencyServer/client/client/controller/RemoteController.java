@@ -1,5 +1,6 @@
-package client;
+package client.controller;
 
+import client.AgencyClientImpl;
 import model.TipoPassagem;
 import model.cidade.Cidade;
 import model.hotel.InfoHospedagem;
@@ -15,49 +16,68 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/** Representa o ponto de entrada da aplicação cliente.
+/** Controlador do acesso a interface remota do servidor
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class Main {
+public class RemoteController {
+
     /** Nome de host do serviço de nomes */
     private static final String NAMING_SERVICE_HOST = "localhost";
 
     /** Porta do serviço de nomes */
     private static final int NAMING_SERVICE_PORT = 11037;
 
+    /** Referência ao serviço de nomes do servidor */
+    private Registry namingServiceRef;
+
+    /** Referência remota do servidor */
+    private AgencyServer serverRef;
+
+    /** Instância do cliente */
+    private AgencyClientImpl client;
+
     /*------------------------------------------------------------------------*/
 
-    /** Inicializa a aplicação cliente.
-     * @param args argumentos de linha de comando
-     */
-    public static void main(String[] args) {
+    /** Instância única do controlador */
+    private static RemoteController ourInstance = new RemoteController();
+
+    /** Resgatar a instância única do controlador */
+    public static RemoteController getInstance() {
+        return ourInstance;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Construtor padrão desse controlador */
+    private RemoteController() {
+
         try {
-            Registry namingServiceRef = LocateRegistry.getRegistry(
-                    NAMING_SERVICE_HOST, NAMING_SERVICE_PORT);
-            AgencyServer serverRef = (AgencyServer) namingServiceRef.lookup(
-                    "server");
+            namingServiceRef = LocateRegistry.getRegistry(NAMING_SERVICE_HOST,
+                    NAMING_SERVICE_PORT);
 
-            AgencyClientImpl client = new AgencyClientImpl(serverRef);
+            serverRef = (AgencyServer) namingServiceRef.lookup("server");
 
-            // FIXME: Debug
-            //testarVoos(serverRef);
+            client = new AgencyClientImpl(serverRef);
 
             // FIXME: Debug
-            testarHoteis(serverRef);
+            //testarVoos();
+
+            // FIXME: Debug
+            testarHoteis();
         }
         catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
+
     }
 
     /*------------------------------------------------------------------------*/
 
     /** Wrapper para o teste dos voos.
-     * @param serverRef referência ao servidor
      * @throws RemoteException se ocorrer erro no RMI
      */
-    private static void testarVoos(AgencyServer serverRef) throws RemoteException {
+    private void testarVoos() throws RemoteException {
         LocalDate data = LocalDate.of(2018, 9, 27);
         LocalDate datavolta = LocalDate.of(2018, 9, 28);
         ArrayList<InfoVoo> voos = serverRef.consultarPassagens(TipoPassagem.IDA_E_VOLTA, Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, datavolta, 1);
@@ -99,10 +119,9 @@ public class Main {
     /*------------------------------------------------------------------------*/
 
     /** Wrapper para o teste dos hotéis.
-     * @param serverRef referência ao servidor
      * @throws RemoteException caso ocorra erro no RMI
      */
-    private static void testarHoteis(AgencyServer serverRef) throws RemoteException {
+    private void testarHoteis() throws RemoteException {
         LocalDate dataIda = LocalDate.of(2018, 10, 5);
         LocalDate dataVolta = LocalDate.of(2018, 10, 7);
 
@@ -118,4 +137,6 @@ public class Main {
             }
         }
     }
+
+    /*------------------------------------------------------------------------*/
 }

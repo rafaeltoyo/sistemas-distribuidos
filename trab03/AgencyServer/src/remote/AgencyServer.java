@@ -2,12 +2,15 @@ package remote;
 
 import model.TipoPassagem;
 import model.cidade.Cidade;
-import model.voo.Voo;
+import model.hotel.InfoHospedagem;
+import model.hotel.InfoHotel;
+import model.voo.InfoVoo;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 
 /** Interface RMI para o servidor da agência.
  * @author Rafael Hideo Toyomoto
@@ -25,13 +28,18 @@ public interface AgencyServer extends Remote {
      * @return lista de passagens aéreas disponíveis que atendem aos parâmetros
      * @throws RemoteException caso ocorra erro no RMI
      */
-    ArrayList<Voo> consultarPassagens(TipoPassagem tipo, Cidade origem,
-            Cidade destino, Calendar dataIda, Calendar dataVolta,
+    ArrayList<InfoVoo> consultarPassagens(TipoPassagem tipo, Cidade origem,
+            Cidade destino, LocalDate dataIda, LocalDate dataVolta,
             int numPessoas) throws RemoteException;
 
-    //ArrayList<Hospedagem> consultarHospedagens() throws RemoteException;
+    boolean comprarPassagens(TipoPassagem tipo, int idVooIda, int idVooVolta,
+            int numPessoas) throws RemoteException;
 
-    //boolean comprarHospedagem(Hospedagem hospedagem) throws RemoteException;
+    HashMap<InfoHotel, ArrayList<InfoHospedagem>> consultarHospedagens(
+            Cidade local, LocalDate dataIni, LocalDate dataFim)
+            throws RemoteException;
+
+    //boolean comprarHospedagem(InfoHotel hospedagem) throws RemoteException;
 
     //ArrayList<Pacote> consultarPacotes() throws RemoteException;
 

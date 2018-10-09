@@ -1,8 +1,8 @@
 package client;
 
+import client.controller.ViewController;
+import client.view.ListarHotel;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,6 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainScreen extends Application {
+
+    ViewController viewController;
 
     private Stage window;
     private Scene scene1, scene2;
@@ -25,6 +27,17 @@ public class MainScreen extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        window = primaryStage;
+
+        // Iniciar o controlador das telas
+        viewController = ViewController.getInstance();
+        viewController.init(primaryStage);
+
+        ListarHotel listarHotel = new ListarHotel(window);
+        listarHotel.show();
+    }
+
+    public void teste(Stage primaryStage) throws Exception {
         window = primaryStage;
 
         Label label1 = new Label("Welcome to the first scene!");

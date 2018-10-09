@@ -1,6 +1,6 @@
 package model;
 
-import model.saldo.Reserva;
+import model.hotel.InfoHotel;
 import model.voo.Passagem;
 
 public class Pacote {
@@ -11,13 +11,13 @@ public class Pacote {
 
     private Passagem passagem;
 
-    private Hospedagem hospedagem;
+    private InfoHotel hospedagem;
 
-    public Pacote(Passagem passagem, Hospedagem hospedagem) {
+    public Pacote(Passagem passagem, InfoHotel hospedagem) {
         this(count++, passagem, hospedagem);
     }
 
-    public Pacote(int id, Passagem passagem, Hospedagem hospedagem) {
+    public Pacote(int id, Passagem passagem, InfoHotel hospedagem) {
         this.id = id;
         this.passagem = passagem;
         this.hospedagem = hospedagem;
@@ -37,6 +37,7 @@ public class Pacote {
      * @return Sucesso da compra
      */
     public boolean comprar(int numPessoas) {
+        /* TODO
         Reserva reservaPassagem = passagem.reservar(numPessoas);
         if (reservaPassagem == null) {
             return false;
@@ -45,7 +46,7 @@ public class Pacote {
         if (!temHospedagem) {
             passagem.estornar(reservaPassagem);
             return false;
-        }
+        }*/
         return true;
     }
 }

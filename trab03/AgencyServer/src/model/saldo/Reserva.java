@@ -3,10 +3,13 @@ package model.saldo;
 import java.util.Date;
 
 public class Reserva {
-
     Date data;
 
-    int quantidade;
+    private int quantidade;
+
+    public int getQuantidade() {
+        return quantidade;
+    }
 
     public Reserva(int quantidade) {
         this.data = new Date();

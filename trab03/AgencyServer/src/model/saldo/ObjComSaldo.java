@@ -1,8 +1,6 @@
 package model.saldo;
 
-import java.io.Serializable;
-
-abstract public class ObjComSaldo implements Serializable {
+abstract public class ObjComSaldo {
 
     protected Saldo saldo;
 
