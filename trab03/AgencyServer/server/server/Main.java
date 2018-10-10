@@ -31,50 +31,81 @@ public class Main {
             AgencyServerImpl agencyServerImpl = new AgencyServerImpl();
             namingServiceRef.bind("server", agencyServerImpl);
 
-            // FIXME: Debug
-            LocalDate data = LocalDate.of(2018, 9, 27);
-            Voo voo = new Voo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, 80);
-            agencyServerImpl.adicionarVoo(voo);
+            // FIXME: Debug: Criação de voos
+            Cidade[] cidades = {Cidade.CURITIBA, Cidade.SAO_PAULO, Cidade.FLORIANOPOLIS};
+            criarVoos(cidades, LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 5), 80, agencyServerImpl);
 
-            // FIXME: Debug
-            data = LocalDate.of(2018, 9, 27);
-            voo = new Voo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, data, 80);
-            agencyServerImpl.adicionarVoo(voo);
+            /*
+            FIXME: Debug: Criação de hotéis
+            */
 
-            // FIXME: Debug
-            data = LocalDate.of(2018, 9, 28);
-            voo = new Voo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, 80);
-            agencyServerImpl.adicionarVoo(voo);
+            Hotel hotel;
 
-            // FIXME: Debug
-            data = LocalDate.of(2018, 9, 28);
-            voo = new Voo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, data, 20);
-            agencyServerImpl.adicionarVoo(voo);
-
-            // FIXME: Debug
-            data = LocalDate.of(2018, 9, 27);
-            voo = new Voo(Cidade.CURITIBA, Cidade.SAO_PAULO, data, 80);
-            agencyServerImpl.adicionarVoo(voo);
-
-            // FIXME: Debug
-            data = LocalDate.of(2018, 9, 28);
-            voo = new Voo(Cidade.SAO_PAULO, Cidade.CURITIBA, data, 80);
-            agencyServerImpl.adicionarVoo(voo);
-
-            // FIXME: Debug
-            data = LocalDate.of(2018, 10, 4);
-            Hotel hotel = new Hotel("Ibis", Cidade.CURITIBA, 400);
-            hotel.adicionarHospedagem(data, LocalDate.of(2018, 10, 7));
+            hotel = new Hotel("Ibis", Cidade.CURITIBA, 400);
+            hotel.adicionarHospedagem(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 5));
             agencyServerImpl.adicionarHotel(hotel);
 
-            // FIXME: Debug
-            data = LocalDate.of(2018, 10, 4);
-            hotel = new Hotel("Slaviero", Cidade.BELO_HORIZONTE, 400);
-            hotel.adicionarHospedagem(data, LocalDate.of(2018, 10, 7));
+            hotel = new Hotel("Ibis", Cidade.SAO_PAULO, 400);
+            hotel.adicionarHospedagem(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 5));
+            agencyServerImpl.adicionarHotel(hotel);
+
+            hotel = new Hotel("Ibis", Cidade.FLORIANOPOLIS, 400);
+            hotel.adicionarHospedagem(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 5));
+            agencyServerImpl.adicionarHotel(hotel);
+
+            hotel = new Hotel("Slaviero", Cidade.CURITIBA, 200);
+            hotel.adicionarHospedagem(LocalDate.of(2018, 1, 3), LocalDate.of(2018, 1, 5));
+            agencyServerImpl.adicionarHotel(hotel);
+
+            hotel = new Hotel("Slaviero", Cidade.SAO_PAULO, 200);
+            hotel.adicionarHospedagem(LocalDate.of(2018, 1, 3), LocalDate.of(2018, 1, 5));
+            agencyServerImpl.adicionarHotel(hotel);
+
+            hotel = new Hotel("Slaviero", Cidade.FLORIANOPOLIS, 200);
+            hotel.adicionarHospedagem(LocalDate.of(2018, 1, 3), LocalDate.of(2018, 1, 5));
+            agencyServerImpl.adicionarHotel(hotel);
+
+            hotel = new Hotel("Mercure", Cidade.CURITIBA, 100);
+            hotel.adicionarHospedagem(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 3));
+            agencyServerImpl.adicionarHotel(hotel);
+
+            hotel = new Hotel("Mercure", Cidade.SAO_PAULO, 100);
+            hotel.adicionarHospedagem(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 3));
+            agencyServerImpl.adicionarHotel(hotel);
+
+            hotel = new Hotel("Mercure", Cidade.FLORIANOPOLIS, 100);
+            hotel.adicionarHospedagem(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 3));
             agencyServerImpl.adicionarHotel(hotel);
         }
         catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();
+        }
+    }
+
+    /** Cria voos entre todas as cidades fornecidas, para todos os dias no
+     * intervalo de datas, com o número de poltronas especificado
+     * @param cidades vetor contendo as cidades
+     * @param dataIni data de início do intervalo
+     * @param dataFim data de fim do intervalo (também são criados voos nessa
+     *                data)
+     * @param numPoltronas número de poltronas de cada voo
+     */
+    private static void criarVoos(Cidade[] cidades, LocalDate dataIni, LocalDate dataFim, int numPoltronas, AgencyServerImpl server) {
+        // Copia o objeto LocalDate
+        LocalDate dataIter = dataIni.plusDays(0);
+
+        while (!dataIter.isAfter(dataFim)) {
+            for (Cidade c1 : cidades) {
+                for (Cidade c2 : cidades) {
+                    // Cria cópia do objeto
+                    LocalDate data = dataIter.plusDays(0);
+
+                    Voo v = new Voo(c1, c2, data, numPoltronas);
+                    server.adicionarVoo(v);
+                }
+            }
+
+            dataIter = dataIter.plusDays(1);
         }
     }
 }

@@ -1,4 +1,4 @@
-package model;
+package model.voo;
 
 public enum TipoPassagem {
     SOMENTE_IDA,

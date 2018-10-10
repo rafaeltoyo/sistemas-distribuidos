@@ -1,10 +1,11 @@
 package remote;
 
-import model.TipoPassagem;
 import model.cidade.Cidade;
 import model.hotel.InfoHospedagem;
 import model.hotel.InfoHotel;
+import model.pacote.ConjuntoPacote;
 import model.voo.InfoVoo;
+import model.voo.TipoPassagem;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -85,7 +86,23 @@ public interface AgencyServer extends Remote {
 
     /*------------------------------------------------------------------------*/
 
-    //ArrayList<Pacote> consultarPacotes() throws RemoteException;
+    /** Faz uma consulta de voos e hotéis para os dados fornecidos, e retorna os
+     * resultados em um objeto.
+     * No servidor, não existem pacotes explícitos, apenas voos e hotéis.
+     * @param origem local de origem do voo
+     * @param destino local de destino do voo e cidade do hotel
+     * @param dataIda data do voo de ida e de chegada no hotel
+     * @param dataVolta data do voo de volta e de saída do hotel (não é incluída
+     *                  reserva de hotel para a data de saída)
+     * @param numQuartos número de quartos de hotel desejados
+     * @param numPessoas número de passagens desejadas
+     * @return conjunto de voos de ida, voos de volta e hospedagens que atendem
+     * os dados fornecidos
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    ConjuntoPacote consultarPacotes(Cidade origem, Cidade destino,
+            LocalDate dataIda, LocalDate dataVolta, int numQuartos,
+            int numPessoas) throws RemoteException;
 
     /*------------------------------------------------------------------------*/
 

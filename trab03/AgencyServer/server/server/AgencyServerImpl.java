@@ -1,13 +1,14 @@
 package server;
 
-import model.TipoPassagem;
 import model.cidade.Cidade;
 import model.hotel.Hospedagem;
 import model.hotel.Hotel;
 import model.hotel.InfoHospedagem;
 import model.hotel.InfoHotel;
+import model.pacote.ConjuntoPacote;
 import model.saldo.Reserva;
 import model.voo.InfoVoo;
+import model.voo.TipoPassagem;
 import model.voo.Voo;
 import remote.AgencyServer;
 
@@ -215,14 +216,21 @@ public class AgencyServerImpl extends UnicastRemoteObject
             Cidade local, LocalDate dataIni, LocalDate dataFim,
             int numQuartos, int numPessoas)
             throws RemoteException {
+        // FIXME:
+        // Será que a informação de cada dia é realmente relevante ao cliente?
+        // Se não for, pode-se simplesmente retornar um ArrayList<InfoHotel>.
+        // O cliente compra hospedagem utilizando apenas o ID do hotel e as
+        // datas de chegada e saída.
+
         HashMap<InfoHotel, ArrayList<InfoHospedagem>> result = new HashMap<>();
-        LocalDate data = LocalDate.of(dataIni.getYear(), dataIni.getMonth(), dataIni.getDayOfMonth());
 
         for (Hotel h : hoteis) {
             // Pula hotéis em outras cidades
             if (!local.equals(h.getLocal())) {
                 continue;
             }
+
+            LocalDate data = dataIni.plusDays(0);
 
             ArrayList<InfoHospedagem> hospedagens = new ArrayList<>();
 
@@ -231,6 +239,9 @@ public class AgencyServerImpl extends UnicastRemoteObject
             while (data.isBefore(dataFim)) {
                 Hospedagem hosp = h.getHospedagemData(data);
                 if (hosp == null) {
+                    // Deu ruim, esse hotel não está oferecendo hospedagem em
+                    // um dos dias do período
+                    hospedagens.clear();
                     break;
                 }
 
@@ -288,5 +299,51 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
         // Faz a reserva, se possível, e retorna true se bem sucedido
         return hotel.reservar(dataIni, dataFim, numQuartos);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Faz uma consulta de voos e hotéis para os dados fornecidos, e retorna os
+     * resultados em um objeto.
+     * No servidor, não existem pacotes explícitos, apenas voos e hotéis. Por
+     * isso, essa consulta é implementada com chamadas às consultas de passagens
+     * e de hospedagens.
+     * @param origem local de origem do voo
+     * @param destino local de destino do voo e cidade do hotel
+     * @param dataIda data do voo de ida e de chegada no hotel
+     * @param dataVolta data do voo de volta e de saída do hotel (não é incluída
+     *                  reserva de hotel para a data de saída)
+     * @param numQuartos número de quartos de hotel desejados
+     * @param numPessoas número de passagens desejadas
+     * @return conjunto de voos de ida, voos de volta e hospedagens que atendem
+     * os dados fornecidos
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    public ConjuntoPacote consultarPacotes(Cidade origem, Cidade destino,
+            LocalDate dataIda, LocalDate dataVolta, int numQuartos,
+            int numPessoas) throws RemoteException {
+        // Obtém todos os voos
+        ArrayList<InfoVoo> voos = consultarPassagens(TipoPassagem.IDA_E_VOLTA,
+                origem, destino, dataIda, dataVolta, numPessoas);
+
+        // Obtém as informações de hotéis
+        HashMap<InfoHotel, ArrayList<InfoHospedagem>> hosps = consultarHospedagens(
+                destino, dataIda, dataVolta, numQuartos, numPessoas);
+
+        ConjuntoPacote conjuntoPacote = new ConjuntoPacote();
+        if (!voos.isEmpty() && !hosps.isEmpty()) {
+            for (InfoVoo v : voos) {
+                if (v.getOrigem() == origem) {
+                    conjuntoPacote.adicionarVooIda(v);
+                } else {
+                    conjuntoPacote.adicionarVooVolta(v);
+                }
+            }
+            for (HashMap.Entry<InfoHotel, ArrayList<InfoHospedagem>> entry : hosps.entrySet()) {
+                conjuntoPacote.adicionarHospedagem(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return conjuntoPacote;
     }
 }

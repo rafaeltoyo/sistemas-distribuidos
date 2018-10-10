@@ -22,6 +22,10 @@ public class InfoHotel implements Serializable {
         return id;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
     public Cidade getLocal() {
         return local;
     }
