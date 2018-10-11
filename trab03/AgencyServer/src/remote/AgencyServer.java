@@ -4,6 +4,7 @@ import model.cidade.Cidade;
 import model.hotel.InfoHospedagem;
 import model.hotel.InfoHotel;
 import model.pacote.ConjuntoPacote;
+import model.pacote.Pacote;
 import model.voo.InfoVoo;
 import model.voo.TipoPassagem;
 
@@ -106,11 +107,36 @@ public interface AgencyServer extends Remote {
 
     /*------------------------------------------------------------------------*/
 
-    //boolean comprarPacote(Pacote pacote) throws RemoteException;
+    boolean comprarPacote(Pacote pacote) throws RemoteException;
 
     /*------------------------------------------------------------------------*/
 
     //boolean registraEvento(Evento evento) throws RemoteException;
+    int registrarInteresseVoo(Cidade origem, Cidade destino, LocalDate data,
+            AgencyClient clientRef) throws RemoteException;
+
+    /*------------------------------------------------------------------------*/
+
+    //<?> removerInteresseVoo(<?>) throws RemoteException;
+
+    /*------------------------------------------------------------------------*/
+
+    int registrarInteresseHotel(Cidade destino, LocalDate dataIni,
+            LocalDate dataFim, AgencyClient clientRef) throws RemoteException;
+
+    /*------------------------------------------------------------------------*/
+
+    //<?> removerInteresseHotel(<?>) throws RemoteException;
+
+    /*------------------------------------------------------------------------*/
+
+    int registrarInteressePacote(Cidade origem, Cidade destino,
+            LocalDate dataIda, LocalDate dataVolta, AgencyClient clientRef)
+            throws RemoteException;
+
+    /*------------------------------------------------------------------------*/
+
+    //<?> removerInteressePacote(<?>) throws RemoteException;
 
     /*------------------------------------------------------------------------*/
 

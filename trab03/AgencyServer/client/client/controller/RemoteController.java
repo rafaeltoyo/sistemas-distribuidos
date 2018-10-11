@@ -58,7 +58,7 @@ public class RemoteController {
 
             serverRef = (AgencyServer) namingServiceRef.lookup("server");
 
-            client = new AgencyClientImpl(serverRef);
+            client = new AgencyClientImpl();
 
             // FIXME: Debug
             //testarVoos();

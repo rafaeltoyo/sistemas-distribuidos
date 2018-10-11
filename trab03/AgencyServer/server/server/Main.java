@@ -4,6 +4,7 @@ import model.cidade.Cidade;
 import model.hotel.Hotel;
 import model.voo.Voo;
 
+import java.io.IOException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -76,11 +77,16 @@ public class Main {
             hotel = new Hotel("Mercure", Cidade.FLORIANOPOLIS, 100);
             hotel.adicionarHospedagem(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 3));
             agencyServerImpl.adicionarHotel(hotel);
+
+            // FIXME: Debug: Teste da notificação de eventos
+            testarNovosEventos(agencyServerImpl);
         }
         catch (RemoteException | AlreadyBoundException e) {
             e.printStackTrace();
         }
     }
+
+    /*------------------------------------------------------------------------*/
 
     /** Cria voos entre todas as cidades fornecidas, para todos os dias no
      * intervalo de datas, com o número de poltronas especificado
@@ -89,6 +95,7 @@ public class Main {
      * @param dataFim data de fim do intervalo (também são criados voos nessa
      *                data)
      * @param numPoltronas número de poltronas de cada voo
+     * @param server servidor
      */
     private static void criarVoos(Cidade[] cidades, LocalDate dataIni, LocalDate dataFim, int numPoltronas, AgencyServerImpl server) {
         // Copia o objeto LocalDate
@@ -106,6 +113,40 @@ public class Main {
             }
 
             dataIter = dataIter.plusDays(1);
+        }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Aguarda algum input na entrada padrão (para criar um delay) e cria novos
+     * itens (ex: voo) depois. Isso fará com que dê tempo para algum cliente
+     * fazer um registro de interesse antes dos itens serem adicionados.
+     * @param server servidor
+     */
+    private static void testarNovosEventos(AgencyServerImpl server) {
+        try {
+            System.out.println("Aperte ENTER para adicionar os novos itens.");
+            System.in.read();
+
+            Voo v = new Voo(Cidade.BELO_HORIZONTE, Cidade.RIO_DE_JANEIRO, LocalDate.of(2018, 1, 7), 100);
+            server.adicionarVoo(v);
+
+            Hotel h = new Hotel("Teste", Cidade.BELO_HORIZONTE, 10);
+            if (false) {
+                // Teste de adicionar um novo hotel que atende ao registro de interesse logo de cara
+                h.adicionarHospedagem(LocalDate.of(2018, 1, 7), LocalDate.of(2018, 1, 10));
+                server.adicionarHotel(h);
+            }
+            else {
+                // Teste de adicionar um hotel que não atende ao registro de interesse,
+                // e depois adicionar mais hospedagens de tal forma que ele atenda.
+                h.adicionarHospedagem(LocalDate.of(2018, 1, 7), LocalDate.of(2018, 1, 8));
+                server.adicionarHotel(h);
+                server.adicionarHospedagem(h.getId(), LocalDate.of(2018, 1, 9), LocalDate.of(2018, 1, 9));
+                server.adicionarHospedagem(h.getId(), LocalDate.of(2018, 1, 10), LocalDate.of(2018, 1, 10));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

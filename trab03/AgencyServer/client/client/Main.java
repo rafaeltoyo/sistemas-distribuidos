@@ -39,7 +39,7 @@ public class Main {
             AgencyServer serverRef = (AgencyServer) namingServiceRef.lookup(
                     "server");
 
-            AgencyClientImpl client = new AgencyClientImpl(serverRef);
+            AgencyClientImpl client = new AgencyClientImpl();
 
             // FIXME: Debug
             //testarVoos(serverRef);
@@ -48,7 +48,13 @@ public class Main {
             //testarHoteis(serverRef);
 
             // FIXME: Debug
-            testarPacotes(serverRef);
+            //testarPacotes(serverRef);
+
+            // FIXME: Debug
+            //testarInteresseVoo(client, serverRef);
+
+            // FIXME: Debug
+            testarInteresseHotel(client, serverRef);
         }
         catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
@@ -153,5 +159,25 @@ public class Main {
             InfoHotel h = entry.getKey();
             System.out.println("Hotel " + h.getId() + " (" + h.getNome() + "): " + h.getLocal());
         }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Wrapper para o teste do registro de interesse em voos.
+     * @param serverRef referência ao servidor
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    private static void testarInteresseVoo(AgencyClientImpl selfClient, AgencyServer serverRef) throws RemoteException {
+        serverRef.registrarInteresseVoo(Cidade.BELO_HORIZONTE, Cidade.RIO_DE_JANEIRO, LocalDate.of(2018, 1, 7), selfClient);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Wrapper para o teste do registro de interesse em hotéis.
+     * @param serverRef referência ao servidor
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    private static void testarInteresseHotel(AgencyClientImpl selfClient, AgencyServer serverRef) throws RemoteException {
+        serverRef.registrarInteresseHotel(Cidade.BELO_HORIZONTE, LocalDate.of(2018, 1, 7), LocalDate.of(2018, 1, 11), selfClient);
     }
 }

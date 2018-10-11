@@ -33,6 +33,13 @@ public class Hotel {
         return infoHotel.getId();
     }
 
+    /** Retorna o nome do hotel.
+     * @return nome do hotel
+     */
+    public String getNome() {
+        return infoHotel.getNome();
+    }
+
     /** Retorna a cidade do hotel.
      * @return cidade do hotel
      */
