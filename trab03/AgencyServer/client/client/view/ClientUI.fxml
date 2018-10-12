@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.ClientUIController">
+   <children>
+      <TabPane layoutX="200.0" layoutY="100.0" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab text="Voo">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <GridPane layoutX="14.0" layoutY="14.0" prefHeight="171.0" prefWidth="564.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="140.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Consulta de voos">
+                                 <font>
+                                    <Font name="System Bold" size="24.0" />
+                                 </font>
+                              </Text>
+                              <Label text="Cidade de origem:" GridPane.rowIndex="2" />
+                              <Label text="Data de ida:" GridPane.rowIndex="3" />
+                              <DatePicker fx:id="dateVooIda" prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label text="Cidade de destino:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <Label text="Data de volta:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <DatePicker fx:id="dateVooVolta" prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <RadioButton mnemonicParsing="false" text="Somente ida" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="tipoVoo" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton mnemonicParsing="false" text="Ida e volta" toggleGroup="$tipoVoo" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <ChoiceBox fx:id="choiceOrigemVoo" prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <ChoiceBox fx:id="choiceDestinoVoo" prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <Label text="Número de pessoas:" GridPane.rowIndex="4" />
+                              <Spinner fx:id="spinnerNumPessoasVoo" prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Button fx:id="buttonConsultarVoo" mnemonicParsing="false" prefHeight="25.0" prefWidth="71.0" text="Consultar" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                           </children>
+                        </GridPane>
+                        <TableView fx:id="tableVooIda" layoutX="16.0" layoutY="236.0" prefHeight="110.0" prefWidth="768.0">
+                          <columns>
+                            <TableColumn fx:id="columnIdVooIda" prefWidth="69.0" text="Id" />
+                            <TableColumn fx:id="columnOrigemVooIda" prefWidth="170.0" text="Origem" />
+                              <TableColumn fx:id="columnDestinoVooIda" prefWidth="170.0" text="Destino" />
+                              <TableColumn fx:id="columnDataVooIda" minWidth="0.0" prefWidth="130.0" text="Data" />
+                              <TableColumn fx:id="columnPoltronasVooIda" prefWidth="133.0" text="Poltronas disponíveis" />
+                          </columns>
+                        </TableView>
+                        <Text layoutX="16.0" layoutY="228.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Voos de ida">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Text>
+                        <Text layoutX="16.0" layoutY="378.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Voos de volta">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Text>
+                        <TableView fx:id="tableVooVolta" layoutX="16.0" layoutY="386.0" prefHeight="110.0" prefWidth="768.0">
+                           <columns>
+                              <TableColumn fx:id="columnIdVooVolta" prefWidth="69.0" text="Id" />
+                              <TableColumn fx:id="columnOrigemVooVolta" prefWidth="170.0" text="Origem" />
+                              <TableColumn fx:id="columnDestinoVooVolta" prefWidth="170.0" text="Destino" />
+                              <TableColumn fx:id="columnDataVooVolta" minWidth="0.0" prefWidth="130.0" text="Data" />
+                              <TableColumn fx:id="columnPoltronasVooVolta" prefWidth="133.0" text="Poltronas disponíveis" />
+                           </columns>
+                        </TableView>
+                        <Button layoutX="369.0" layoutY="519.0" mnemonicParsing="false" text="Comprar" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Hospedagem">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <GridPane layoutX="14.0" layoutY="14.0" prefHeight="150.0" prefWidth="564.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="140.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Consulta de hotéis">
+                                 <font>
+                                    <Font name="System Bold" size="24.0" />
+                                 </font>
+                              </Text>
+                              <Label text="Cidade:" GridPane.rowIndex="1" />
+                              <Label text="Data de chegada:" GridPane.rowIndex="2" />
+                              <DatePicker prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label text="Data de saída:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <DatePicker prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <ChoiceBox prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label text="Número de pessoas:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <Spinner prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="71.0" text="Consultar" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                              <Spinner prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label text="Número de quartos:" GridPane.rowIndex="3" />
+                           </children>
+                        </GridPane>
+                        <TableView layoutX="14.0" layoutY="174.0" prefHeight="277.0" prefWidth="768.0">
+                          <columns>
+                            <TableColumn prefWidth="218.0" text="Nome" />
+                            <TableColumn minWidth="0.0" prefWidth="147.0" text="Cidade" />
+                          </columns>
+                        </TableView>
+                        <Button layoutX="369.0" layoutY="481.0" mnemonicParsing="false" text="Comprar" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Pacote">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
