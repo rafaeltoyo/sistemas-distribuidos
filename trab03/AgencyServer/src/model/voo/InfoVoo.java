@@ -51,6 +51,7 @@ public class InfoVoo implements Serializable {
      * @param origem local de origem (partida)
      * @param destino local de destino (chegada)
      * @param data data de partida
+     * @param poltronasDisp número de poltronas disponíveis
      */
     public InfoVoo(Cidade origem, Cidade destino, LocalDate data,
                    int poltronasDisp) {

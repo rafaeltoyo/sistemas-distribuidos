@@ -1,11 +1,11 @@
 package client.controller;
 
 import client.AgencyClientImpl;
-import model.TipoPassagem;
 import model.cidade.Cidade;
 import model.hotel.InfoHospedagem;
 import model.hotel.InfoHotel;
 import model.voo.InfoVoo;
+import model.voo.TipoPassagem;
 import remote.AgencyServer;
 
 import java.rmi.NotBoundException;
@@ -58,7 +58,7 @@ public class RemoteController {
 
             serverRef = (AgencyServer) namingServiceRef.lookup("server");
 
-            client = new AgencyClientImpl(serverRef);
+            client = new AgencyClientImpl();
 
             // FIXME: Debug
             //testarVoos();
@@ -125,7 +125,7 @@ public class RemoteController {
         LocalDate dataIda = LocalDate.of(2018, 10, 5);
         LocalDate dataVolta = LocalDate.of(2018, 10, 7);
 
-        HashMap<InfoHotel, ArrayList<InfoHospedagem>> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta);
+        HashMap<InfoHotel, ArrayList<InfoHospedagem>> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta, 1, 2);
 
         for (HashMap.Entry<InfoHotel, ArrayList<InfoHospedagem>> entry : madoka.entrySet()) {
             InfoHotel hotel = entry.getKey();

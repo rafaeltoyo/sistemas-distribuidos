@@ -19,14 +19,28 @@ public class Hotel {
 
     /*------------------------------------------------------------------------*/
 
-    /** Retorna as informações do hotel
+    /** Retorna as informações do hotel.
      * @return informações do hotel
      */
     public InfoHotel getInfoHotel() {
         return infoHotel;
     }
 
-    /** Retorna a cidade do hotel
+    /** Retorna o identificador do hotel.
+     * @return identificador do hotel
+     */
+    public int getId() {
+        return infoHotel.getId();
+    }
+
+    /** Retorna o nome do hotel.
+     * @return nome do hotel
+     */
+    public String getNome() {
+        return infoHotel.getNome();
+    }
+
+    /** Retorna a cidade do hotel.
      * @return cidade do hotel
      */
     public Cidade getLocal() {
@@ -89,33 +103,37 @@ public class Hotel {
      * @return true se e somente se a reserva foi bem sucedida
      */
     public boolean reservar(LocalDate dataIni, LocalDate dataFim, int numQuartos) {
-        // FIXME: será que tem que por synchronized em tudo isso?
-        HashMap<Hospedagem, Reserva> arrayReservas = new HashMap<>();
-        LocalDate data = LocalDate.of(dataIni.getYear(), dataIni.getMonth(), dataIni.getDayOfMonth());
+        synchronized (hospedagens) {
+            HashMap<Hospedagem, Reserva> arrayReservas = new HashMap<>();
+            LocalDate data = LocalDate.of(dataIni.getYear(), dataIni.getMonth(), dataIni.getDayOfMonth());
 
-        while (!data.isAfter(dataFim)) {
-            // Pega a hospedagem do dia
-            Hospedagem hosp = hospedagens.get(data);
-            if (hosp == null) {
-                // Se não achar, faz rollback de tudo
-                desfazerReserva(arrayReservas);
-                return false;
+            // FIXME: Debug
+            System.out.println("Início reserva...");
+
+            while (data.isBefore(dataFim)) {
+                // Pega a hospedagem do dia
+                Hospedagem hosp = hospedagens.get(data);
+                if (hosp == null) {
+                    // Se não achar, faz rollback de tudo
+                    desfazerReserva(arrayReservas);
+                    return false;
+                }
+
+                // Faz uma reserva na hospedagem
+                Reserva r = hosp.reservar(numQuartos);
+                if (r == null) {
+                    // Se falhar (não tem mais vagas) faz rollback de tudo
+                    desfazerReserva(arrayReservas);
+                    return false;
+                }
+
+                arrayReservas.put(hosp, r);
+
+                data = data.plusDays(1);
             }
 
-            // Faz uma reserva na hospedagem
-            Reserva r = hosp.reservar(numQuartos);
-            if (r == null) {
-                // Se falhar (não tem mais vagas) faz rollback de tudo
-                desfazerReserva(arrayReservas);
-                return false;
-            }
-
-            arrayReservas.put(hosp, r);
-
-            data = data.plusDays(1);
+            return true;
         }
-
-        return true;
     }
 
     /** Função interna para fazer "rollback" de uma reserva de quartos, caso
@@ -125,7 +143,9 @@ public class Hotel {
      *                      função reservar
      */
     private void desfazerReserva(HashMap<Hospedagem, Reserva> arrayReservas) {
-        // FIXME: será que tem que por synchronized em tudo isso?
+        // FIXME: Debug
+        System.out.println("Rollback...");
+
         for (HashMap.Entry<Hospedagem, Reserva> par : arrayReservas.entrySet()) {
             Hospedagem hosp = par.getKey();
             Reserva r = par.getValue();

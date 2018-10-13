@@ -1,10 +1,11 @@
 package client;
 
-import model.TipoPassagem;
 import model.cidade.Cidade;
 import model.hotel.InfoHospedagem;
 import model.hotel.InfoHotel;
+import model.pacote.ConjuntoPacote;
 import model.voo.InfoVoo;
+import model.voo.TipoPassagem;
 import remote.AgencyServer;
 
 import java.rmi.NotBoundException;
@@ -38,13 +39,22 @@ public class Main {
             AgencyServer serverRef = (AgencyServer) namingServiceRef.lookup(
                     "server");
 
-            AgencyClientImpl client = new AgencyClientImpl(serverRef);
+            AgencyClientImpl client = new AgencyClientImpl();
 
             // FIXME: Debug
             //testarVoos(serverRef);
 
             // FIXME: Debug
-            testarHoteis(serverRef);
+            //testarHoteis(serverRef);
+
+            // FIXME: Debug
+            //testarPacotes(serverRef);
+
+            // FIXME: Debug
+            //testarInteresseVoo(client, serverRef);
+
+            // FIXME: Debug
+            testarInteresseHotel(client, serverRef);
         }
         catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
@@ -58,8 +68,8 @@ public class Main {
      * @throws RemoteException se ocorrer erro no RMI
      */
     private static void testarVoos(AgencyServer serverRef) throws RemoteException {
-        LocalDate data = LocalDate.of(2018, 9, 27);
-        LocalDate datavolta = LocalDate.of(2018, 9, 28);
+        LocalDate data = LocalDate.of(2018, 1, 2);
+        LocalDate datavolta = LocalDate.of(2018, 1, 3);
         ArrayList<InfoVoo> voos = serverRef.consultarPassagens(TipoPassagem.IDA_E_VOLTA, Cidade.CURITIBA, Cidade.FLORIANOPOLIS, data, datavolta, 1);
         for (InfoVoo voo : voos) {
             System.out.println(voo.getId());
@@ -103,10 +113,10 @@ public class Main {
      * @throws RemoteException caso ocorra erro no RMI
      */
     private static void testarHoteis(AgencyServer serverRef) throws RemoteException {
-        LocalDate dataIda = LocalDate.of(2018, 10, 5);
-        LocalDate dataVolta = LocalDate.of(2018, 10, 7);
+        LocalDate dataIda = LocalDate.of(2018, 1, 3);
+        LocalDate dataVolta = LocalDate.of(2018, 1, 5);
 
-        HashMap<InfoHotel, ArrayList<InfoHospedagem>> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta);
+        HashMap<InfoHotel, ArrayList<InfoHospedagem>> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta, 100, 2);
 
         for (HashMap.Entry<InfoHotel, ArrayList<InfoHospedagem>> entry : madoka.entrySet()) {
             InfoHotel hotel = entry.getKey();
@@ -116,6 +126,58 @@ public class Main {
             for (InfoHospedagem hosp : hospedagens) {
                 System.out.println(hosp.getData());
             }
+
+            System.out.println(serverRef.comprarHospedagem(hotel.getId(), dataIda, dataVolta, 100));
+            System.out.println(serverRef.comprarHospedagem(hotel.getId(), dataVolta.minusDays(1), dataVolta, 100));
         }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Wrapper para o teste dos pacotes.
+     * @param serverRef referência ao servidor
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    private static void testarPacotes(AgencyServer serverRef) throws RemoteException {
+        LocalDate dataIda = LocalDate.of(2018, 1, 3);
+        LocalDate dataVolta = LocalDate.of(2018, 1, 5);
+
+        ConjuntoPacote pacotes = serverRef.consultarPacotes(Cidade.SAO_PAULO, Cidade.CURITIBA, dataIda, dataVolta, 1, 2);
+
+        System.out.println("Opções de voos de ida:");
+        for (InfoVoo v : pacotes.getVoosIda()) {
+            System.out.println("Voo " + v.getId() + " (" + v.getData() + "): " + v.getOrigem() + " para " + v.getDestino());
+        }
+
+        System.out.println("Opções de voos de volta:");
+        for (InfoVoo v : pacotes.getVoosVolta()) {
+            System.out.println("Voo " + v.getId() + " (" + v.getData() + "): " + v.getOrigem() + " para " + v.getDestino());
+        }
+
+        System.out.println("Opções de hospedagem:");
+        for (HashMap.Entry<InfoHotel, ArrayList<InfoHospedagem>> entry : pacotes.getHospedagens().entrySet()) {
+            InfoHotel h = entry.getKey();
+            System.out.println("Hotel " + h.getId() + " (" + h.getNome() + "): " + h.getLocal());
+        }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Wrapper para o teste do registro de interesse em voos.
+     * @param serverRef referência ao servidor
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    private static void testarInteresseVoo(AgencyClientImpl selfClient, AgencyServer serverRef) throws RemoteException {
+        serverRef.registrarInteresseVoo(Cidade.BELO_HORIZONTE, Cidade.RIO_DE_JANEIRO, LocalDate.of(2018, 1, 7), selfClient);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Wrapper para o teste do registro de interesse em hotéis.
+     * @param serverRef referência ao servidor
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    private static void testarInteresseHotel(AgencyClientImpl selfClient, AgencyServer serverRef) throws RemoteException {
+        serverRef.registrarInteresseHotel(Cidade.BELO_HORIZONTE, LocalDate.of(2018, 1, 7), LocalDate.of(2018, 1, 11), selfClient);
     }
 }
