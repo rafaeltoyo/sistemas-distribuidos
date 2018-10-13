@@ -158,6 +158,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
     public ArrayList<InfoVoo> consultarPassagens(TipoPassagem tipo,
             Cidade origem, Cidade destino, LocalDate dataIda,
             LocalDate dataVolta, int numPessoas) throws RemoteException {
+        // TODO: Colocar null-check em todos os parâmetros
         ArrayList<InfoVoo> result = new ArrayList<>();
         for (Voo voo : voos) {
             // FIXME: precisa synchronized para ler?

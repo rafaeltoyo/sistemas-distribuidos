@@ -7,9 +7,9 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -17,7 +17,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.ClientUIController">
     <children>
         <TabPane layoutX="200.0" layoutY="100.0" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -52,12 +51,12 @@
                                         <Label text="Cidade de destino:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                                         <Label text="Data de volta:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                                         <DatePicker fx:id="dateVooVolta" prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                                        <RadioButton mnemonicParsing="false" text="Somente ida" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                                        <RadioButton fx:id="radioSomenteIdaVoo" mnemonicParsing="false" text="Somente ida" GridPane.columnIndex="4" GridPane.rowIndex="1">
                                             <toggleGroup>
                                                 <ToggleGroup fx:id="tipoVoo" />
                                             </toggleGroup>
                                         </RadioButton>
-                                        <RadioButton mnemonicParsing="false" text="Ida e volta" toggleGroup="$tipoVoo" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                                        <RadioButton fx:id="radioIdaEVoltaVoo" mnemonicParsing="false" text="Ida e volta" toggleGroup="$tipoVoo" GridPane.columnIndex="4" GridPane.rowIndex="2" />
                                         <ChoiceBox fx:id="choiceOrigemVoo" prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                         <ChoiceBox fx:id="choiceDestinoVoo" prefHeight="25.0" prefWidth="140.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                                         <Label text="Número de pessoas:" GridPane.rowIndex="3" />
