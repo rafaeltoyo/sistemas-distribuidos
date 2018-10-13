@@ -72,6 +72,9 @@ public class ClientUIController {
     private Button buttonConsultarVoo;
 
     @FXML
+    private Button buttonComprarVoo;
+
+    @FXML
     private TableView<InfoVoo> tableVooIda;
 
     @FXML
@@ -111,6 +114,21 @@ public class ClientUIController {
 
     @FXML
     public void initialize() {
+        inicializarVoos();
+
+        try {
+            connectToServer();
+        }
+        catch (RemoteException | NotBoundException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+            alert.showAndWait();
+
+            // Aqui, é preferível usar System.exit a usar Platform.exit.
+            System.exit(-1);
+        }
+    }
+
+    private void inicializarVoos() {
         // Inicializa as ChoiceBox com as cidades do enum Cidade
         choiceOrigemVoo.getItems().setAll(Cidade.values());
         choiceDestinoVoo.getItems().setAll(Cidade.values());
@@ -133,19 +151,11 @@ public class ClientUIController {
         columnDataVooVolta.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getData().toString()));
         columnPoltronasVooVolta.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().poltronasDisp));
 
-        // Configura o botão
+        // Configura o botão de consulta
         buttonConsultarVoo.setOnAction(this::consultarVoos);
 
-        try {
-            connectToServer();
-        }
-        catch (RemoteException | NotBoundException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
-            alert.showAndWait();
-
-            // Aqui, é preferível usar System.exit a usar Platform.exit.
-            System.exit(-1);
-        }
+        // Configura o botão de compra
+        buttonComprarVoo.setOnAction(this::comprarVoos);
     }
 
     /*------------------------------------------------------------------------*/
@@ -166,6 +176,10 @@ public class ClientUIController {
         LocalDate dataVolta = dateVooVolta.getValue();
         int numPessoas = spinnerNumPessoasVoo.getValue();
         TipoPassagem tipoPassagem = (tipoVoo.getSelectedToggle() == radioSomenteIdaVoo)? TipoPassagem.SOMENTE_IDA : TipoPassagem.IDA_E_VOLTA;
+
+        if (!validarConsultaVoos(origem, destino, dataIda, dataVolta, numPessoas, tipoPassagem)) {
+            return;
+        }
 
         ArrayList<InfoVoo> voos = null;
         try {
@@ -191,5 +205,76 @@ public class ClientUIController {
 
         tableVooIda.setItems(olInfoVooIda);
         tableVooVolta.setItems(olInfoVooVolta);
+    }
+
+    private boolean validarConsultaVoos(Cidade origem, Cidade destino, LocalDate dataIda, LocalDate dataVolta, int numPessoas, TipoPassagem tipoPassagem) {
+        boolean ok = true;
+        String error = "Forneça um valor para os seguintes campos:";
+
+        if (origem == null) {
+            ok = false;
+            error += "\n  Cidade de origem";
+        }
+        if (destino == null) {
+            ok = false;
+            error += "\n  Cidade de destino";
+        }
+        if (dataIda == null) {
+            ok = false;
+            error += "\n  Data de ida";
+        }
+        if (tipoPassagem == TipoPassagem.IDA_E_VOLTA && dataVolta == null) {
+            ok = false;
+            error += "\n  Data de volta";
+        }
+        if (numPessoas < 1 || numPessoas > 8) {
+            ok = false;
+            error += "\n  Número de pessoas (entre 1 e 8)";
+        }
+        if (!ok) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, error);
+            alert.show();
+        }
+
+        return ok;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    private void comprarVoos(ActionEvent event) {
+        InfoVoo vooIda = tableVooIda.getSelectionModel().getSelectedItem();
+        InfoVoo vooVolta = tableVooVolta.getSelectionModel().getSelectedItem();
+        int idVooVolta = 0;
+        int numPessoas = spinnerNumPessoasVoo.getValue();
+
+        TipoPassagem tipoPassagem = TipoPassagem.IDA_E_VOLTA;
+        if (vooVolta == null) {
+            tipoPassagem = TipoPassagem.SOMENTE_IDA;
+        }
+        else {
+            idVooVolta = vooVolta.getId();
+        }
+
+        if (vooIda == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Selecione os voos que deseja comprar.");
+            alert.show();
+            return;
+        }
+
+        // TODO: Janela de confirmação
+
+        try {
+            if (serverRef.comprarPassagens(tipoPassagem, vooIda.getId(), idVooVolta, numPessoas)) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Compra realizada com sucesso!");
+                alert.show();
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na compra.");
+                alert.show();
+            }
+        }
+        catch (RemoteException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+        }
     }
 }

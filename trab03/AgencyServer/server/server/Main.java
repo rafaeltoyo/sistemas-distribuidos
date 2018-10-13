@@ -34,7 +34,9 @@ public class Main {
 
             // FIXME: Debug: Criação de voos
             Cidade[] cidades = {Cidade.CURITIBA, Cidade.SAO_PAULO, Cidade.FLORIANOPOLIS};
-            criarVoos(cidades, LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 5), 80, agencyServerImpl);
+            for (int i = 0; i < 3; ++i) {
+                criarVoos(cidades, LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 5), 80, agencyServerImpl);
+            }
 
             /*
             FIXME: Debug: Criação de hotéis

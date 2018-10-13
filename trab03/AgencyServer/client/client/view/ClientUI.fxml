@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.ClientUIController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.ClientUIController">
     <children>
         <TabPane layoutX="200.0" layoutY="100.0" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
@@ -92,7 +92,7 @@
                                         <TableColumn fx:id="columnPoltronasVooVolta" prefWidth="133.0" text="Poltronas disponíveis" />
                                     </columns>
                                 </TableView>
-                                <Button layoutX="300.0" layoutY="500.0" mnemonicParsing="false" prefWidth="200.0" text="Comprar">
+                                <Button fx:id="buttonComprarVoo" layoutX="300.0" layoutY="500.0" mnemonicParsing="false" prefWidth="200.0" text="Comprar">
                            <font>
                               <Font size="14.0" />
                            </font></Button>
