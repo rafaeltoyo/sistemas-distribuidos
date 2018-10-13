@@ -68,6 +68,14 @@ public class Interesse {
     }
 
     /**
+     * Alterar o Status do interesse
+     * @param status Novo status
+     */
+    public void setStatus(StatusInteresse status) {
+        this.status = status;
+    }
+
+    /**
      * Enum dos tipos de interesse existentes.
      * @author Rafael Hideo Toyomoto
      * @author Victor Barpp Gomes

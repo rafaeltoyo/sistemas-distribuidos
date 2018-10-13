@@ -3,6 +3,8 @@ package client.controller;
 import client.model.Interesse;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -390,6 +392,13 @@ public class ClientUIController {
         choiceTipoInteresse.getItems().setAll(Interesse.TipoInteresse.values());
         choiceDestinoInteresse.getItems().setAll(Cidade.values());
 
+        // Criar mascara de número float no campo de valor máximo
+        textValorInteresse.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d+([\\.|,]\\d+)?")) {
+                textValorInteresse.setText(oldValue);
+            }
+        });
+
         // Configura as colunas
         columnInteresseId.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getId()));
         columnInteresseDestino.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getCidade().toString()));
@@ -670,11 +679,22 @@ public class ClientUIController {
     /*------------------------------------------------------------------------*/
 
     private void consultarInteresses() {
-
+        olInteresse.clear();
+        olInteresse.addAll(InteresseController.getInstance().getInteresses());
+        tableInteresse.setItems(olInteresse);
     }
 
     private void registrarInteresse(ActionEvent event) {
+        Interesse.TipoInteresse tipo = choiceTipoInteresse.getValue();
+        Cidade destino = choiceDestinoInteresse.getValue();
+        float valorMaximo = Float.parseFloat(textValorInteresse.getCharacters().toString());
 
+        try {
+            serverRef.comprarPacote(null);
+        }
+        catch (RemoteException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+        }
     }
 
     private void excluirInteresse(ActionEvent event) {
