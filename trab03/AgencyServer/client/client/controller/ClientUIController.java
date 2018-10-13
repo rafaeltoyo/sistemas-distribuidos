@@ -1,21 +1,13 @@
 package client.controller;
 
+import client.model.Interesse;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import model.cidade.Cidade;
 import model.hotel.InfoHospedagem;
 import model.hotel.InfoHotel;
@@ -55,6 +47,8 @@ public class ClientUIController {
 
     private ObservableList<InfoHotel> olInfoHotelPac = FXCollections.observableArrayList();
 
+    private ObservableList<Interesse> olInteresse = FXCollections.observableArrayList();
+
     /*------------------------------------------------------------------------*/
 
     @FXML
@@ -86,6 +80,9 @@ public class ClientUIController {
 
     @FXML
     private Button buttonComprarVoo;
+
+    @FXML
+    private Button buttonInteresseVoo;
 
     @FXML
     private TableView<InfoVoo> tableVooIda;
@@ -147,6 +144,9 @@ public class ClientUIController {
     private Button buttonComprarHosp;
 
     @FXML
+    private Button buttonInteresseHosp;
+
+    @FXML
     private TableView<InfoHotel> tableHospedagem;
 
     @FXML
@@ -189,6 +189,9 @@ public class ClientUIController {
 
     @FXML
     private Button buttonComprarPacote;
+
+    @FXML
+    private Button buttonInteressePacote;
 
     @FXML
     private TableView<InfoVoo> tableVooIdaPac;
@@ -247,10 +250,43 @@ public class ClientUIController {
     /*------------------------------------------------------------------------*/
 
     @FXML
+    private ChoiceBox<Interesse.TipoInteresse> choiceTipoInteresse;
+
+    @FXML
+    private ChoiceBox<Cidade> choiceDestinoInteresse;
+
+    @FXML
+    private TextField textValorInteresse;
+
+    @FXML
+    private Button buttonAdicionarInteresse;
+
+    @FXML
+    private Button buttonExcluirInteresse;
+
+    @FXML
+    private TableView<Interesse> tableInteresse;
+
+    @FXML
+    private TableColumn<Interesse, Number> columnInteresseId;
+
+    @FXML
+    private TableColumn<Interesse, String> columnInteresseDestino;
+
+    @FXML
+    private TableColumn<Interesse, String> columnInteresseTipo;
+
+    @FXML
+    private TableColumn<Interesse, String> columnInteresseStatus;
+
+    /*------------------------------------------------------------------------*/
+
+    @FXML
     public void initialize() {
         inicializarVoos();
         inicializarHospedagens();
         inicializarPacotes();
+        inicializarInteresse();
 
         try {
             connectToServer();
@@ -349,6 +385,24 @@ public class ClientUIController {
         //buttonComprarPacote.setOnAction(this::comprarVoos);
     }
 
+    private void inicializarInteresse() {
+        // Inicializa as ChoiceBox com as cidades do enum Cidade
+        choiceTipoInteresse.getItems().setAll(Interesse.TipoInteresse.values());
+        choiceDestinoInteresse.getItems().setAll(Cidade.values());
+
+        // Configura as colunas
+        columnInteresseId.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getId()));
+        columnInteresseDestino.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getCidade().toString()));
+        columnInteresseTipo.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getTipo().toString()));
+        columnInteresseStatus.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getStatus().toString()));
+
+        // Configura o botão de consulta
+        buttonAdicionarInteresse.setOnAction(this::registrarInteresse);
+        buttonExcluirInteresse.setOnAction(this::excluirInteresse);
+
+        consultarInteresses();
+    }
+
     /*------------------------------------------------------------------------*/
 
     private void connectToServer() throws RemoteException, NotBoundException {
@@ -430,6 +484,43 @@ public class ClientUIController {
         return ok;
     }
 
+    private void comprarVoos(ActionEvent event) {
+        InfoVoo vooIda = tableVooIda.getSelectionModel().getSelectedItem();
+        InfoVoo vooVolta = tableVooVolta.getSelectionModel().getSelectedItem();
+        int idVooVolta = 0;
+        int numPessoas = spinnerNumPessoasVoo.getValue();
+
+        TipoPassagem tipoPassagem = TipoPassagem.IDA_E_VOLTA;
+        if (vooVolta == null) {
+            tipoPassagem = TipoPassagem.SOMENTE_IDA;
+        }
+        else {
+            idVooVolta = vooVolta.getId();
+        }
+
+        if (vooIda == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Selecione os voos que deseja comprar.");
+            alert.show();
+            return;
+        }
+
+        // TODO: Janela de confirmação
+
+        try {
+            if (serverRef.comprarPassagens(tipoPassagem, vooIda.getId(), idVooVolta, numPessoas)) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Compra realizada com sucesso!");
+                alert.show();
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na compra.");
+                alert.show();
+            }
+        }
+        catch (RemoteException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+        }
+    }
+
     /*------------------------------------------------------------------------*/
 
     private void consultarHospedagens(ActionEvent event) {
@@ -491,7 +582,6 @@ public class ClientUIController {
 
         return ok;
     }
-
 
     /*------------------------------------------------------------------------*/
 
@@ -579,40 +669,17 @@ public class ClientUIController {
 
     /*------------------------------------------------------------------------*/
 
-    private void comprarVoos(ActionEvent event) {
-        InfoVoo vooIda = tableVooIda.getSelectionModel().getSelectedItem();
-        InfoVoo vooVolta = tableVooVolta.getSelectionModel().getSelectedItem();
-        int idVooVolta = 0;
-        int numPessoas = spinnerNumPessoasVoo.getValue();
+    private void consultarInteresses() {
 
-        TipoPassagem tipoPassagem = TipoPassagem.IDA_E_VOLTA;
-        if (vooVolta == null) {
-            tipoPassagem = TipoPassagem.SOMENTE_IDA;
-        }
-        else {
-            idVooVolta = vooVolta.getId();
-        }
-
-        if (vooIda == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Selecione os voos que deseja comprar.");
-            alert.show();
-            return;
-        }
-
-        // TODO: Janela de confirmação
-
-        try {
-            if (serverRef.comprarPassagens(tipoPassagem, vooIda.getId(), idVooVolta, numPessoas)) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Compra realizada com sucesso!");
-                alert.show();
-            }
-            else {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na compra.");
-                alert.show();
-            }
-        }
-        catch (RemoteException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
-        }
     }
+
+    private void registrarInteresse(ActionEvent event) {
+
+    }
+
+    private void excluirInteresse(ActionEvent event) {
+
+    }
+
+    /*------------------------------------------------------------------------*/
 }
