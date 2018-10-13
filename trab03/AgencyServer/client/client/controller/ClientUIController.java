@@ -17,6 +17,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
 import model.cidade.Cidade;
+import model.hotel.InfoHospedagem;
+import model.hotel.InfoHotel;
 import model.voo.InfoVoo;
 import model.voo.TipoPassagem;
 import remote.AgencyServer;
@@ -27,6 +29,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ClientUIController {
     /** Nome de host do serviço de nomes */
@@ -43,6 +46,16 @@ public class ClientUIController {
     private ObservableList<InfoVoo> olInfoVooIda = FXCollections.observableArrayList();
 
     private ObservableList<InfoVoo> olInfoVooVolta = FXCollections.observableArrayList();
+
+    private ObservableList<InfoHotel> olInfoHotel = FXCollections.observableArrayList();
+
+    private ObservableList<InfoVoo> olInfoVooIdaPac = FXCollections.observableArrayList();
+
+    private ObservableList<InfoVoo> olInfoVooVoltaPac = FXCollections.observableArrayList();
+
+    private ObservableList<InfoHotel> olInfoHotelPac = FXCollections.observableArrayList();
+
+    /*------------------------------------------------------------------------*/
 
     @FXML
     private RadioButton radioSomenteIdaVoo;
@@ -113,8 +126,131 @@ public class ClientUIController {
     /*------------------------------------------------------------------------*/
 
     @FXML
+    private ChoiceBox<Cidade> choiceCidadeHosp;
+
+    @FXML
+    private DatePicker dateChegadaHosp;
+
+    @FXML
+    private DatePicker dateSaidaHosp;
+
+    @FXML
+    private Spinner<Integer> spinnerNumQuartosHosp;
+
+    @FXML
+    private Spinner<Integer> spinnerNumPessoasHosp;
+
+    @FXML
+    private Button buttonConsultarHosp;
+
+    @FXML
+    private Button buttonComprarHosp;
+
+    @FXML
+    private TableView<InfoHotel> tableHospedagem;
+
+    @FXML
+    private TableColumn<InfoHotel, String> columnNomeHosp;
+
+    @FXML
+    private TableColumn<InfoHotel, String> columnCidadeHosp;
+
+    @FXML
+    private TableColumn<InfoHotel, String> columnChegadaHosp;
+
+    @FXML
+    private TableColumn<InfoHotel, Number> columnDiariasHosp;
+
+    @FXML
+    private TableColumn<InfoHotel, Number> columnQuartosHosp;
+
+    /*------------------------------------------------------------------------*/
+
+    @FXML
+    private ChoiceBox<Cidade> choiceOrigemPacote;
+
+    @FXML
+    private ChoiceBox<Cidade> choiceDestinoPacote;
+
+    @FXML
+    private DatePicker datePacoteIda;
+
+    @FXML
+    private DatePicker datePacoteVolta;
+
+    @FXML
+    private Spinner<Integer> spinnerNumQuartosPacote;
+
+    @FXML
+    private Spinner<Integer> spinnerNumPessoasPacote;
+
+    @FXML
+    private Button buttonConsultarPacote;
+
+    @FXML
+    private Button buttonComprarPacote;
+
+    @FXML
+    private TableView<InfoVoo> tableVooIdaPac;
+
+    @FXML
+    private TableView<InfoVoo> tableVooVoltaPac;
+
+    @FXML
+    private TableView<InfoHotel> tableHospedagemPac;
+
+    @FXML
+    private TableColumn<InfoVoo, Number> columnIdVooIdaPac;
+
+    @FXML
+    private TableColumn<InfoVoo, String> columnOrigemVooIdaPac;
+
+    @FXML
+    private TableColumn<InfoVoo, String> columnDestinoVooIdaPac;
+
+    @FXML
+    private TableColumn<InfoVoo, String> columnDataVooIdaPac;
+
+    @FXML
+    private TableColumn<InfoVoo, Number> columnPoltronasVooIdaPac;
+
+    @FXML
+    private TableColumn<InfoVoo, Number> columnIdVooVoltaPac;
+
+    @FXML
+    private TableColumn<InfoVoo, String> columnOrigemVooVoltaPac;
+
+    @FXML
+    private TableColumn<InfoVoo, String> columnDestinoVooVoltaPac;
+
+    @FXML
+    private TableColumn<InfoVoo, String> columnDataVooVoltaPac;
+
+    @FXML
+    private TableColumn<InfoVoo, Number> columnPoltronasVooVoltaPac;
+
+    @FXML
+    private TableColumn<InfoHotel, String> columnNomeHospPac;
+
+    @FXML
+    private TableColumn<InfoHotel, String> columnCidadeHospPac;
+
+    @FXML
+    private TableColumn<InfoHotel, String> columnChegadaHospPac;
+
+    @FXML
+    private TableColumn<InfoHotel, Number> columnDiariasHospPac;
+
+    @FXML
+    private TableColumn<InfoHotel, Number> columnQuartosHospPac;
+
+    /*------------------------------------------------------------------------*/
+
+    @FXML
     public void initialize() {
         inicializarVoos();
+        inicializarHospedagens();
+        inicializarPacotes();
 
         try {
             connectToServer();
@@ -156,6 +292,61 @@ public class ClientUIController {
 
         // Configura o botão de compra
         buttonComprarVoo.setOnAction(this::comprarVoos);
+    }
+
+    private void inicializarHospedagens() {
+        // Inicializa a ChoiceBox com as cidades do enum Cidade
+        choiceCidadeHosp.getItems().setAll(Cidade.values());
+
+        // Inicializa o seletor de número de quartos e de pessoas
+        spinnerNumQuartosHosp.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 3, 1));
+        spinnerNumPessoasHosp.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 8, 1));
+
+        // Configura as colunas
+        columnNomeHosp.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getNome()));
+        columnCidadeHosp.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getLocal().toString()));
+        columnChegadaHosp.setCellValueFactory(item -> new SimpleStringProperty("")); // FIXME
+        columnDiariasHosp.setCellValueFactory(item -> new SimpleIntegerProperty(0)); // FIXME
+        columnQuartosHosp.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getNumQuartos()));
+
+        // Configura o botão de consulta
+        buttonConsultarHosp.setOnAction(this::consultarHospedagens);
+
+        // Configura o botão de compra
+        //buttonComprarHosp.setOnAction(this::comprarVoos);
+    }
+
+    private void inicializarPacotes() {
+        // Inicializa as ChoiceBox com as cidades do enum Cidade
+        choiceOrigemPacote.getItems().setAll(Cidade.values());
+        choiceDestinoPacote.getItems().setAll(Cidade.values());
+
+        // Inicializa o seletor de número de pessoas
+        spinnerNumQuartosPacote.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 3, 1));
+        spinnerNumPessoasPacote.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 8, 1));
+
+        // Configura as colunas
+        columnIdVooIdaPac.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getId()));
+        columnOrigemVooIdaPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getOrigem().toString()));
+        columnDestinoVooIdaPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getDestino().toString()));
+        columnDataVooIdaPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getData().toString()));
+        columnPoltronasVooIdaPac.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().poltronasDisp));
+        columnIdVooVoltaPac.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getId()));
+        columnOrigemVooVoltaPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getOrigem().toString()));
+        columnDestinoVooVoltaPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getDestino().toString()));
+        columnDataVooVoltaPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getData().toString()));
+        columnPoltronasVooVoltaPac.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().poltronasDisp));
+        columnNomeHospPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getNome()));
+        columnCidadeHospPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getLocal().toString()));
+        columnChegadaHospPac.setCellValueFactory(item -> new SimpleStringProperty("")); // FIXME
+        columnDiariasHospPac.setCellValueFactory(item -> new SimpleIntegerProperty(0)); // FIXME
+        columnQuartosHospPac.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getNumQuartos()));
+
+        // Configura o botão de consulta
+        buttonConsultarPacote.setOnAction(this::consultarPacotes);
+
+        // Configura o botão de compra
+        //buttonComprarPacote.setOnAction(this::comprarVoos);
     }
 
     /*------------------------------------------------------------------------*/
@@ -226,6 +417,153 @@ public class ClientUIController {
         if (tipoPassagem == TipoPassagem.IDA_E_VOLTA && dataVolta == null) {
             ok = false;
             error += "\n  Data de volta";
+        }
+        if (numPessoas < 1 || numPessoas > 8) {
+            ok = false;
+            error += "\n  Número de pessoas (entre 1 e 8)";
+        }
+        if (!ok) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, error);
+            alert.show();
+        }
+
+        return ok;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    private void consultarHospedagens(ActionEvent event) {
+        Cidade cidade = choiceCidadeHosp.getValue();
+        LocalDate dataEntrada = dateChegadaHosp.getValue();
+        LocalDate dataSaida = dateSaidaHosp.getValue();
+        int numQuartos = spinnerNumQuartosHosp.getValue();
+        int numPessoas = spinnerNumPessoasHosp.getValue();
+
+        if (!validarConsultaHospedagens(cidade, dataEntrada, dataSaida, numQuartos, numPessoas)) {
+            return;
+        }
+
+        HashMap<InfoHotel, ArrayList<InfoHospedagem>> hospedagens = null;
+        try {
+            hospedagens = serverRef.consultarHospedagens(cidade, dataEntrada, dataSaida, numQuartos, numPessoas);
+        }
+        catch (RemoteException e) {
+            // TODO: Mostrar mensagem de erro
+            e.printStackTrace();
+        }
+
+        olInfoHotel.clear();
+        if (hospedagens != null) {
+            olInfoHotel.addAll(hospedagens.keySet());
+        }
+
+        tableHospedagem.setItems(olInfoHotel);
+    }
+
+    private boolean validarConsultaHospedagens(Cidade cidade, LocalDate dataEntrada, LocalDate dataSaida, int numQuartos, int numPessoas) {
+        boolean ok = true;
+        String error = "Forneça um valor para os seguintes campos:";
+
+        if (cidade == null) {
+            ok = false;
+            error += "\n  Cidade";
+        }
+        if (dataEntrada == null) {
+            ok = false;
+            error += "\n  Data de chegada";
+        }
+        if (dataSaida == null) {
+            ok = false;
+            error += "\n  Data de saida";
+        }
+        if (numQuartos < 1 || numQuartos > 3) {
+            ok = false;
+            error += "\n  Número de quartos (entre 1 e 3)";
+        }
+        if (numPessoas < 1 || numPessoas > 8) {
+            ok = false;
+            error += "\n  Número de pessoas (entre 1 e 8)";
+        }
+        if (!ok) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, error);
+            alert.show();
+        }
+
+        return ok;
+    }
+
+
+    /*------------------------------------------------------------------------*/
+
+    private void consultarPacotes(ActionEvent event) {
+        Cidade origem = choiceOrigemPacote.getValue();
+        Cidade destino = choiceDestinoPacote.getValue();
+        LocalDate dataIda = datePacoteIda.getValue();
+        LocalDate dataVolta = datePacoteVolta.getValue();
+        int numQuartos = spinnerNumQuartosPacote.getValue();
+        int numPessoas = spinnerNumPessoasPacote.getValue();
+
+        if (!validarConsultaPacotes(origem, destino, dataIda, dataVolta, numQuartos, numPessoas)) {
+            return;
+        }
+
+        HashMap<InfoHotel, ArrayList<InfoHospedagem>> hospedagens = null;
+        ArrayList<InfoVoo> voos = null;
+        try {
+            hospedagens = serverRef.consultarHospedagens(destino, dataIda, dataVolta, numQuartos, numPessoas);
+            voos = serverRef.consultarPassagens(TipoPassagem.IDA_E_VOLTA, origem, destino, dataIda, dataVolta, numPessoas);
+        }
+        catch (RemoteException e) {
+            // TODO: Mostrar mensagem de erro
+            e.printStackTrace();
+        }
+
+        olInfoHotelPac.clear();
+        olInfoVooIdaPac.clear();
+        olInfoVooVoltaPac.clear();
+
+        if (hospedagens != null) {
+            olInfoHotelPac.addAll(hospedagens.keySet());
+        }
+        if (voos != null) {
+            for (InfoVoo v : voos) {
+                if (v.getOrigem() == origem) {
+                    olInfoVooIdaPac.add(v);
+                }
+                else {
+                    olInfoVooVoltaPac.add(v);
+                }
+            }
+        }
+
+        tableHospedagemPac.setItems(olInfoHotelPac);
+        tableVooIdaPac.setItems(olInfoVooIdaPac);
+        tableVooVoltaPac.setItems(olInfoVooVoltaPac);
+    }
+
+    private boolean validarConsultaPacotes(Cidade origem, Cidade destino, LocalDate dataIda, LocalDate dataVolta, int numQuartos, int numPessoas) {
+        boolean ok = true;
+        String error = "Forneça um valor para os seguintes campos:";
+
+        if (origem == null) {
+            ok = false;
+            error += "\n  Cidade de origem";
+        }
+        if (destino == null) {
+            ok = false;
+            error += "\n  Cidade de destino";
+        }
+        if (dataIda == null) {
+            ok = false;
+            error += "\n  Data de ida";
+        }
+        if (dataVolta == null) {
+            ok = false;
+            error += "\n  Data de volta";
+        }
+        if (numQuartos < 1 || numQuartos > 3) {
+            ok = false;
+            error += "\n  Número de quartos (entre 1 e 3)";
         }
         if (numPessoas < 1 || numPessoas > 8) {
             ok = false;
