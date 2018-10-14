@@ -1,12 +1,15 @@
 package server;
 
-import server.controller.EventoController;
 import model.cidade.Cidade;
-import model.evento.*;
+import model.evento.Evento;
+import model.evento.Interesse;
+import model.evento.InteresseHotel;
+import model.evento.InteresseVoo;
+import model.evento.ListaInteresseHotel;
+import model.evento.ListaInteresseVoo;
 import model.hotel.Hospedagem;
 import model.hotel.Hotel;
-import model.hotel.InfoHospedagem;
-import model.hotel.InfoHotel;
+import model.hotel.InfoHotelRet;
 import model.pacote.ConjuntoPacote;
 import model.pacote.Pacote;
 import model.saldo.Reserva;
@@ -15,12 +18,12 @@ import model.voo.TipoPassagem;
 import model.voo.Voo;
 import remote.AgencyClient;
 import remote.AgencyServer;
+import server.controller.EventoController;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /** Representa o servidor da agência.
@@ -272,17 +275,11 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
     /** {@inheritDoc} */
     @Override
-    public HashMap<InfoHotel, ArrayList<InfoHospedagem>> consultarHospedagens(
-            Cidade local, LocalDate dataIni, LocalDate dataFim,
-            int numQuartos, int numPessoas)
-            throws RemoteException {
-        // FIXME:
-        // Será que a informação de cada dia é realmente relevante ao cliente?
-        // Se não for, pode-se simplesmente retornar um ArrayList<InfoHotel>.
-        // O cliente compra hospedagem utilizando apenas o ID do hotel e as
-        // datas de chegada e saída.
-
-        HashMap<InfoHotel, ArrayList<InfoHospedagem>> result = new HashMap<>();
+    public ArrayList<InfoHotelRet> consultarHospedagens(Cidade local,
+            LocalDate dataIni, LocalDate dataFim, int numQuartos,
+            int numPessoas) throws RemoteException {
+        // Cria um vetor de InfoHotelRet para enviar ao cliente
+        ArrayList<InfoHotelRet> result = new ArrayList<>();
 
         for (Hotel h : hoteis) {
             // Pula hotéis em outras cidades
@@ -290,38 +287,49 @@ public class AgencyServerImpl extends UnicastRemoteObject
                 continue;
             }
 
-            LocalDate data = dataIni.plusDays(0);
+            // Inicia a contagem de número de quartos disponíveis no número
+            // máximo de quartos do hotel
+            int quartosDisp = h.getInfoHotel().getNumQuartos();
 
-            ArrayList<InfoHospedagem> hospedagens = new ArrayList<>();
+            // Flag usada depois do loop para adicionar um hotel ou não à lista
+            // de retorno
+            boolean podeReceber = true;
 
             // Considera-se que o cliente sai na data de volta.
             // Portanto, não são incluídas hospedagens para o dia de volta.
+            LocalDate data = dataIni.plusDays(0);
             while (data.isBefore(dataFim)) {
                 Hospedagem hosp = h.getHospedagemData(data);
                 if (hosp == null) {
                     // Deu ruim, esse hotel não está oferecendo hospedagem em
                     // um dos dias do período
-                    hospedagens.clear();
+                    podeReceber = false;
                     break;
                 }
 
-                if (hosp.getQuartosDisp() < numPessoas) {
+                int hospQuartosDisp = hosp.getQuartosDisp();
+                if (hospQuartosDisp < numPessoas) {
                     // Deu ruim, esse hotel não pode receber o cliente em todos
                     // os dias do período
-                    hospedagens.clear();
+                    podeReceber = false;
                     break;
+                }
+
+                if (hospQuartosDisp < quartosDisp) {
+                    // Há um dia mais lotado, atualiza o número
+                    quartosDisp = hospQuartosDisp;
                 }
 
                 // FIXME: vamos só ignorar o número de pessoas?
-
-                hospedagens.add(hosp.getInfoHospedagem());
 
                 data = data.plusDays(1);
             }
 
             // Apenas envia o hotel se tiver vagas em todos os dias do período
-            if (!hospedagens.isEmpty()) {
-                result.put(h.getInfoHotel(), hospedagens);
+            if (podeReceber) {
+                InfoHotelRet ihr = new InfoHotelRet(h.getInfoHotel(),
+                        quartosDisp, dataIni, dataFim);
+                result.add(ihr);
             }
         }
 
@@ -363,7 +371,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
                 origem, destino, dataIda, dataVolta, numPessoas);
 
         // Obtém as informações de hotéis
-        HashMap<InfoHotel, ArrayList<InfoHospedagem>> hosps = consultarHospedagens(
+        ArrayList<InfoHotelRet> hosps = consultarHospedagens(
                 destino, dataIda, dataVolta, numQuartos, numPessoas);
 
         ConjuntoPacote conjuntoPacote = new ConjuntoPacote();
@@ -375,8 +383,8 @@ public class AgencyServerImpl extends UnicastRemoteObject
                     conjuntoPacote.adicionarVooVolta(v);
                 }
             }
-            for (HashMap.Entry<InfoHotel, ArrayList<InfoHospedagem>> entry : hosps.entrySet()) {
-                conjuntoPacote.adicionarHospedagem(entry.getKey(), entry.getValue());
+            for (InfoHotelRet ihr : hosps) {
+                conjuntoPacote.adicionarHospedagem(ihr);
             }
         }
 

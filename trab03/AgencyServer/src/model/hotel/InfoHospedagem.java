@@ -1,6 +1,5 @@
 package model.hotel;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 /** Representa as informações de uma hospedagem (dia em um hotel). Contém apenas
@@ -9,7 +8,7 @@ import java.time.LocalDate;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class InfoHospedagem implements Serializable {
+public class InfoHospedagem {
     /** Data da hospedagem
      * No servidor, é mantida uma referência a este campo, que é utilizada como
      * chave para o mapeamento entre datas e hospedagens. */

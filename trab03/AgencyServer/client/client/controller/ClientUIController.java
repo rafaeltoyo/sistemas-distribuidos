@@ -1,9 +1,8 @@
 package client.controller;
 
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,20 +20,18 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import model.mensagem.Mensagem;
-import remote.AgencyServer;
 import model.cidade.Cidade;
 import model.evento.Interesse;
-import model.hotel.InfoHospedagem;
-import model.hotel.InfoHotel;
+import model.hotel.InfoHotelRet;
+import model.mensagem.Mensagem;
 import model.voo.InfoVoo;
 import model.voo.TipoPassagem;
+import remote.AgencyServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ClientUIController {
     /**
@@ -58,13 +55,13 @@ public class ClientUIController {
 
     private ObservableList<InfoVoo> olInfoVooVolta = FXCollections.observableArrayList();
 
-    private ObservableList<InfoHotel> olInfoHotel = FXCollections.observableArrayList();
+    private ObservableList<InfoHotelRet> olInfoHotel = FXCollections.observableArrayList();
 
     private ObservableList<InfoVoo> olInfoVooIdaPac = FXCollections.observableArrayList();
 
     private ObservableList<InfoVoo> olInfoVooVoltaPac = FXCollections.observableArrayList();
 
-    private ObservableList<InfoHotel> olInfoHotelPac = FXCollections.observableArrayList();
+    private ObservableList<InfoHotelRet> olInfoHotelPac = FXCollections.observableArrayList();
 
     private ObservableList<Interesse> olInteresse = FXCollections.observableArrayList();
 
@@ -183,22 +180,22 @@ public class ClientUIController {
     private Button buttonInteresseHosp;
 
     @FXML
-    private TableView<InfoHotel> tableHospedagem;
+    private TableView<InfoHotelRet> tableHospedagem;
 
     @FXML
-    private TableColumn<InfoHotel, String> columnNomeHosp;
+    private TableColumn<InfoHotelRet, String> columnNomeHosp;
 
     @FXML
-    private TableColumn<InfoHotel, String> columnCidadeHosp;
+    private TableColumn<InfoHotelRet, String> columnCidadeHosp;
 
     @FXML
-    private TableColumn<InfoHotel, String> columnChegadaHosp;
+    private TableColumn<InfoHotelRet, String> columnChegadaHosp;
 
     @FXML
-    private TableColumn<InfoHotel, Number> columnDiariasHosp;
+    private TableColumn<InfoHotelRet, Number> columnDiariasHosp;
 
     @FXML
-    private TableColumn<InfoHotel, Number> columnQuartosHosp;
+    private TableColumn<InfoHotelRet, Number> columnQuartosHosp;
 
     /*------------------------------------------------------------------------*/
 
@@ -236,7 +233,7 @@ public class ClientUIController {
     private TableView<InfoVoo> tableVooVoltaPac;
 
     @FXML
-    private TableView<InfoHotel> tableHospedagemPac;
+    private TableView<InfoHotelRet> tableHospedagemPac;
 
     @FXML
     private TableColumn<InfoVoo, Number> columnIdVooIdaPac;
@@ -269,19 +266,19 @@ public class ClientUIController {
     private TableColumn<InfoVoo, Number> columnPoltronasVooVoltaPac;
 
     @FXML
-    private TableColumn<InfoHotel, String> columnNomeHospPac;
+    private TableColumn<InfoHotelRet, String> columnNomeHospPac;
 
     @FXML
-    private TableColumn<InfoHotel, String> columnCidadeHospPac;
+    private TableColumn<InfoHotelRet, String> columnCidadeHospPac;
 
     @FXML
-    private TableColumn<InfoHotel, String> columnChegadaHospPac;
+    private TableColumn<InfoHotelRet, String> columnChegadaHospPac;
 
     @FXML
-    private TableColumn<InfoHotel, Number> columnDiariasHospPac;
+    private TableColumn<InfoHotelRet, Number> columnDiariasHospPac;
 
     @FXML
-    private TableColumn<InfoHotel, Number> columnQuartosHospPac;
+    private TableColumn<InfoHotelRet, Number> columnQuartosHospPac;
 
     /*------------------------------------------------------------------------*/
 
@@ -399,9 +396,9 @@ public class ClientUIController {
         // Configura as colunas
         columnNomeHosp.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getNome()));
         columnCidadeHosp.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getLocal().toString()));
-        columnChegadaHosp.setCellValueFactory(item -> new SimpleStringProperty("")); // FIXME
-        columnDiariasHosp.setCellValueFactory(item -> new SimpleIntegerProperty(0)); // FIXME
-        columnQuartosHosp.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getNumQuartos()));
+        columnChegadaHosp.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getDataEntrada().toString()));
+        columnDiariasHosp.setCellValueFactory(item -> new SimpleLongProperty(item.getValue().getNumDiarias()));
+        columnQuartosHosp.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getQuartosDisponiveis()));
 
         // Configura o botão de consulta
         buttonConsultarHosp.setOnAction(this::consultarHospedagens);
@@ -432,9 +429,9 @@ public class ClientUIController {
         columnPoltronasVooVoltaPac.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().poltronasDisp));
         columnNomeHospPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getNome()));
         columnCidadeHospPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getLocal().toString()));
-        columnChegadaHospPac.setCellValueFactory(item -> new SimpleStringProperty("")); // FIXME
-        columnDiariasHospPac.setCellValueFactory(item -> new SimpleIntegerProperty(0)); // FIXME
-        columnQuartosHospPac.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getNumQuartos()));
+        columnChegadaHospPac.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getDataEntrada().toString()));
+        columnDiariasHospPac.setCellValueFactory(item -> new SimpleLongProperty(item.getValue().getNumDiarias()));
+        columnQuartosHospPac.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getQuartosDisponiveis()));
 
         // Configura o botão de consulta
         buttonConsultarPacote.setOnAction(this::consultarPacotes);
@@ -598,7 +595,7 @@ public class ClientUIController {
             return;
         }
 
-        HashMap<InfoHotel, ArrayList<InfoHospedagem>> hospedagens = null;
+        ArrayList<InfoHotelRet> hospedagens = null;
         try {
             hospedagens = serverRef.consultarHospedagens(cidade, dataEntrada, dataSaida, numQuartos, numPessoas);
         } catch (RemoteException e) {
@@ -608,7 +605,7 @@ public class ClientUIController {
 
         olInfoHotel.clear();
         if (hospedagens != null) {
-            olInfoHotel.addAll(hospedagens.keySet());
+            olInfoHotel.addAll(hospedagens);
         }
 
         tableHospedagem.setItems(olInfoHotel);
@@ -647,7 +644,7 @@ public class ClientUIController {
     }
 
     private void comprarHospedagem(ActionEvent event) {
-        InfoHotel hotel = tableHospedagem.getSelectionModel().getSelectedItem();
+        InfoHotelRet hotel = tableHospedagem.getSelectionModel().getSelectedItem();
         if (hotel == null) {
             return;
         }
@@ -687,7 +684,7 @@ public class ClientUIController {
             return;
         }
 
-        HashMap<InfoHotel, ArrayList<InfoHospedagem>> hospedagens = null;
+        ArrayList<InfoHotelRet> hospedagens = null;
         ArrayList<InfoVoo> voos = null;
         try {
             hospedagens = serverRef.consultarHospedagens(destino, dataIda, dataVolta, numQuartos, numPessoas);
@@ -702,7 +699,7 @@ public class ClientUIController {
         olInfoVooVoltaPac.clear();
 
         if (hospedagens != null) {
-            olInfoHotelPac.addAll(hospedagens.keySet());
+            olInfoHotelPac.addAll(hospedagens);
         }
         if (voos != null) {
             for (InfoVoo v : voos) {
@@ -768,7 +765,7 @@ public class ClientUIController {
         }
         int idVooVolta = vooVolta.getId();
 
-        InfoHotel hotel = tableHospedagemPac.getSelectionModel().getSelectedItem();
+        InfoHotelRet hotel = tableHospedagemPac.getSelectionModel().getSelectedItem();
         if (hotel == null) {
             return;
         }

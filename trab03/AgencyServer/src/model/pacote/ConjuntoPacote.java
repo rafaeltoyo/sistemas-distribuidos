@@ -1,15 +1,12 @@
 package model.pacote;
 
-import model.hotel.InfoHospedagem;
-import model.hotel.InfoHotel;
+import model.hotel.InfoHotelRet;
 import model.voo.InfoVoo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Representa:
  *   um conjunto de voos de ida;
@@ -29,7 +26,7 @@ public class ConjuntoPacote implements Serializable {
     private ArrayList<InfoVoo> voosVolta;
 
     /** Conjunto de hotéis que podem receber o cliente no período informado */
-    private HashMap<InfoHotel, ArrayList<InfoHospedagem>> hospedagens;
+    private ArrayList<InfoHotelRet> hospedagens;
 
     /*------------------------------------------------------------------------*/
 
@@ -47,11 +44,11 @@ public class ConjuntoPacote implements Serializable {
         return Collections.unmodifiableList(voosVolta);
     }
 
-    /** Retorna uma referência read-only ao HashMap de hotéis e hospedagens.
-     * @return HashMap de hotéis e hospedagens.
+    /** Retorna uma referência read-only à lista de hotéis.
+     * @return lista de hotéis
      */
-    public Map<InfoHotel, ArrayList<InfoHospedagem>> getHospedagens() {
-        return Collections.unmodifiableMap(hospedagens);
+    public List<InfoHotelRet> getHospedagens() {
+        return Collections.unmodifiableList(hospedagens);
     }
 
     /*------------------------------------------------------------------------*/
@@ -60,7 +57,7 @@ public class ConjuntoPacote implements Serializable {
      * internas.
      */
     public ConjuntoPacote() {
-        hospedagens = new HashMap<>();
+        hospedagens = new ArrayList<>();
         voosIda = new ArrayList<>();
         voosVolta = new ArrayList<>();
     }
@@ -87,10 +84,9 @@ public class ConjuntoPacote implements Serializable {
 
     /** Adiciona um hotel e seus dias de hospedagem ao HashMap.
      * @param h informações do hotel
-     * @param hp informações de hospedagem
      */
-    public void adicionarHospedagem(InfoHotel h, ArrayList<InfoHospedagem> hp) {
-        hospedagens.put(h, hp);
+    public void adicionarHospedagem(InfoHotelRet h) {
+        hospedagens.add(h);
     }
 
     /*------------------------------------------------------------------------*/

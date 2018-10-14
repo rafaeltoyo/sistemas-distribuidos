@@ -2,9 +2,7 @@ package model.hotel;
 
 import model.cidade.Cidade;
 
-import java.io.Serializable;
-
-public class InfoHotel implements Serializable {
+public class InfoHotel {
     /** Contagem de hotéis para o auto-incremento do identificador */
     private static int count = 0;
 

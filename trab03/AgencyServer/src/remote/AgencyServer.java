@@ -2,8 +2,7 @@ package remote;
 
 import model.cidade.Cidade;
 import model.evento.Interesse;
-import model.hotel.InfoHospedagem;
-import model.hotel.InfoHotel;
+import model.hotel.InfoHotelRet;
 import model.pacote.ConjuntoPacote;
 import model.pacote.Pacote;
 import model.voo.InfoVoo;
@@ -13,7 +12,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /** Interface RMI para o servidor da agência.
  * @author Rafael Hideo Toyomoto
@@ -67,8 +65,8 @@ public interface AgencyServer extends Remote {
      * @return mapa com informações de hotel e hospedagem
      * @throws RemoteException caso ocorra erro no RMI
      */
-    HashMap<InfoHotel, ArrayList<InfoHospedagem>> consultarHospedagens(
-            Cidade local, LocalDate dataIni, LocalDate dataFim, int numQuartos,
+    ArrayList<InfoHotelRet> consultarHospedagens(Cidade local,
+            LocalDate dataIni, LocalDate dataFim, int numQuartos,
             int numPessoas) throws RemoteException;
 
     /*------------------------------------------------------------------------*/

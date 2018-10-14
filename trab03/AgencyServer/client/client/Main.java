@@ -1,8 +1,7 @@
 package client;
 
 import model.cidade.Cidade;
-import model.hotel.InfoHospedagem;
-import model.hotel.InfoHotel;
+import model.hotel.InfoHotelRet;
 import model.pacote.ConjuntoPacote;
 import model.voo.InfoVoo;
 import model.voo.TipoPassagem;
@@ -14,7 +13,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /** Representa o ponto de entrada da aplicação cliente.
  * @author Rafael Hideo Toyomoto
@@ -116,16 +114,10 @@ public class Main {
         LocalDate dataIda = LocalDate.of(2018, 1, 3);
         LocalDate dataVolta = LocalDate.of(2018, 1, 5);
 
-        HashMap<InfoHotel, ArrayList<InfoHospedagem>> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta, 100, 2);
+        ArrayList<InfoHotelRet> madoka = serverRef.consultarHospedagens(Cidade.CURITIBA, dataIda, dataVolta, 100, 2);
 
-        for (HashMap.Entry<InfoHotel, ArrayList<InfoHospedagem>> entry : madoka.entrySet()) {
-            InfoHotel hotel = entry.getKey();
-            ArrayList<InfoHospedagem> hospedagens = entry.getValue();
-
+        for (InfoHotelRet hotel : madoka) {
             System.out.println(hotel.getId());
-            for (InfoHospedagem hosp : hospedagens) {
-                System.out.println(hosp.getData());
-            }
 
             System.out.println(serverRef.comprarHospedagem(hotel.getId(), dataIda, dataVolta, 100));
             System.out.println(serverRef.comprarHospedagem(hotel.getId(), dataVolta.minusDays(1), dataVolta, 100));
@@ -155,8 +147,7 @@ public class Main {
         }
 
         System.out.println("Opções de hospedagem:");
-        for (HashMap.Entry<InfoHotel, ArrayList<InfoHospedagem>> entry : pacotes.getHospedagens().entrySet()) {
-            InfoHotel h = entry.getKey();
+        for (InfoHotelRet h : pacotes.getHospedagens()) {
             System.out.println("Hotel " + h.getId() + " (" + h.getNome() + "): " + h.getLocal());
         }
     }
