@@ -11,7 +11,6 @@ import model.hotel.Hospedagem;
 import model.hotel.Hotel;
 import model.hotel.InfoHotelRet;
 import model.pacote.ConjuntoPacote;
-import model.pacote.Pacote;
 import model.saldo.Reserva;
 import model.voo.InfoVoo;
 import model.voo.TipoPassagem;
@@ -395,7 +394,66 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
     /** {@inheritDoc} */
     @Override
-    public boolean comprarPacote(Pacote pacote) throws RemoteException {
+    public boolean comprarPacote(int idVooIda, int idVooVolta, int idHotel,
+            LocalDate dataIda, LocalDate dataVolta, int numQuartos,
+            int numPessoas) throws RemoteException {
+        Voo vooIda = null;
+        Voo vooVolta = null;
+
+        // Busca os voos
+        for (Voo v : voos) {
+            int idVoo = v.getId();
+
+            if (idVoo == idVooIda) {
+                vooIda = v;
+            }
+            else if (idVoo == idVooVolta) {
+                vooVolta = v;
+            }
+
+            if (vooIda != null && vooVolta != null) {
+                break;
+            }
+        }
+
+        // Retorna false se não encontrou algum dos voos
+        if (vooIda == null || vooVolta == null) {
+            return false;
+        }
+
+        // Busca o hotel
+        Hotel hotel = null;
+        for (Hotel h : hoteis) {
+            if (h.getId() == idHotel) {
+                hotel = h;
+                break;
+            }
+        }
+
+        if (hotel == null) {
+            // Hotel não existe
+            return false;
+        }
+
+        // Tenta reservar voo de ida
+        Reserva reservaVooIda = vooIda.reservar(numPessoas);
+        if (reservaVooIda != null) {
+            // Tenta reservar voo de volta
+            Reserva reservaVooVolta = vooVolta.reservar(numPessoas);
+            if (reservaVooVolta != null) {
+                // Tenta reservar hotel
+                if (hotel.reservar(dataIda, dataVolta, numQuartos)) {
+                    // Retorna true se conseguiu tudo
+                    return true;
+                }
+                // Caso dê ruim, desfaz a reserva do voo de volta
+                vooVolta.estornar(reservaVooVolta);
+            }
+            // Caso dê ruim, desfaz a reserva do voo de ida
+            vooIda.estornar(reservaVooIda);
+        }
+
+        // Retorna false se não conseguir comprar
         return false;
     }
 

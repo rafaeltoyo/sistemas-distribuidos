@@ -4,7 +4,6 @@ import model.cidade.Cidade;
 import model.evento.Interesse;
 import model.hotel.InfoHotelRet;
 import model.pacote.ConjuntoPacote;
-import model.pacote.Pacote;
 import model.voo.InfoVoo;
 import model.voo.TipoPassagem;
 
@@ -106,7 +105,22 @@ public interface AgencyServer extends Remote {
 
     /*------------------------------------------------------------------------*/
 
-    boolean comprarPacote(Pacote pacote) throws RemoteException;
+    /** Tenta comprar um pacote (voo ida + voo volta + hotel) com os parâmetros
+     * especificados.
+     * @param idVooIda identificador do voo de ida
+     * @param idVooVolta identificador do voo de volta
+     * @param idHotel identificador do hotel
+     * @param dataIda data do voo de ida (data de entrada no hotel)
+     * @param dataVolta data do voo de volta (dia seguinte à data de saída do
+     *                  hotel)
+     * @param numQuartos número de quartos a comprar (hotel)
+     * @param numPessoas número de pessoas (passagens)
+     * @return true se e somente se a compra foi bem sucedida
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    boolean comprarPacote(int idVooIda, int idVooVolta, int idHotel,
+             LocalDate dataIda, LocalDate dataVolta, int numQuartos,
+             int numPessoas) throws RemoteException;
 
     /*------------------------------------------------------------------------*/
 

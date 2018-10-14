@@ -777,14 +777,18 @@ public class ClientUIController {
         LocalDate dataSaida = datePacoteVolta.getValue();
 
         if (dataEntrada != null && dataSaida != null) {
-            /* TODO
             try {
-
+                if (serverRef.comprarPacote(idVooIda, idVooVolta, idHotel, dataEntrada, dataSaida, numQuartos, numPessoas)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Compra realizada com sucesso!");
+                    alert.show();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na compra.");
+                    alert.show();
+                }
             } catch (RemoteException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
                 alert.show();
             }
-            */
         }
     }
 
