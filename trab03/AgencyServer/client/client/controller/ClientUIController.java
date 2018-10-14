@@ -485,7 +485,7 @@ public class ClientUIController {
         LocalDate dataIda = dateVooIda.getValue();
         LocalDate dataVolta = dateVooVolta.getValue();
         int numPessoas = spinnerNumPessoasVoo.getValue();
-        TipoPassagem tipoPassagem = (tipoVoo.getSelectedToggle() == radioSomenteIdaVoo) ? TipoPassagem.SOMENTE_IDA : TipoPassagem.IDA_E_VOLTA;
+        TipoPassagem tipoPassagem = (tipoVoo.getSelectedToggle() == radioSomenteIdaVoo)? TipoPassagem.SOMENTE_IDA : TipoPassagem.IDA_E_VOLTA;
 
         if (!validarConsultaVoos(origem, destino, dataIda, dataVolta, numPessoas, tipoPassagem)) {
             return;
@@ -553,17 +553,18 @@ public class ClientUIController {
         int idVooVolta = 0;
         int numPessoas = spinnerNumPessoasVoo.getValue();
 
-        TipoPassagem tipoPassagem = TipoPassagem.IDA_E_VOLTA;
-        if (vooVolta == null) {
-            tipoPassagem = TipoPassagem.SOMENTE_IDA;
-        } else {
-            idVooVolta = vooVolta.getId();
-        }
+        TipoPassagem tipoPassagem = (tipoVoo.getSelectedToggle() == radioSomenteIdaVoo)? TipoPassagem.SOMENTE_IDA : TipoPassagem.IDA_E_VOLTA;
 
-        if (vooIda == null) {
+        // Verifica se o voo de ida existe e, se for ida e volta, se o voo de volta existe
+        if (vooIda == null || (tipoPassagem == TipoPassagem.IDA_E_VOLTA && vooVolta == null)) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Selecione os voos que deseja comprar.");
             alert.show();
             return;
+        }
+
+        // Pega o ID do voo de volta se for ida e volta
+        if (tipoPassagem == TipoPassagem.IDA_E_VOLTA) {
+            idVooVolta = vooVolta.getId();
         }
 
         // TODO: Janela de confirmação
