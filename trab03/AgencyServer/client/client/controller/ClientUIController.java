@@ -6,7 +6,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import remote.AgencyServer;
 import server.model.cidade.Cidade;
 import server.model.evento.Interesse;
@@ -358,7 +368,7 @@ public class ClientUIController {
         buttonConsultarHosp.setOnAction(this::consultarHospedagens);
 
         // Configura o botão de compra
-        //buttonComprarHosp.setOnAction(this::comprarVoos);
+        buttonComprarHosp.setOnAction(this::comprarHospedagem);
     }
 
     private void inicializarPacotes() {
@@ -391,7 +401,7 @@ public class ClientUIController {
         buttonConsultarPacote.setOnAction(this::consultarPacotes);
 
         // Configura o botão de compra
-        //buttonComprarPacote.setOnAction(this::comprarVoos);
+        buttonComprarPacote.setOnAction(this::comprarPacote);
     }
 
     private void inicializarInteresse() {
@@ -532,6 +542,7 @@ public class ClientUIController {
             }
         } catch (RemoteException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+            alert.show();
         }
     }
 
@@ -594,6 +605,33 @@ public class ClientUIController {
         }
 
         return ok;
+    }
+
+    private void comprarHospedagem(ActionEvent event) {
+        InfoHotel hotel = tableHospedagem.getSelectionModel().getSelectedItem();
+        if (hotel == null) {
+            return;
+        }
+
+        int idHotel = hotel.getId();
+        LocalDate dataEntrada = dateChegadaHosp.getValue();
+        LocalDate dataSaida = dateSaidaHosp.getValue();
+        int numQuartos = spinnerNumQuartosHosp.getValue();
+
+        if (dataEntrada != null && dataSaida != null) {
+            try {
+                if (serverRef.comprarHospedagem(idHotel, dataEntrada, dataSaida, numQuartos)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Compra realizada com sucesso!");
+                    alert.show();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na compra.");
+                    alert.show();
+                }
+            } catch (RemoteException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+                alert.show();
+            }
+        }
     }
 
     /*------------------------------------------------------------------------*/
@@ -676,6 +714,42 @@ public class ClientUIController {
         }
 
         return ok;
+    }
+
+    private void comprarPacote(ActionEvent event) {
+        InfoVoo vooIda = tableVooIdaPac.getSelectionModel().getSelectedItem();
+        if (vooIda == null) {
+            return;
+        }
+        int idVooIda = vooIda.getId();
+
+        InfoVoo vooVolta = tableVooVoltaPac.getSelectionModel().getSelectedItem();
+        if (vooVolta == null) {
+            return;
+        }
+        int idVooVolta = vooVolta.getId();
+
+        InfoHotel hotel = tableHospedagemPac.getSelectionModel().getSelectedItem();
+        if (hotel == null) {
+            return;
+        }
+        int idHotel = hotel.getId();
+
+        int numPessoas = spinnerNumPessoasPacote.getValue();
+        int numQuartos = spinnerNumQuartosPacote.getValue();
+        LocalDate dataEntrada = datePacoteIda.getValue();
+        LocalDate dataSaida = datePacoteVolta.getValue();
+
+        if (dataEntrada != null && dataSaida != null) {
+            /* TODO
+            try {
+
+            } catch (RemoteException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+                alert.show();
+            }
+            */
+        }
     }
 
     /*------------------------------------------------------------------------*/
