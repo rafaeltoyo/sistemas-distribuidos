@@ -45,14 +45,14 @@ public class RemoteController {
     private RemoteController() {
     }
 
-    public void connect() throws RemoteException, NotBoundException {
-        connect(NAMING_SERVICE_HOST, NAMING_SERVICE_PORT, "server");
+    public void connect(ClientUIController ui) throws RemoteException, NotBoundException {
+        connect(NAMING_SERVICE_HOST, NAMING_SERVICE_PORT, "server", ui);
     }
 
-    public void connect(String host, int port, String name) throws RemoteException, NotBoundException {
+    public void connect(String host, int port, String name, ClientUIController ui) throws RemoteException, NotBoundException {
         namingServiceRef = LocateRegistry.getRegistry(host, port);
         serverRef = (AgencyServer) namingServiceRef.lookup(name);
-        client = new AgencyClientImpl();
+        client = new AgencyClientImpl(ui);
     }
 
     /*------------------------------------------------------------------------*/

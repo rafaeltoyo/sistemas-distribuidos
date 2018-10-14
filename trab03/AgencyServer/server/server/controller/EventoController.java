@@ -33,9 +33,9 @@ public class EventoController {
         String origem = interesse.getTipo() == Interesse.TipoInteresse.HOSPEDAGEM ? "Default" : interesse.getOrigem().toString();
 
         if (arvore.computeIfAbsent(interesse.getTipo(), hm -> new HashMap<>())
-                        .computeIfAbsent(origem, hm -> new HashMap<>())
-                        .computeIfAbsent(interesse.getDestino().toString(), al -> new ArrayList<>())
-                        .add(ev)) {
+                .computeIfAbsent(origem, hm -> new HashMap<>())
+                .computeIfAbsent(interesse.getDestino().toString(), al -> new ArrayList<>())
+                .add(ev)) {
             lista.put(interesse.getId(), ev);
             return ev;
         }
@@ -66,7 +66,15 @@ public class EventoController {
     }
 
     public List<Evento> consultar(Hotel hotel) {
-        return consultar(Interesse.TipoInteresse.VOO, null, hotel.getLocal());
+        return consultar(Interesse.TipoInteresse.HOSPEDAGEM, null, hotel.getLocal());
+    }
+
+    public List<Evento> consultarPacote(Voo voo) {
+        return consultar(Interesse.TipoInteresse.PACOTE, voo.getOrigem(), voo.getDestino());
+    }
+
+    public List<Evento> consultarPacote(Hotel hotel) {
+        return consultar(Interesse.TipoInteresse.PACOTE, null, hotel.getLocal());
     }
 
     public Evento consultar(int id) {

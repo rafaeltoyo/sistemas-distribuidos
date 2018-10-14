@@ -65,6 +65,8 @@ public class ClientUIController {
 
     private ObservableList<Interesse> olInteresse = FXCollections.observableArrayList();
 
+    private ObservableList<Mensagem> olMensagem = FXCollections.observableArrayList();
+
     /*------------------------------------------------------------------------*/
 
     @FXML
@@ -304,7 +306,7 @@ public class ClientUIController {
     private TableView<Interesse> tableInteresse;
 
     @FXML
-    private TableView<Interesse> tableNotify;
+    private TableView<Mensagem> tableNotify;
 
     @FXML
     private TableColumn<Interesse, Number> columnInteresseId;
@@ -455,10 +457,18 @@ public class ClientUIController {
 
         // Configura as colunas
         columnInteresseId.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getId()));
-        columnInteresseOrigem.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getOrigem().toString()));
+        columnInteresseOrigem.setCellValueFactory(item -> {
+            Cidade origem = item.getValue().getOrigem();
+            if (origem != null) {
+                return new SimpleStringProperty(item.getValue().getOrigem().toString());
+            }
+            return new SimpleStringProperty("");
+        });
         columnInteresseDestino.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getDestino().toString()));
         columnInteresseTipo.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getTipo().toString()));
         columnInteresseValor.setCellValueFactory(item -> new SimpleStringProperty(Float.toString(item.getValue().getValorMaximo())));
+        columnNotifyId.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getId()));
+        columnNotifyMsg.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getMensagem()));
 
         // Configura o botão de consulta
         buttonAdicionarInteresse.setOnAction(this::registrarInteresse);
@@ -473,7 +483,7 @@ public class ClientUIController {
         //Registry namingServiceRef = LocateRegistry.getRegistry(
         //        NAMING_SERVICE_HOST, NAMING_SERVICE_PORT);
         //serverRef = (AgencyServer) namingServiceRef.lookup("server");
-        RemoteController.getInstance().connect();
+        RemoteController.getInstance().connect(this);
         serverRef = RemoteController.getInstance().serverRef;
     }
 
@@ -828,7 +838,14 @@ public class ClientUIController {
             InteresseController.getInstance().remove(interesse.getId());
 
             try {
-                serverRef.removerInteresse(interesse.getId(), RemoteController.getInstance().client);
+                if (serverRef.removerInteresse(interesse.getId(), RemoteController.getInstance().client)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Registro de interesse removido com sucesso!");
+                    alert.show();
+                }
+                else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na remoção do registro de interesse.");
+                    alert.show();
+                }
             } catch (RemoteException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
                 alert.show();
@@ -838,4 +855,9 @@ public class ClientUIController {
     }
 
     /*------------------------------------------------------------------------*/
+
+    public void colocarMensagem(Mensagem msg) {
+        olMensagem.add(msg);
+        tableNotify.setItems(olMensagem);
+    }
 }

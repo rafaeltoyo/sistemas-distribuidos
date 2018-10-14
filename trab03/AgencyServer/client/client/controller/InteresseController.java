@@ -28,7 +28,13 @@ public class InteresseController {
     }
 
     public void remove(int idInteresse) {
-        this.interesses.remove(idInteresse);
+        Interesse interesse = null;
+        for (Interesse it : interesses) {
+            if (it.getId() == idInteresse) {
+                interesse = it;
+            }
+        }
+        this.interesses.remove(interesse);
     }
 
     public void remove(InteresseVoo interesseVoo) {

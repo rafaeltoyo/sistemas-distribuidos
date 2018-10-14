@@ -1,5 +1,7 @@
 package client;
 
+import client.controller.ClientUIController;
+import model.mensagem.Mensagem;
 import remote.AgencyClient;
 
 import java.rmi.RemoteException;
@@ -10,22 +12,27 @@ import java.rmi.server.UnicastRemoteObject;
  * @author Victor Barpp Gomes
  */
 public class AgencyClientImpl extends UnicastRemoteObject implements AgencyClient {
-    // Sem atributos
+    private ClientUIController ui;
 
     /*------------------------------------------------------------------------*/
 
     /** Construtor único.
      * @throws RemoteException caso ocorra erro no RMI
      */
-    public AgencyClientImpl() throws RemoteException {
+    public AgencyClientImpl(ClientUIController ui) throws RemoteException {
         super();
+        this.ui = ui;
     }
 
     /*------------------------------------------------------------------------*/
 
     /** {@inheritDoc} */
-    public void notifyEvent(String str) throws RemoteException {
-        // FIXME: isso tá meio inútil
-        System.out.println(str);
+    public void notifyEvent(Mensagem msg) throws RemoteException {
+        if (ui != null) {
+            ui.colocarMensagem(msg);
+        }
+        else {
+            System.out.println(msg.getMensagem());
+        }
     }
 }

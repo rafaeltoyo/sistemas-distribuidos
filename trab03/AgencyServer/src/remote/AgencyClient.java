@@ -1,5 +1,7 @@
 package remote;
 
+import model.mensagem.Mensagem;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -9,8 +11,8 @@ import java.rmi.RemoteException;
  */
 public interface AgencyClient extends Remote {
     /** Envia uma notificação de evento ao cliente.
-     * @param str notificação
+     * @param msg notificação
      * @throws RemoteException caso ocorra erro no RMI
      */
-    void notifyEvent(String str) throws RemoteException;
+    void notifyEvent(Mensagem msg) throws RemoteException;
 }

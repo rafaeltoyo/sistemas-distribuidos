@@ -10,6 +10,7 @@ import model.evento.ListaInteresseVoo;
 import model.hotel.Hospedagem;
 import model.hotel.Hotel;
 import model.hotel.InfoHotelRet;
+import model.mensagem.Mensagem;
 import model.pacote.ConjuntoPacote;
 import model.saldo.Reserva;
 import model.voo.InfoVoo;
@@ -54,6 +55,53 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
     /*------------------------------------------------------------------------*/
 
+    /** Verifica se existe hotel cadastrado em uma cidade
+     * @param cidade cidade
+     * @return true se e somente se existe hotel cadastrado na cidade
+     */
+    private boolean existeHotel(Cidade cidade) {
+        for (Hotel h : hoteis) {
+            if (h.getLocal() == cidade) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Verifica se existe voo partindo de uma cidade origem para uma cidade
+     * destino, no máximo até a data especificada.
+     * @param origem cidade de origem do voo
+     * @param destino cidade de destino do voo
+     * @param data data máxima para a verificação
+     * @return true se e somente se há algum voo que atende às especificações
+     */
+    private boolean existeVooAteData(Cidade origem, Cidade destino, LocalDate data) {
+        for (Voo voo : voos) {
+            if (voo.getOrigem() == origem && voo.getDestino() == destino && !voo.getData().isAfter(data)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Verifica se existe voo partindo de uma cidade origem para uma cidade
+     * destino, a partir de uma data especificada.
+     * @param origem cidade de origem do voo
+     * @param destino cidade de destino do voo
+     * @param data data mínima para a verificação
+     * @return true se e somente se há algum voo que atende às especificações
+     */
+    private boolean existeVooAPartirDe(Cidade origem, Cidade destino, LocalDate data) {
+        for (Voo voo : voos) {
+            if (voo.getOrigem() == origem && voo.getDestino() == destino && !voo.getData().isBefore(data)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*------------------------------------------------------------------------*/
+
     /** Adiciona um voo à lista de voos do servidor, busca registros de
      * interesse que são atendidos por esse voo e envia notificação aos
      * respectivos clientes.
@@ -61,32 +109,97 @@ public class AgencyServerImpl extends UnicastRemoteObject
      */
     public void adicionarVoo(Voo voo) {
         voos.add(voo);
+        notificarInteresseVoo(voo);
+        notificarInteressePacote(voo);
+    }
 
-        // Verifica interesses e notifica clientes
-        List<InteresseVoo> ivList = interessesVoo.obterInteresses(voo);
-        ArrayList<InteresseVoo> ivARemover = new ArrayList<>();
-        if (ivList != null) {
-            for (InteresseVoo iv : ivList) {
-                String notif = "Um voo foi encontrado!\n" +
-                        "Origem: " + voo.getOrigem() + "\n" +
-                        "Destino: " + voo.getDestino() + "\n" +
-                        "Data: " + voo.getData();
+    private void notificarInteresseVoo(Voo v) {
+        List<Evento> evList = EventoController.getInstance().consultar(v);
+        ArrayList<Evento> evARemover = new ArrayList<>();
+        if (evList != null) {
+            for (Evento ev : evList) {
+                String notif = "Um voo foi encontrado de " + v.getOrigem() + " para " + v.getDestino() + "!";
 
                 try {
-                    iv.getClientRef().notifyEvent(notif);
+                    ev.getClientRef().notifyEvent(new Mensagem(ev.getInteresse().getId(), notif));
                 }
                 catch (RemoteException e) {
-                    e.printStackTrace();
+                    // O cliente provavelmente não existe mais. Exclui o registro.
+                    evARemover.add(ev);
                 }
-
-                ivARemover.add(iv);
             }
 
             // Remove os registros depois, para evitar ConcurrentModification
-            for (InteresseVoo iv : ivARemover) {
-                interessesVoo.removerInteresse(iv.getId(), iv.getOrigem(),
-                        iv.getDestino(), iv.getData());
+            for (Evento ev : evARemover) {
+                EventoController.getInstance().remover(ev.getInteresse().getId());
             }
+        }
+    }
+
+    private void notificarInteressePacote(Voo v) {
+        // Lista de interesses em que esse voo pode ser o voo de ida
+        List<Evento> evListIda = EventoController.getInstance().consultar(Interesse.TipoInteresse.PACOTE, v.getOrigem(), v.getDestino());
+
+        // Lista de interesses em que esse voo pode ser o voo de volta
+        List<Evento> evListVolta = EventoController.getInstance().consultar(Interesse.TipoInteresse.PACOTE, v.getDestino(), v.getOrigem());
+
+        // Lista de eventos a remover depois de notificar
+        ArrayList<Evento> evARemover = new ArrayList<>();
+
+        // Verifica se ocorreu algum evento de pacote em que v é o voo de ida
+        if (evListIda != null) for (Evento ev : evListIda) {
+            Cidade origem = ev.getInteresse().getOrigem();
+            Cidade destino = ev.getInteresse().getDestino();
+            LocalDate dataVooIda = v.getData();
+
+            // Se não achou hotel, esse evento não ocorreu
+            if (!existeHotel(destino)) {
+                continue;
+            }
+            // Verifica se há voo de volta
+            if (existeVooAPartirDe(destino, origem, dataVooIda)) {
+                // Se achou voo de volta, ocorreu um evento de pacote
+                String notif = "Há novos pacotes de " + origem + " para " + destino + "!";
+
+                try {
+                    ev.getClientRef().notifyEvent(new Mensagem(ev.getInteresse().getId(), notif));
+                }
+                catch (RemoteException e) {
+                    // O cliente provavelmente não existe mais. Exclui o registro.
+                    evARemover.add(ev);
+                }
+            }
+        }
+
+        // Verifica se ocorreu algum evento de pacote em que v é o voo de volta
+        if (evListVolta != null) for (Evento ev : evListVolta) {
+            Cidade origem = ev.getInteresse().getOrigem();
+            Cidade destino = ev.getInteresse().getDestino();
+            LocalDate dataVooVolta = v.getData();
+
+            // Verifica se há hotel
+            if (!existeHotel(destino)) {
+                continue;
+            }
+            // Verifica se há voo de ida
+            if (existeVooAteData(origem, destino, dataVooVolta)) {
+                // Se achou voo de ida, ocorreu um evento de pacote
+                String notif = "Há novos pacotes de " + origem + " para " + destino + "!";
+
+                try {
+                    ev.getClientRef().notifyEvent(new Mensagem(ev.getInteresse().getId(), notif));
+                }
+                catch (RemoteException e) {
+                    // O cliente provavelmente não existe mais. Exclui o registro.
+                    evARemover.add(ev);
+                }
+            }
+        }
+
+
+        // Remove os registros depois, para evitar ConcurrentModification
+        for (Evento ev : evARemover) {
+            EventoController.getInstance().remover(ev.getInteresse().getId());
         }
     }
 
@@ -98,6 +211,7 @@ public class AgencyServerImpl extends UnicastRemoteObject
     public void adicionarHotel(Hotel hotel) {
         hoteis.add(hotel);
         notificarInteresseHotel(hotel);
+        notificarInteressePacote(hotel);
     }
 
     /** Permite adicionar novas hospedagens (datas) a um hotel já existente, a
@@ -112,7 +226,6 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
         if (h != null) {
             h.adicionarHospedagem(dataIni, dataFim);
-            notificarInteresseHotel(h);
         }
     }
 
@@ -123,31 +236,75 @@ public class AgencyServerImpl extends UnicastRemoteObject
     private void notificarInteresseHotel(Hotel h) {
         if (h != null) {
             // Verifica interesses e notifica clientes
-            List<InteresseHotel> ihList = interessesHotel.obterInteresses(h);
-            ArrayList<InteresseHotel> ihARemover = new ArrayList<>();
-            if (ihList != null) {
-                for (InteresseHotel ih : ihList) {
+            List<Evento> evList = EventoController.getInstance().consultar(h);
+            ArrayList<Evento> evARemover = new ArrayList<>();
+            if (evList != null) {
+                for (Evento ev : evList) {
                     String notif = "Um hotel foi encontrado!\n" +
                             "Nome: " + h.getNome() + "\n" +
-                            "Cidade: " + ih.getDestino() + "\n" +
-                            "Data de entrada: " + ih.getDataIni() + "\n" +
-                            "Data de saída: " + ih.getDataFim();
+                            "Cidade: " + ev.getInteresse().getDestino();
 
                     try {
-                        ih.getClientRef().notifyEvent(notif);
+                        ev.getClientRef().notifyEvent(new Mensagem(ev.getInteresse().getId(), notif));
                     }
                     catch (RemoteException e) {
-                        e.printStackTrace();
+                        // O cliente provavelmente não existe mais. Exclui o registro.
+                        evARemover.add(ev);
                     }
-
-                    ihARemover.add(ih);
                 }
 
                 // Remove os registros depois, para evitar ConcurrentModification
-                for (InteresseHotel ih : ihARemover) {
-                    interessesHotel.removerInteresse(ih.getId(), ih.getDestino());
+                for (Evento ev : evARemover) {
+                    EventoController.getInstance().remover(ev.getInteresse().getId());
                 }
             }
+        }
+    }
+
+    private void notificarInteressePacote(Hotel h) {
+        // Pega todos os possíveis eventos que vão para a cidade do hotel
+        ArrayList<Evento> evList = new ArrayList<>();
+        for (Cidade origem : Cidade.values()) {
+            evList.addAll(EventoController.getInstance().consultar(Interesse.TipoInteresse.PACOTE, origem, h.getLocal()));
+        }
+
+        // Lista de eventos a remover no final
+        ArrayList<Evento> evARemover = new ArrayList<>();
+
+        // Itera pelos eventos
+        for (Evento ev : evList) {
+            // Agora é necessário ver se há um hotel que atende ao requisito
+            Cidade destino = ev.getInteresse().getDestino();
+            Cidade origem = ev.getInteresse().getOrigem();
+
+            // Itera pelos voos de ida
+            loopVooIda:
+            for (Voo vooIda : voos) {
+                if (vooIda.getOrigem() != origem || vooIda.getDestino() != destino) {
+                    continue;
+                }
+                for (Voo vooVolta : voos) {
+                    if (vooVolta.getOrigem() == destino && vooVolta.getDestino() == origem) {
+                        String notif = "Há novos pacotes de " + origem + " para " + destino + "!";
+
+                        try {
+                            ev.getClientRef().notifyEvent(new Mensagem(ev.getInteresse().getId(), notif));
+                        }
+                        catch (RemoteException e) {
+                            // O cliente provavelmente não existe mais. Exclui o registro.
+                            evARemover.add(ev);
+                        }
+
+                        // Impede que seja enviada uma notificação para cada hotel
+                        break loopVooIda;
+                    }
+                }
+            }
+        }
+
+        // Remove os registros depois, para evitar ConcurrentModification
+        for (Evento ev : evARemover) {
+            EventoController.getInstance().remover(ev.getInteresse().getId());
         }
     }
 
@@ -529,10 +686,12 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
     @Override
     public boolean removerInteresse(int id, AgencyClient client) throws RemoteException {
+        /*
         Evento ev = EventoController.getInstance().consultar(id);
-        if (ev.getClientRef() != client) {
+        if (ev.getClientRef().equals(client)) {
             return false;
         }
+        */
         return EventoController.getInstance().remover(id);
     }
 }

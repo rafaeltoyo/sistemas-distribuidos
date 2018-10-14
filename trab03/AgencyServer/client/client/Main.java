@@ -37,7 +37,7 @@ public class Main {
             AgencyServer serverRef = (AgencyServer) namingServiceRef.lookup(
                     "server");
 
-            AgencyClientImpl client = new AgencyClientImpl();
+            AgencyClientImpl client = new AgencyClientImpl(null);
 
             // FIXME: Debug
             //testarVoos(serverRef);
