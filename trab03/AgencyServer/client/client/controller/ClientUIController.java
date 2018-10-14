@@ -2,6 +2,8 @@ package client.controller;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,10 +15,13 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import model.mensagem.Mensagem;
 import remote.AgencyServer;
 import model.cidade.Cidade;
 import model.evento.Interesse;
@@ -62,6 +67,23 @@ public class ClientUIController {
     private ObservableList<InfoHotel> olInfoHotelPac = FXCollections.observableArrayList();
 
     private ObservableList<Interesse> olInteresse = FXCollections.observableArrayList();
+
+    /*------------------------------------------------------------------------*/
+
+    @FXML
+    private TabPane tabpane;
+
+    @FXML
+    private Tab tabVoo;
+
+    @FXML
+    private Tab tabHospedagem;
+
+    @FXML
+    private Tab tabPacote;
+
+    @FXML
+    private Tab tabInteresse;
 
     /*------------------------------------------------------------------------*/
 
@@ -285,6 +307,9 @@ public class ClientUIController {
     private TableView<Interesse> tableInteresse;
 
     @FXML
+    private TableView<Interesse> tableNotify;
+
+    @FXML
     private TableColumn<Interesse, Number> columnInteresseId;
 
     @FXML
@@ -299,6 +324,12 @@ public class ClientUIController {
     @FXML
     private TableColumn<Interesse, String> columnInteresseValor;
 
+    @FXML
+    private TableColumn<Mensagem, Number> columnNotifyId;
+
+    @FXML
+    private TableColumn<Mensagem, String> columnNotifyMsg;
+
     /*------------------------------------------------------------------------*/
 
     @FXML
@@ -307,6 +338,14 @@ public class ClientUIController {
         inicializarHospedagens();
         inicializarPacotes();
         inicializarInteresse();
+
+        tabpane.getSelectionModel().selectedItemProperty().addListener(
+                (ov, t, t1) -> {
+                    if (t != t1 && t1 == tabInteresse) {
+                        consultarInteresses();
+                    }
+                }
+        );
 
         try {
             connectToServer();
