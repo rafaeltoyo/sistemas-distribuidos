@@ -1,6 +1,6 @@
-package server.model.voo;
+package model.voo;
 
-import server.model.cidade.Cidade;
+import model.cidade.Cidade;
 
 import java.io.Serializable;
 import java.time.LocalDate;

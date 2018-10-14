@@ -1,18 +1,18 @@
 package server;
 
 import server.controller.EventoController;
-import server.model.cidade.Cidade;
-import server.model.evento.*;
-import server.model.hotel.Hospedagem;
-import server.model.hotel.Hotel;
-import server.model.hotel.InfoHospedagem;
-import server.model.hotel.InfoHotel;
-import server.model.pacote.ConjuntoPacote;
-import server.model.pacote.Pacote;
-import server.model.saldo.Reserva;
-import server.model.voo.InfoVoo;
-import server.model.voo.TipoPassagem;
-import server.model.voo.Voo;
+import model.cidade.Cidade;
+import model.evento.*;
+import model.hotel.Hospedagem;
+import model.hotel.Hotel;
+import model.hotel.InfoHospedagem;
+import model.hotel.InfoHotel;
+import model.pacote.ConjuntoPacote;
+import model.pacote.Pacote;
+import model.saldo.Reserva;
+import model.voo.InfoVoo;
+import model.voo.TipoPassagem;
+import model.voo.Voo;
 import remote.AgencyClient;
 import remote.AgencyServer;
 

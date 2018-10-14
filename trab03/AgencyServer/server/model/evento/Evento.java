@@ -1,4 +1,4 @@
-package server.model.evento;
+package model.evento;
 
 import remote.AgencyClient;
 
@@ -19,7 +19,7 @@ public class Evento {
     private AgencyClient clientRef;
 
     public Evento(Interesse interesse, AgencyClient clientRef) {
-        interesse.setId(count++);
+        interesse.setId(++count);
         this.interesse = interesse;
         this.clientRef = clientRef;
     }

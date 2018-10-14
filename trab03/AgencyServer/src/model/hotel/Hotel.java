@@ -1,7 +1,7 @@
-package server.model.hotel;
+package model.hotel;
 
-import server.model.cidade.Cidade;
-import server.model.saldo.Reserva;
+import model.cidade.Cidade;
+import model.saldo.Reserva;
 
 import java.time.LocalDate;
 import java.util.HashMap;

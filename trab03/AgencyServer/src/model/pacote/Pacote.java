@@ -1,7 +1,7 @@
-package server.model.pacote;
+package model.pacote;
 
-import server.model.hotel.InfoHotel;
-import server.model.voo.InfoVoo;
+import model.hotel.InfoHotel;
+import model.voo.InfoVoo;
 
 import java.io.Serializable;
 import java.time.LocalDate;

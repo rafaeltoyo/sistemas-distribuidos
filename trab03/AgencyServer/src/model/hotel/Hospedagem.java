@@ -1,6 +1,6 @@
-package server.model.hotel;
+package model.hotel;
 
-import server.model.saldo.Reserva;
+import model.saldo.Reserva;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

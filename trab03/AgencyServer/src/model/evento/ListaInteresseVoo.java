@@ -1,7 +1,7 @@
-package server.model.evento;
+package model.evento;
 
-import server.model.cidade.Cidade;
-import server.model.voo.Voo;
+import model.cidade.Cidade;
+import model.voo.Voo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

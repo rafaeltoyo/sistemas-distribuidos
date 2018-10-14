@@ -18,12 +18,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import remote.AgencyServer;
-import server.model.cidade.Cidade;
-import server.model.evento.Interesse;
-import server.model.hotel.InfoHospedagem;
-import server.model.hotel.InfoHotel;
-import server.model.voo.InfoVoo;
-import server.model.voo.TipoPassagem;
+import model.cidade.Cidade;
+import model.evento.Interesse;
+import model.hotel.InfoHospedagem;
+import model.hotel.InfoHotel;
+import model.voo.InfoVoo;
+import model.voo.TipoPassagem;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -775,16 +775,25 @@ public class ClientUIController {
         } catch (RemoteException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
         }
+        consultarInteresses();
     }
 
     private void excluirInteresse(ActionEvent event) {
         Interesse interesse = tableInteresse.getSelectionModel().getSelectedItem();
-        InteresseController.getInstance().remove(interesse.getId());
-        try {
-            serverRef.removerInteresse(interesse.getId(), RemoteController.getInstance().client);
-        } catch (RemoteException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+        if (interesse == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Selecione um registro antes.");
+            alert.show();
+        } else {
+            InteresseController.getInstance().remove(interesse.getId());
+
+            try {
+                serverRef.removerInteresse(interesse.getId(), RemoteController.getInstance().client);
+            } catch (RemoteException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+                alert.show();
+            }
         }
+        consultarInteresses();
     }
 
     /*------------------------------------------------------------------------*/
