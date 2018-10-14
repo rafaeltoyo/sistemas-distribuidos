@@ -1,13 +1,13 @@
 package remote;
 
-import server.model.cidade.Cidade;
-import server.model.evento.Interesse;
-import server.model.hotel.InfoHospedagem;
-import server.model.hotel.InfoHotel;
-import server.model.pacote.ConjuntoPacote;
-import server.model.pacote.Pacote;
-import server.model.voo.InfoVoo;
-import server.model.voo.TipoPassagem;
+import model.cidade.Cidade;
+import model.evento.Interesse;
+import model.hotel.InfoHospedagem;
+import model.hotel.InfoHotel;
+import model.pacote.ConjuntoPacote;
+import model.pacote.Pacote;
+import model.voo.InfoVoo;
+import model.voo.TipoPassagem;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

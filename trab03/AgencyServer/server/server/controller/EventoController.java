@@ -1,10 +1,10 @@
 package server.controller;
 
-import server.model.cidade.Cidade;
-import server.model.evento.Evento;
-import server.model.evento.Interesse;
-import server.model.hotel.Hotel;
-import server.model.voo.Voo;
+import model.cidade.Cidade;
+import model.evento.Evento;
+import model.evento.Interesse;
+import model.hotel.Hotel;
+import model.voo.Voo;
 import remote.AgencyClient;
 
 import java.util.ArrayList;
@@ -32,11 +32,11 @@ public class EventoController {
         Evento ev = new Evento(interesse, client);
         String origem = interesse.getTipo() == Interesse.TipoInteresse.HOSPEDAGEM ? "Default" : interesse.getOrigem().toString();
 
-        if (lista.put(interesse.getId(), ev) == ev &&
-                arvore.computeIfAbsent(interesse.getTipo(), hm -> new HashMap<>())
+        if (arvore.computeIfAbsent(interesse.getTipo(), hm -> new HashMap<>())
                         .computeIfAbsent(origem, hm -> new HashMap<>())
                         .computeIfAbsent(interesse.getDestino().toString(), al -> new ArrayList<>())
                         .add(ev)) {
+            lista.put(interesse.getId(), ev);
             return ev;
         }
         return null;

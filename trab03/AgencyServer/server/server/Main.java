@@ -1,8 +1,8 @@
 package server;
 
-import server.model.cidade.Cidade;
-import server.model.hotel.Hotel;
-import server.model.voo.Voo;
+import model.cidade.Cidade;
+import model.hotel.Hotel;
+import model.voo.Voo;
 
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;

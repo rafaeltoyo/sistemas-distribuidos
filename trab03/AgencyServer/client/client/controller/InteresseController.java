@@ -1,8 +1,8 @@
 package client.controller;
 
-import server.model.evento.Interesse;
-import server.model.evento.InteresseHotel;
-import server.model.evento.InteresseVoo;
+import model.evento.Interesse;
+import model.evento.InteresseHotel;
+import model.evento.InteresseVoo;
 
 import java.util.ArrayList;
 
