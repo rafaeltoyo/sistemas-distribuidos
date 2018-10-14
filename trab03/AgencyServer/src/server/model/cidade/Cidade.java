@@ -1,4 +1,4 @@
-package model.cidade;
+package server.model.cidade;
 
 /** Representa uma cidade.
  * @author Rafael Hideo Toyomoto

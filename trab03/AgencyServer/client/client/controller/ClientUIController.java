@@ -1,38 +1,40 @@
 package client.controller;
 
-import client.model.Interesse;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import model.cidade.Cidade;
-import model.hotel.InfoHospedagem;
-import model.hotel.InfoHotel;
-import model.voo.InfoVoo;
-import model.voo.TipoPassagem;
 import remote.AgencyServer;
+import server.model.cidade.Cidade;
+import server.model.evento.Interesse;
+import server.model.hotel.InfoHospedagem;
+import server.model.hotel.InfoHotel;
+import server.model.voo.InfoVoo;
+import server.model.voo.TipoPassagem;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ClientUIController {
-    /** Nome de host do serviço de nomes */
+    /**
+     * Nome de host do serviço de nomes
+     */
     private static final String NAMING_SERVICE_HOST = "localhost";
 
-    /** Porta do serviço de nomes */
+    /**
+     * Porta do serviço de nomes
+     */
     private static final int NAMING_SERVICE_PORT = 11037;
 
-    /** Referência ao servidor (RMI) */
+    /**
+     * Referência ao servidor (RMI)
+     */
     private AgencyServer serverRef;
 
     /*------------------------------------------------------------------------*/
@@ -255,6 +257,9 @@ public class ClientUIController {
     private ChoiceBox<Interesse.TipoInteresse> choiceTipoInteresse;
 
     @FXML
+    private ChoiceBox<Cidade> choiceOrigemInteresse;
+
+    @FXML
     private ChoiceBox<Cidade> choiceDestinoInteresse;
 
     @FXML
@@ -273,13 +278,16 @@ public class ClientUIController {
     private TableColumn<Interesse, Number> columnInteresseId;
 
     @FXML
+    private TableColumn<Interesse, String> columnInteresseOrigem;
+
+    @FXML
     private TableColumn<Interesse, String> columnInteresseDestino;
 
     @FXML
     private TableColumn<Interesse, String> columnInteresseTipo;
 
     @FXML
-    private TableColumn<Interesse, String> columnInteresseStatus;
+    private TableColumn<Interesse, String> columnInteresseValor;
 
     /*------------------------------------------------------------------------*/
 
@@ -292,8 +300,7 @@ public class ClientUIController {
 
         try {
             connectToServer();
-        }
-        catch (RemoteException | NotBoundException e) {
+        } catch (RemoteException | NotBoundException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
             alert.showAndWait();
 
@@ -390,6 +397,7 @@ public class ClientUIController {
     private void inicializarInteresse() {
         // Inicializa as ChoiceBox com as cidades do enum Cidade
         choiceTipoInteresse.getItems().setAll(Interesse.TipoInteresse.values());
+        choiceOrigemInteresse.getItems().setAll(Cidade.values());
         choiceDestinoInteresse.getItems().setAll(Cidade.values());
 
         // Criar mascara de número float no campo de valor máximo
@@ -401,9 +409,10 @@ public class ClientUIController {
 
         // Configura as colunas
         columnInteresseId.setCellValueFactory(item -> new SimpleIntegerProperty(item.getValue().getId()));
-        columnInteresseDestino.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getCidade().toString()));
+        columnInteresseOrigem.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getOrigem().toString()));
+        columnInteresseDestino.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getDestino().toString()));
         columnInteresseTipo.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getTipo().toString()));
-        columnInteresseStatus.setCellValueFactory(item -> new SimpleStringProperty(item.getValue().getStatus().toString()));
+        columnInteresseValor.setCellValueFactory(item -> new SimpleStringProperty(Float.toString(item.getValue().getValorMaximo())));
 
         // Configura o botão de consulta
         buttonAdicionarInteresse.setOnAction(this::registrarInteresse);
@@ -415,10 +424,11 @@ public class ClientUIController {
     /*------------------------------------------------------------------------*/
 
     private void connectToServer() throws RemoteException, NotBoundException {
-        Registry namingServiceRef = LocateRegistry.getRegistry(
-                NAMING_SERVICE_HOST, NAMING_SERVICE_PORT);
-        serverRef = (AgencyServer) namingServiceRef.lookup(
-                "server");
+        //Registry namingServiceRef = LocateRegistry.getRegistry(
+        //        NAMING_SERVICE_HOST, NAMING_SERVICE_PORT);
+        //serverRef = (AgencyServer) namingServiceRef.lookup("server");
+        RemoteController.getInstance().connect();
+        serverRef = RemoteController.getInstance().serverRef;
     }
 
     /*------------------------------------------------------------------------*/
@@ -429,7 +439,7 @@ public class ClientUIController {
         LocalDate dataIda = dateVooIda.getValue();
         LocalDate dataVolta = dateVooVolta.getValue();
         int numPessoas = spinnerNumPessoasVoo.getValue();
-        TipoPassagem tipoPassagem = (tipoVoo.getSelectedToggle() == radioSomenteIdaVoo)? TipoPassagem.SOMENTE_IDA : TipoPassagem.IDA_E_VOLTA;
+        TipoPassagem tipoPassagem = (tipoVoo.getSelectedToggle() == radioSomenteIdaVoo) ? TipoPassagem.SOMENTE_IDA : TipoPassagem.IDA_E_VOLTA;
 
         if (!validarConsultaVoos(origem, destino, dataIda, dataVolta, numPessoas, tipoPassagem)) {
             return;
@@ -438,8 +448,7 @@ public class ClientUIController {
         ArrayList<InfoVoo> voos = null;
         try {
             voos = serverRef.consultarPassagens(tipoPassagem, origem, destino, dataIda, dataVolta, numPessoas);
-        }
-        catch (RemoteException e) {
+        } catch (RemoteException e) {
             // TODO: Mostrar mensagem de erro
             e.printStackTrace();
         }
@@ -450,8 +459,7 @@ public class ClientUIController {
             for (InfoVoo v : voos) {
                 if (v.getOrigem() == origem) {
                     olInfoVooIda.add(v);
-                }
-                else {
+                } else {
                     olInfoVooVolta.add(v);
                 }
             }
@@ -502,8 +510,7 @@ public class ClientUIController {
         TipoPassagem tipoPassagem = TipoPassagem.IDA_E_VOLTA;
         if (vooVolta == null) {
             tipoPassagem = TipoPassagem.SOMENTE_IDA;
-        }
-        else {
+        } else {
             idVooVolta = vooVolta.getId();
         }
 
@@ -519,13 +526,11 @@ public class ClientUIController {
             if (serverRef.comprarPassagens(tipoPassagem, vooIda.getId(), idVooVolta, numPessoas)) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Compra realizada com sucesso!");
                 alert.show();
-            }
-            else {
+            } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na compra.");
                 alert.show();
             }
-        }
-        catch (RemoteException e) {
+        } catch (RemoteException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
         }
     }
@@ -546,8 +551,7 @@ public class ClientUIController {
         HashMap<InfoHotel, ArrayList<InfoHospedagem>> hospedagens = null;
         try {
             hospedagens = serverRef.consultarHospedagens(cidade, dataEntrada, dataSaida, numQuartos, numPessoas);
-        }
-        catch (RemoteException e) {
+        } catch (RemoteException e) {
             // TODO: Mostrar mensagem de erro
             e.printStackTrace();
         }
@@ -611,8 +615,7 @@ public class ClientUIController {
         try {
             hospedagens = serverRef.consultarHospedagens(destino, dataIda, dataVolta, numQuartos, numPessoas);
             voos = serverRef.consultarPassagens(TipoPassagem.IDA_E_VOLTA, origem, destino, dataIda, dataVolta, numPessoas);
-        }
-        catch (RemoteException e) {
+        } catch (RemoteException e) {
             // TODO: Mostrar mensagem de erro
             e.printStackTrace();
         }
@@ -628,8 +631,7 @@ public class ClientUIController {
             for (InfoVoo v : voos) {
                 if (v.getOrigem() == origem) {
                     olInfoVooIdaPac.add(v);
-                }
-                else {
+                } else {
                     olInfoVooVoltaPac.add(v);
                 }
             }
@@ -686,19 +688,29 @@ public class ClientUIController {
 
     private void registrarInteresse(ActionEvent event) {
         Interesse.TipoInteresse tipo = choiceTipoInteresse.getValue();
+        Cidade origem = choiceOrigemInteresse.getValue();
         Cidade destino = choiceDestinoInteresse.getValue();
         float valorMaximo = Float.parseFloat(textValorInteresse.getCharacters().toString());
 
+        Interesse interesse = new Interesse(origem, destino, tipo, valorMaximo);
+
         try {
-            serverRef.comprarPacote(null);
-        }
-        catch (RemoteException e) {
+            InteresseController.getInstance().create(interesse);
+            int id = serverRef.registrarInteresse(interesse, RemoteController.getInstance().client);
+            interesse.setId(id);
+        } catch (RemoteException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
         }
     }
 
     private void excluirInteresse(ActionEvent event) {
-
+        Interesse interesse = tableInteresse.getSelectionModel().getSelectedItem();
+        InteresseController.getInstance().remove(interesse.getId());
+        try {
+            serverRef.removerInteresse(interesse.getId(), RemoteController.getInstance().client);
+        } catch (RemoteException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
+        }
     }
 
     /*------------------------------------------------------------------------*/

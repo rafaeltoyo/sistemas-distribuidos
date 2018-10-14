@@ -1,8 +1,8 @@
 package client.controller;
 
-import client.model.Interesse;
-import model.eventos.InteresseHotel;
-import model.eventos.InteresseVoo;
+import server.model.evento.Interesse;
+import server.model.evento.InteresseHotel;
+import server.model.evento.InteresseVoo;
 
 import java.util.ArrayList;
 
@@ -24,20 +24,7 @@ public class InteresseController {
     }
 
     public void create(Interesse interesse) {
-        interesse.setStatus(Interesse.StatusInteresse.AGUARDANDO);
         this.interesses.add(interesse.getId(), interesse);
-    }
-
-    public void accept(int idInteresse) {
-        this.interesses.get(idInteresse).setStatus(Interesse.StatusInteresse.DISPONIVEL);
-    }
-
-    public void accept(InteresseVoo interesseVoo) {
-        accept(interesseVoo.getId());
-    }
-
-    public void accept(InteresseHotel interesseHotel) {
-        accept(interesseHotel.getId());
     }
 
     public void remove(int idInteresse) {
@@ -50,15 +37,5 @@ public class InteresseController {
 
     public void remove(InteresseHotel interesseHotel) {
         remove(interesseHotel.getId());
-    }
-
-    public void clear() {
-        ArrayList<Interesse> temp = new ArrayList<>();
-        for (Interesse interesse : this.interesses) {
-            if (interesse.getStatus() == Interesse.StatusInteresse.DISPONIVEL) {
-                temp.add(interesse);
-            }
-        }
-        this.interesses.removeAll(temp);
     }
 }

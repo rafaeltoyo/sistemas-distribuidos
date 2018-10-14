@@ -1,4 +1,4 @@
-package model.saldo;
+package server.model.saldo;
 
 import java.util.Date;
 

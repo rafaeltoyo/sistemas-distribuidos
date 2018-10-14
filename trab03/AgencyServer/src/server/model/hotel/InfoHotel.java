@@ -1,6 +1,6 @@
-package model.hotel;
+package server.model.hotel;
 
-import model.cidade.Cidade;
+import server.model.cidade.Cidade;
 
 import java.io.Serializable;
 

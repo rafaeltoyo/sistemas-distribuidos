@@ -8,7 +8,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.hotel.InfoHotel;
+import server.model.hotel.InfoHotel;
 
 import java.util.ArrayList;
 

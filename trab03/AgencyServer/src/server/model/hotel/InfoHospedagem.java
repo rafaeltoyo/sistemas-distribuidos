@@ -1,4 +1,4 @@
-package model.hotel;
+package server.model.hotel;
 
 import java.io.Serializable;
 import java.time.LocalDate;

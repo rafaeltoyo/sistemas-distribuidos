@@ -1,8 +1,8 @@
 package server;
 
-import model.cidade.Cidade;
-import model.hotel.Hotel;
-import model.voo.Voo;
+import server.model.cidade.Cidade;
+import server.model.hotel.Hotel;
+import server.model.voo.Voo;
 
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
@@ -80,7 +80,7 @@ public class Main {
             hotel.adicionarHospedagem(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 3));
             agencyServerImpl.adicionarHotel(hotel);
 
-            // FIXME: Debug: Teste da notificação de eventos
+            // FIXME: Debug: Teste da notificação de evento
             testarNovosEventos(agencyServerImpl);
         }
         catch (RemoteException | AlreadyBoundException e) {

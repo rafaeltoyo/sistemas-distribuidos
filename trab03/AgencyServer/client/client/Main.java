@@ -1,11 +1,11 @@
 package client;
 
-import model.cidade.Cidade;
-import model.hotel.InfoHospedagem;
-import model.hotel.InfoHotel;
-import model.pacote.ConjuntoPacote;
-import model.voo.InfoVoo;
-import model.voo.TipoPassagem;
+import server.model.cidade.Cidade;
+import server.model.hotel.InfoHospedagem;
+import server.model.hotel.InfoHotel;
+import server.model.pacote.ConjuntoPacote;
+import server.model.voo.InfoVoo;
+import server.model.voo.TipoPassagem;
 import remote.AgencyServer;
 
 import java.rmi.NotBoundException;

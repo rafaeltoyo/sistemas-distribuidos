@@ -1,7 +1,7 @@
-package model.voo;
+package server.model.voo;
 
-import model.cidade.Cidade;
-import model.saldo.Reserva;
+import server.model.cidade.Cidade;
+import server.model.saldo.Reserva;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

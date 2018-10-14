@@ -1,8 +1,8 @@
-package model.pacote;
+package server.model.pacote;
 
-import model.hotel.InfoHospedagem;
-import model.hotel.InfoHotel;
-import model.voo.InfoVoo;
+import server.model.hotel.InfoHospedagem;
+import server.model.hotel.InfoHotel;
+import server.model.voo.InfoVoo;
 
 import java.io.Serializable;
 import java.util.ArrayList;

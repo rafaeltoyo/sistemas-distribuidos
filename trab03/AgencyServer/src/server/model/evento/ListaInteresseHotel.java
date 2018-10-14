@@ -1,8 +1,8 @@
-package model.eventos;
+package server.model.evento;
 
-import model.cidade.Cidade;
-import model.hotel.Hospedagem;
-import model.hotel.Hotel;
+import server.model.cidade.Cidade;
+import server.model.hotel.Hospedagem;
+import server.model.hotel.Hotel;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

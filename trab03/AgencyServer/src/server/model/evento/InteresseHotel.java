@@ -1,6 +1,6 @@
-package model.eventos;
+package server.model.evento;
 
-import model.cidade.Cidade;
+import server.model.cidade.Cidade;
 import remote.AgencyClient;
 
 import java.time.LocalDate;

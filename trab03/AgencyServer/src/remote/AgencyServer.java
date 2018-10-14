@@ -1,12 +1,13 @@
 package remote;
 
-import model.cidade.Cidade;
-import model.hotel.InfoHospedagem;
-import model.hotel.InfoHotel;
-import model.pacote.ConjuntoPacote;
-import model.pacote.Pacote;
-import model.voo.InfoVoo;
-import model.voo.TipoPassagem;
+import server.model.cidade.Cidade;
+import server.model.evento.Interesse;
+import server.model.hotel.InfoHospedagem;
+import server.model.hotel.InfoHotel;
+import server.model.pacote.ConjuntoPacote;
+import server.model.pacote.Pacote;
+import server.model.voo.InfoVoo;
+import server.model.voo.TipoPassagem;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -140,6 +141,10 @@ public interface AgencyServer extends Remote {
 
     /*------------------------------------------------------------------------*/
 
-    //boolean removerEvento(Evento evento) throws RemoteException;
+    int registrarInteresse(Interesse interesse, AgencyClient client) throws RemoteException;
+
+    /*------------------------------------------------------------------------*/
+
+    boolean removerInteresse(int id, AgencyClient client) throws RemoteException;
 
 }
