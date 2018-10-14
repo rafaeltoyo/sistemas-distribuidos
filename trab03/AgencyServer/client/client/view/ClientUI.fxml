@@ -21,9 +21,9 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.ClientUIController">
     <children>
-        <TabPane layoutX="200.0" layoutY="100.0" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <TabPane fx:id="tabpane" layoutX="200.0" layoutY="100.0" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
-                <Tab text="Voo">
+                <Tab fx:id="tabVoo" text="Voo">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
@@ -104,7 +104,7 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="Hospedagem">
+                <Tab fx:id="tabHospedagem" text="Hospedagem">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
@@ -160,7 +160,7 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="Pacote">
+                <Tab fx:id="tabPacote" text="Pacote">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -251,7 +251,7 @@
                      </children></AnchorPane>
                     </content>
                 </Tab>
-            <Tab text="Interesses">
+            <Tab fx:id="tabInteresse" text="Interesses">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
