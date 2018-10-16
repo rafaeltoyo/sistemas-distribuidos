@@ -3,10 +3,6 @@ package server;
 import model.cidade.Cidade;
 import model.evento.Evento;
 import model.evento.Interesse;
-import model.evento.InteresseHotel;
-import model.evento.InteresseVoo;
-import model.evento.ListaInteresseHotel;
-import model.evento.ListaInteresseVoo;
 import model.hotel.Hospedagem;
 import model.hotel.Hotel;
 import model.hotel.InfoHotelRet;
@@ -37,12 +33,6 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
     /** Lista de hotéis cadastrados */
     private ArrayList<Hotel> hoteis = new ArrayList<>();
-
-    /** Banco de registros de interesse em voos */
-    private ListaInteresseVoo interessesVoo = new ListaInteresseVoo();
-
-    /** Banco de registros de interesse em hotéis */
-    private ListaInteresseHotel interessesHotel = new ListaInteresseHotel();
 
     /*------------------------------------------------------------------------*/
 
@@ -318,8 +308,6 @@ public class AgencyServerImpl extends UnicastRemoteObject
         // TODO: Colocar null-check em todos os parâmetros
         ArrayList<InfoVoo> result = new ArrayList<>();
         for (Voo voo : voos) {
-            // FIXME: precisa synchronized para ler?
-
             // Adiciona voos de ida
             if (origem.equals(voo.getOrigem()) &&
                     destino.equals(voo.getDestino()) &&
@@ -618,72 +606,13 @@ public class AgencyServerImpl extends UnicastRemoteObject
 
     /** {@inheritDoc} */
     @Override
-    public int registrarInteresseVoo(Cidade origem, Cidade destino,
-            LocalDate data, AgencyClient clientRef) throws RemoteException {
-        InteresseVoo iv = new InteresseVoo(origem, destino, data, clientRef);
-
-        if (interessesVoo.colocarInteresse(iv)) {
-            return iv.getId();
-        }
-        return -1;
-    }
-
-    /*------------------------------------------------------------------------*/
-
-    /*
-    @Override
-    public <?> removerInteresseVoo(<?>) throws RemoteException {
-    }
-     */
-
-    /*------------------------------------------------------------------------*/
-
-    /** {@inheritDoc} */
-    @Override
-    public int registrarInteresseHotel(Cidade destino, LocalDate dataIni,
-            LocalDate dataFim, AgencyClient clientRef) throws RemoteException {
-        InteresseHotel ih = new InteresseHotel(destino, dataIni, dataFim,
-                clientRef);
-
-        if (interessesHotel.colocarInteresse(ih)) {
-            return ih.getId();
-        }
-        return -1;
-    }
-
-    /*------------------------------------------------------------------------*/
-
-    /*
-    @Override
-    public <?> removerInteresseHotel(<?>) throws RemoteException {
-    }
-     */
-
-    /*------------------------------------------------------------------------*/
-
-    /** {@inheritDoc} */
-    @Override
-    public int registrarInteressePacote(Cidade origem, Cidade destino, LocalDate dataIda, LocalDate dataVolta, AgencyClient clientRef) throws RemoteException {
-        return -1;
-    }
-
-    /*------------------------------------------------------------------------*/
-
-    /*
-    @Override
-    public <?> removerInteressePacote(<?>) throws RemoteException {
-    }
-     */
-
-    /*------------------------------------------------------------------------*/
-
-    @Override
     public int registrarInteresse(Interesse interesse, AgencyClient client) throws RemoteException {
         return EventoController.getInstance().registrar(interesse, client).getInteresse().getId();
     }
 
     /*------------------------------------------------------------------------*/
 
+    /** {@inheritDoc} */
     @Override
     public boolean removerInteresse(int id, AgencyClient client) throws RemoteException {
         /*

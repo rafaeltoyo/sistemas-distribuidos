@@ -107,9 +107,6 @@ public class Hotel {
             HashMap<Hospedagem, Reserva> arrayReservas = new HashMap<>();
             LocalDate data = LocalDate.of(dataIni.getYear(), dataIni.getMonth(), dataIni.getDayOfMonth());
 
-            // FIXME: Debug
-            System.out.println("Início reserva...");
-
             while (data.isBefore(dataFim)) {
                 // Pega a hospedagem do dia
                 Hospedagem hosp = hospedagens.get(data);
@@ -143,9 +140,6 @@ public class Hotel {
      *                      função reservar
      */
     private void desfazerReserva(HashMap<Hospedagem, Reserva> arrayReservas) {
-        // FIXME: Debug
-        System.out.println("Rollback...");
-
         for (HashMap.Entry<Hospedagem, Reserva> par : arrayReservas.entrySet()) {
             Hospedagem hosp = par.getKey();
             Reserva r = par.getValue();

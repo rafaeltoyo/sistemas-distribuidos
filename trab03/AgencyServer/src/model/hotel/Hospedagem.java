@@ -58,10 +58,6 @@ public class Hospedagem {
      */
     public Reserva reservar(int numQuartos) {
         synchronized (this) {
-            // FIXME: Debug
-            System.out.println("Antes: Hospedagem: data: " + infoHospedagem.getData() +
-                    ", quartosDisp: " + quartosDisp);
-
             Reserva reserva = null;
 
             if (numQuartos <= quartosDisp) {
@@ -69,10 +65,6 @@ public class Hospedagem {
                 quartosDisp -= numQuartos;
                 infoHospedagem.quartosDisp -= numQuartos;
             }
-
-            // FIXME: Debug
-            System.out.println("Depois: Hospedagem: data: " + infoHospedagem.getData() +
-                    ", quartosDisp: " + quartosDisp);
 
             return reserva;
         }

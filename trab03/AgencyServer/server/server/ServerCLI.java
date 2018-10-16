@@ -39,6 +39,9 @@ public class ServerCLI {
             agencyServerImpl = new AgencyServerImpl();
             namingServiceRef.bind("server", agencyServerImpl);
 
+            // HEH
+            popularServidor();
+
             System.out.println("/*---------------------*/\n" +
                     "/* Servidor da agência */\n" +
                     "/*---------------------*/\n");
@@ -73,6 +76,50 @@ public class ServerCLI {
         System.exit(0);
     }
 
+    /*------------------------------------------------------------------------*/
+
+    private static void popularServidor() {
+        adicionarVoo("Curitiba", "Florianópolis", "2018-10-16", "100");
+        adicionarVoo("Florianópolis", "Curitiba", "2018-10-16", "100");
+        adicionarVoo("Curitiba", "Florianópolis", "2018-10-17", "100");
+        adicionarVoo("Florianópolis", "Curitiba", "2018-10-17", "100");
+        adicionarVoo("Curitiba", "Florianópolis", "2018-10-18", "100");
+        adicionarVoo("Florianópolis", "Curitiba", "2018-10-18", "100");
+        adicionarVoo("Curitiba", "Florianópolis", "2018-10-19", "100");
+        adicionarVoo("Florianópolis", "Curitiba", "2018-10-19", "100");
+        adicionarVoo("Curitiba", "Florianópolis", "2018-10-20", "100");
+        adicionarVoo("Florianópolis", "Curitiba", "2018-10-20", "100");
+        adicionarVoo("Curitiba", "São Paulo", "2018-10-16", "100");
+        adicionarVoo("São Paulo", "Curitiba", "2018-10-16", "100");
+        adicionarVoo("Curitiba", "São Paulo", "2018-10-17", "100");
+        adicionarVoo("São Paulo", "Curitiba", "2018-10-17", "100");
+        adicionarVoo("Curitiba", "São Paulo", "2018-10-18", "100");
+        adicionarVoo("São Paulo", "Curitiba", "2018-10-18", "100");
+        adicionarVoo("Curitiba", "São Paulo", "2018-10-19", "100");
+        adicionarVoo("São Paulo", "Curitiba", "2018-10-19", "100");
+        adicionarVoo("Curitiba", "São Paulo", "2018-10-20", "100");
+        adicionarVoo("São Paulo", "Curitiba", "2018-10-20", "100");
+
+        adicionarHotel("Hotel Peru", "Florianópolis", "20");
+        adicionarHospedagem("0", "2018-10-16", "2018-10-20");
+        adicionarHotel("Hotel Pato", "Florianópolis", "30");
+        adicionarHospedagem("1", "2018-10-16", "2018-10-20");
+        adicionarHotel("Hotel Galinha", "Florianópolis", "15");
+        adicionarHospedagem("2", "2018-10-16", "2018-10-20");
+        adicionarHotel("Hotel Weeb", "Curitiba", "20");
+        adicionarHospedagem("3", "2018-10-16", "2018-10-20");
+        adicionarHotel("Hotel Noob", "Curitiba", "30");
+        adicionarHospedagem("4", "2018-10-16", "2018-10-20");
+        adicionarHotel("Hotel Bispo", "Curitiba", "15");
+        adicionarHospedagem("5", "2018-10-16", "2018-10-20");
+        adicionarHotel("Hotel Pereira", "São Paulo", "20");
+        adicionarHospedagem("6", "2018-10-16", "2018-10-20");
+        adicionarHotel("Hotel Madoka", "São Paulo", "30");
+        adicionarHospedagem("7", "2018-10-16", "2018-10-20");
+        adicionarHotel("Hotel Homura", "São Paulo", "15");
+        adicionarHospedagem("8", "2018-10-16", "2018-10-20");
+    }
+    
     /*------------------------------------------------------------------------*/
 
     /** Mostra o menu da interface de linha de comando. */

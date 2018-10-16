@@ -124,39 +124,22 @@ public interface AgencyServer extends Remote {
 
     /*------------------------------------------------------------------------*/
 
-    //boolean registraEvento(Evento evento) throws RemoteException;
-    int registrarInteresseVoo(Cidade origem, Cidade destino, LocalDate data,
-            AgencyClient clientRef) throws RemoteException;
-
-    /*------------------------------------------------------------------------*/
-
-    //<?> removerInteresseVoo(<?>) throws RemoteException;
-
-    /*------------------------------------------------------------------------*/
-
-    int registrarInteresseHotel(Cidade destino, LocalDate dataIni,
-            LocalDate dataFim, AgencyClient clientRef) throws RemoteException;
-
-    /*------------------------------------------------------------------------*/
-
-    //<?> removerInteresseHotel(<?>) throws RemoteException;
-
-    /*------------------------------------------------------------------------*/
-
-    int registrarInteressePacote(Cidade origem, Cidade destino,
-            LocalDate dataIda, LocalDate dataVolta, AgencyClient clientRef)
-            throws RemoteException;
-
-    /*------------------------------------------------------------------------*/
-
-    //<?> removerInteressePacote(<?>) throws RemoteException;
-
-    /*------------------------------------------------------------------------*/
-
+    /** Registra um interesse de um cliente.
+     * @param interesse objeto Interesse com os dados
+     * @param client referência do cliente (RMI)
+     * @return identificador do registro (Evento) no servidor
+     * @throws RemoteException caso ocorra erro no RMI
+     */
     int registrarInteresse(Interesse interesse, AgencyClient client) throws RemoteException;
 
     /*------------------------------------------------------------------------*/
 
+    /** Remove um interesse de cliente a partir do identificador.
+     * @param id identificador do registro de interesse
+     * @param client referência do cliente (RMI)
+     * @return true se e somente se o registro foi removido com sucesso
+     * @throws RemoteException caso ocorra erro no RMI
+     */
     boolean removerInteresse(int id, AgencyClient client) throws RemoteException;
 
 }

@@ -12,22 +12,42 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Controlador de Eventos
+ * @author Rafael Hideo Toyomoto
+ * @author Victor Barpp Gomes
+ */
 public class EventoController {
 
+    /** Instância única do controlador */
     private static EventoController ourInstance = new EventoController();
 
+    /** Eventos armazenados em uma estrutura em árvore */
     private HashMap<Interesse.TipoInteresse, HashMap<String, HashMap<String, ArrayList<Evento>>>> arvore;
+
+    /** Eventos armazenados em uma lista pelo seu ID */
     private HashMap<Integer, Evento> lista;
 
+    /** Construtor privado do singleton */
     private EventoController() {
         arvore = new HashMap<>();
         lista = new HashMap<>();
     }
 
+    /**
+     * Retorna a instância do singleton
+     * @return Instância do controlador
+     */
     public static EventoController getInstance() {
         return ourInstance;
     }
 
+    /**
+     * Registra um novo evento (Registro de interesse) no servidor
+     * @param interesse Interesse do cliente
+     * @param client Referência do cliente
+     * @return Referência para o Evento criado
+     */
     public Evento registrar(Interesse interesse, AgencyClient client) {
         Evento ev = new Evento(interesse, client);
         String origem = interesse.getTipo() == Interesse.TipoInteresse.HOSPEDAGEM ? "Default" : interesse.getOrigem().toString();
@@ -42,6 +62,13 @@ public class EventoController {
         return null;
     }
 
+    /**
+     * Consultar todos eventos a partir de tipo, origem e destino do evento
+     * @param tipo Tipo do evento (Voo, Hospedagem ou Pacote)
+     * @param origem Cidade de origem do cliente
+     * @param destino Cidade destino de interesse do cliente
+     * @return Lista com os eventos que possuem as características solicitadas
+     */
     public List<Evento> consultar(Interesse.TipoInteresse tipo, Cidade origem, Cidade destino) {
         HashMap<String, HashMap<String, ArrayList<Evento>>> hashTipo = arvore.get(tipo);
         if (hashTipo == null) {
@@ -61,26 +88,29 @@ public class EventoController {
         return Collections.unmodifiableList(result);
     }
 
+    /**
+     * Consultar todos eventos a partir de um Voo
+     * @param voo Voo para fornecer os dados de consulta
+     * @return Lista com os eventos que possuem as características solicitadas
+     */
     public List<Evento> consultar(Voo voo) {
         return consultar(Interesse.TipoInteresse.VOO, voo.getOrigem(), voo.getDestino());
     }
 
+    /**
+     * Consultar todos eventos a partir de um Hotel
+     * @param hotel Hotel para fornecer os dados de consulta
+     * @return Lista com os eventos que possuem as características solicitadas
+     */
     public List<Evento> consultar(Hotel hotel) {
         return consultar(Interesse.TipoInteresse.HOSPEDAGEM, null, hotel.getLocal());
     }
 
-    public List<Evento> consultarPacote(Voo voo) {
-        return consultar(Interesse.TipoInteresse.PACOTE, voo.getOrigem(), voo.getDestino());
-    }
-
-    public List<Evento> consultarPacote(Hotel hotel) {
-        return consultar(Interesse.TipoInteresse.PACOTE, null, hotel.getLocal());
-    }
-
-    public Evento consultar(int id) {
-        return lista.get(id);
-    }
-
+    /**
+     * Remover um Evento a partir de seu ID
+     * @param id ID do evento
+     * @return Se a exclusão foi realizada com sucesso
+     */
     public boolean remover(int id) {
         Evento ev = lista.get(id);
         if (ev == null) {

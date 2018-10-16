@@ -12,12 +12,16 @@ import java.util.ArrayList;
  * @author Victor Barpp Gomes
  */
 public class Voo {
+    /** Número de poltronas total */
     private int poltronasTotal;
 
+    /** Número de poltronas disponíveis */
     private int poltronasDisp;
 
+    /** Conjunto de reservas (compras realizadas) */
     private ArrayList<Reserva> reservas = new ArrayList<>();
 
+    /** Informações */
     private InfoVoo infoVoo;
 
     /*------------------------------------------------------------------------*/
@@ -66,6 +70,10 @@ public class Voo {
         infoVoo = new InfoVoo(origem, destino, data, poltronasTotal);
     }
 
+    /** Implementa a reserva (compra) de passagens do voo.
+     * @param numPessoas número de poltronas a comprar
+     * @return um objeto Reserva, se bem sucedido, ou null, se falhar
+     */
     public Reserva reservar(int numPessoas) {
         synchronized (this) {
             Reserva reserva = null;
@@ -80,6 +88,10 @@ public class Voo {
         }
     }
 
+    /** Desfaz uma compra de passagens
+     * @param reserva reserva a estornar
+     * @return true se e somente se a compra foi estornada com sucesso
+     */
     public boolean estornar(Reserva reserva) {
         synchronized (this) {
             if (reservas.remove(reserva)) {
