@@ -924,15 +924,29 @@ public class ClientUIController {
      * @param event evento de click
      */
     private void registrarInteresse(ActionEvent event) {
+        // Obtém valores do formulário
         Interesse.TipoInteresse tipo = choiceTipoInteresse.getValue();
         Cidade origem = choiceOrigemInteresse.getValue();
         Cidade destino = choiceDestinoInteresse.getValue();
+        if (!validarRegistroInteresse(tipo, origem, destino)) {
+            return;
+        }
 
-        BigDecimal valorMaximoVoo;
-        BigDecimal valorMaximoHotel;
+        // Se for interesse em hospedagem, retira a cidade de origem
+        if (tipo == Interesse.TipoInteresse.HOSPEDAGEM) {
+            origem = null;
+        }
+
+        // Obtém os valores máximos do interesse
+        BigDecimal valorMaximoVoo = BigDecimal.ZERO;
+        BigDecimal valorMaximoHotel = BigDecimal.ZERO;
         try {
-            valorMaximoVoo = (BigDecimal) df.parse(textValorInteresseVoo.getCharacters().toString());
-            valorMaximoHotel = (BigDecimal) df.parse(textValorInteresseHotel.getCharacters().toString());
+            if (tipo != Interesse.TipoInteresse.HOSPEDAGEM) {
+                valorMaximoVoo = (BigDecimal) df.parse(textValorInteresseVoo.getCharacters().toString());
+            }
+            if (tipo != Interesse.TipoInteresse.VOO) {
+                valorMaximoHotel = (BigDecimal) df.parse(textValorInteresseHotel.getCharacters().toString());
+            }
         }
         catch (ParseException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Favor inserir um número no campo Valor Máximo.");
@@ -940,8 +954,8 @@ public class ClientUIController {
             return;
         }
 
+        // Cria o objeto e chama o método do servidor
         Interesse interesse = new Interesse(origem, destino, tipo, Dinheiro.reais(valorMaximoVoo), Dinheiro.reais(valorMaximoHotel));
-
         try {
             InteresseController.getInstance().create(interesse);
             int id = serverRef.registrarInteresse(interesse, RemoteController.getInstance().client);
@@ -951,6 +965,36 @@ public class ClientUIController {
             alert.show();
         }
         consultarInteresses();
+    }
+
+    /** Valida alguns campos do formulário de registro de interesses.
+     * @param tipo tipo do interesse (ex: voo)
+     * @param origem cidade de origem
+     * @param destino cidade de destino
+     * @return true se e somente se os campos são válidos
+     */
+    private boolean validarRegistroInteresse(Interesse.TipoInteresse tipo, Cidade origem, Cidade destino) {
+        boolean ok = true;
+        String error = "Forneça um valor para os seguintes campos:";
+
+        if (tipo == null) {
+            ok = false;
+            error += "\n  Tipo de interesse";
+        }
+        else if (tipo != Interesse.TipoInteresse.HOSPEDAGEM && origem == null) {
+            ok = false;
+            error += "\n  Cidade de origem";
+        }
+        if (destino == null) {
+            ok = false;
+            error += "\n  Cidade de destino";
+        }
+        if (!ok) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, error);
+            alert.show();
+        }
+
+        return ok;
     }
 
     /**
