@@ -9,7 +9,6 @@ import shared.remote.AgencyClient;
  * @author Victor Barpp Gomes
  */
 public class Evento {
-
     /** Contagem de interesses para o auto-incremento do identificador */
     private static int count = 0;
 
@@ -19,30 +18,31 @@ public class Evento {
     /** Referência ao cliente (RMI) */
     private AgencyClient clientRef;
 
-    /**
-     * Construtor de um Evento a partir de um interesse e uma referência do cliente
-     * @param interesse Interesse do cliente
-     * @param clientRef Referência do cliente
-     */
-    public Evento(Interesse interesse, AgencyClient clientRef) {
-        interesse.setId(++count);
-        this.interesse = interesse;
-        this.clientRef = clientRef;
-    }
+    /*------------------------------------------------------------------------*/
 
-    /**
-     * Retorna a instância do interesse desse evento
-     * @return Interesse do evento
+    /** Retorna a instância do interesse desse evento.
+     * @return interesse do evento
      */
     public Interesse getInteresse() {
         return interesse;
     }
 
-    /**
-     * Retorna a referência do cliente desse evento
-     * @return Referência do cliente do evento
+    /** Retorna a referência do cliente desse evento.
+     * @return referência do cliente do evento
      */
     public AgencyClient getClientRef() {
         return clientRef;
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Construtor único, que recebe um interesse e uma referência do cliente.
+     * @param interesse interesse do cliente
+     * @param clientRef referência do cliente
+     */
+    public Evento(Interesse interesse, AgencyClient clientRef) {
+        interesse.setId(++count);
+        this.interesse = interesse;
+        this.clientRef = clientRef;
     }
 }

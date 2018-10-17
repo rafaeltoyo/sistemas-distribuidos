@@ -62,6 +62,7 @@ public class Hotel {
      * @param nome nome do hotel
      * @param local cidade do hotel
      * @param numQuartos número total de quartos do hotel
+     * @param precoDiaria valor da diária
      */
     public Hotel(String nome, Cidade local, int numQuartos, Dinheiro precoDiaria) {
         infoHotel = new InfoHotel(nome, local, numQuartos, precoDiaria);
