@@ -3,6 +3,10 @@ package shared.model.hotel;
 import shared.model.cidade.Cidade;
 import shared.model.saldo.Dinheiro;
 
+/** Esta classe é uma estrutura de armazenamento de informações de um hotel.
+ * @author Rafael Hideo Toyomoto
+ * @author Victor Barpp Gomes
+ */
 public class InfoHotel {
     /** Contagem de hotéis para o auto-incremento do identificador */
     private static int count = 0;
@@ -61,11 +65,11 @@ public class InfoHotel {
 
     /*------------------------------------------------------------------------*/
 
-    /**
-     * Construtor padrão de informação de um hotel
-     * @param nome Nome do hotel
-     * @param local Cidade do hotel
-     * @param numQuartos Número de quartos do hotel
+    /** Construtor padrão de informação de um hotel.
+     * @param nome nome do hotel
+     * @param local cidade do hotel
+     * @param numQuartos número de quartos do hotel
+     * @param precoDiaria valor da diária do hotel
      */
     public InfoHotel(String nome, Cidade local, int numQuartos, Dinheiro precoDiaria) {
         this.id = (count++);

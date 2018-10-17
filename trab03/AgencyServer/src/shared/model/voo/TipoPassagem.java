@@ -1,7 +1,8 @@
 package shared.model.voo;
 
-/**
- * Enum de Tipo de passagem
+/** Este enum representa os tipos de passagem.
+ * @author Rafael Hideo Toyomoto
+ * @author Victor Barpp Gomes
  */
 public enum TipoPassagem {
     /** Passagem somente de ida */

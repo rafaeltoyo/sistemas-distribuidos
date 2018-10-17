@@ -33,7 +33,7 @@ public class Dinheiro implements Serializable {
         return quantia;
     }
 
-    /** Retorna a moeda (ex: BRL)
+    /** Retorna a moeda (ex: BRL).
      * @return moeda
      */
     public Currency getMoeda() {
@@ -43,7 +43,7 @@ public class Dinheiro implements Serializable {
     /*------------------------------------------------------------------------*/
 
     /** Construtor privado com especificação de todos os atributos (não utiliza
-     * atributos padrão da classe)
+     * atributos padrão da classe).
      * @param quantia quantia em dinheiro
      * @param moeda moeda (ex: BRL)
      * @param arredondamento modo de arredondamento do BigDecimal
@@ -85,6 +85,7 @@ public class Dinheiro implements Serializable {
 
     /** Compara este Dinheiro com o Dinheiro especificado. É um wrapper para o
      * método compareTo() da classe BigDecimal.
+     * @param val objeto Dinheiro com o qual se faz a comparação
      * @return -1, 0, ou 1, se esse Dnheiro numericamente menor que, igual a, ou
      * maior que val.
      */

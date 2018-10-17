@@ -6,6 +6,10 @@ import shared.model.saldo.Dinheiro;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+/** Esta classe é uma estrutura de armazenamento de informações de um voo.
+ * @author Rafael Hideo Toyomoto
+ * @author Victor Barpp Gomes
+ */
 public class InfoVoo implements Serializable {
     /** Contagem de voos para o auto-incremento do identificador */
     private static int count = 0;
@@ -75,6 +79,7 @@ public class InfoVoo implements Serializable {
      * @param destino local de destino (chegada)
      * @param data data de partida
      * @param poltronasDisp número de poltronas disponíveis
+     * @param precoPassagem valor da passagem
      */
     public InfoVoo(Cidade origem, Cidade destino, LocalDate data,
                    int poltronasDisp, Dinheiro precoPassagem) {

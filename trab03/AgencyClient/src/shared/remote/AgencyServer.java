@@ -141,5 +141,4 @@ public interface AgencyServer extends Remote {
      * @throws RemoteException caso ocorra erro no RMI
      */
     boolean removerInteresse(int id, AgencyClient client) throws RemoteException;
-
 }

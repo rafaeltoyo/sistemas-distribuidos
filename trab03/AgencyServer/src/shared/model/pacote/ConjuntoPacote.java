@@ -88,6 +88,4 @@ public class ConjuntoPacote implements Serializable {
     public void adicionarHospedagem(InfoHotelRet h) {
         hospedagens.add(h);
     }
-
-    /*------------------------------------------------------------------------*/
 }

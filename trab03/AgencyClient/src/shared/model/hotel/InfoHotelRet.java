@@ -118,6 +118,7 @@ public class InfoHotelRet implements Serializable {
      * @param quartosDisponiveis número de quartos disponíveis no período
      * @param dataEntrada data de início do período
      * @param dataSaida data de fim do período
+     * @param numQuartosAComprar número de quartos que o cliente deseja comprar
      */
     public InfoHotelRet(InfoHotel infoHotel, int quartosDisponiveis,
                         LocalDate dataEntrada, LocalDate dataSaida, int numQuartosAComprar) {
