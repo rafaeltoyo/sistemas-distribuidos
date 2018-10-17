@@ -52,6 +52,10 @@ public class ClientUIController {
 
     /*------------------------------------------------------------------------*/
 
+    /* Objetos de interface gráfica.
+     * Não documentados porque... olha a quantidade.
+     */
+
     private ObservableList<InfoVoo> olInfoVooIda = FXCollections.observableArrayList();
 
     private ObservableList<InfoVoo> olInfoVooVolta = FXCollections.observableArrayList();
@@ -347,9 +351,7 @@ public class ClientUIController {
 
     /*------------------------------------------------------------------------*/
 
-    /**
-     * Inicializador da interface e conexão com o servidor (RMI)
-     */
+    /** Inicializa a interface gráfica e a conexão com o servidor (RMI). */
     @FXML
     public void initialize() {
         df.setParseBigDecimal(true);
@@ -378,9 +380,7 @@ public class ClientUIController {
         }
     }
 
-    /**
-     * Iniciar a aba de Voos
-     */
+    /** Iniciar a aba de Voos */
     private void inicializarVoos() {
         // Inicializa as ChoiceBox com as cidades do enum Cidade
         choiceOrigemVoo.getItems().setAll(Cidade.values());
@@ -413,9 +413,7 @@ public class ClientUIController {
         buttonComprarVoo.setOnAction(this::comprarVoos);
     }
 
-    /**
-     * Iniciar a aba de Hospedagens
-     */
+    /** Inicia a aba de Hospedagens. */
     private void inicializarHospedagens() {
         // Inicializa a ChoiceBox com as cidades do enum Cidade
         choiceCidadeHosp.getItems().setAll(Cidade.values());
@@ -439,9 +437,7 @@ public class ClientUIController {
         buttonComprarHosp.setOnAction(this::comprarHospedagem);
     }
 
-    /**
-     * Iniciar a aba de pacotes
-     */
+    /** Inicia a aba de pacotes. */
     private void inicializarPacotes() {
         // Inicializa as ChoiceBox com as cidades do enum Cidade
         choiceOrigemPacote.getItems().setAll(Cidade.values());
@@ -478,9 +474,7 @@ public class ClientUIController {
         buttonComprarPacote.setOnAction(this::comprarPacote);
     }
 
-    /**
-     * Iniciar a aba de interesses
-     */
+    /** Iniciar a aba de interesses. */
     private void inicializarInteresse() {
         // Inicializa as ChoiceBox com as cidades do enum Cidade
         choiceTipoInteresse.getItems().setAll(Interesse.TipoInteresse.values());
@@ -526,8 +520,7 @@ public class ClientUIController {
 
     /*------------------------------------------------------------------------*/
 
-    /**
-     * Conectar com o servidor (RMI)
+    /** Conecta com o servidor (RMI).
      * @throws RemoteException caso ocorra um erro no RMI
      * @throws NotBoundException caso não exista a entrada no serviço de nomes
      */
@@ -538,8 +531,7 @@ public class ClientUIController {
 
     /*------------------------------------------------------------------------*/
 
-    /**
-     * Consultar os Voos
+    /** Faz uma consulta de Voos chamando o método do servidor.
      * @param event evento de click
      */
     private void consultarVoos(ActionEvent event) {
@@ -578,8 +570,7 @@ public class ClientUIController {
         tableVooVolta.setItems(olInfoVooVolta);
     }
 
-    /**
-     * Validar consulta
+    /** Valida alguns parâmetros da consulta de voos.
      * @param origem Cidade origem
      * @param destino Cidade destino
      * @param dataIda Data de ida
@@ -620,8 +611,7 @@ public class ClientUIController {
         return ok;
     }
 
-    /**
-     * Comprar Voo
+    /** Realiza a compra de um voo chamando o método do servidor.
      * @param event evento de click
      */
     private void comprarVoos(ActionEvent event) {
@@ -663,8 +653,7 @@ public class ClientUIController {
 
     /*------------------------------------------------------------------------*/
 
-    /**
-     * Consultar Hospedagens
+    /** Faz uma consulta de Hospedagens chamando o método do servidor.
      * @param event evento de click
      */
     private void consultarHospedagens(ActionEvent event) {
@@ -694,8 +683,7 @@ public class ClientUIController {
         tableHospedagem.setItems(olInfoHotel);
     }
 
-    /**
-     * Validar consulta de hospedagens
+    /** Valida alguns parâmetros da consulta de hospedagens.
      * @param cidade Cidade do Hotel
      * @param dataEntrada Data de entrada
      * @param dataSaida Data de saída
@@ -735,8 +723,7 @@ public class ClientUIController {
         return ok;
     }
 
-    /**
-     * Comprar uma Hospedagem
+    /** Compra hospedagens chamando o método do servidor.
      * @param event evento de click
      */
     private void comprarHospedagem(ActionEvent event) {
@@ -769,8 +756,7 @@ public class ClientUIController {
 
     /*------------------------------------------------------------------------*/
 
-    /**
-     * Consultar os Pacotes
+    /** Faz uma consulta de pacotes chamando o método do servidor.
      * @param event evento de click
      */
     private void consultarPacotes(ActionEvent event) {
@@ -817,8 +803,7 @@ public class ClientUIController {
         tableVooVoltaPac.setItems(olInfoVooVoltaPac);
     }
 
-    /**
-     * Validar consulta de pacote
+    /** Valida alguns parâmetros da consulta de pacote.
      * @param origem Cidade origem
      * @param destino Cidade destino
      * @param dataIda Data de ida
@@ -863,8 +848,7 @@ public class ClientUIController {
         return ok;
     }
 
-    /**
-     * Comprar um pacote
+    /** Compra um pacote chamando o método do servidor.
      * @param event evento de click
      */
     private void comprarPacote(ActionEvent event) {
@@ -910,17 +894,14 @@ public class ClientUIController {
 
     /*------------------------------------------------------------------------*/
 
-    /**
-     * Consultar os interesses registrados
-     */
+    /** Atualiza os interesses da tabela de interesses. */
     private void consultarInteresses() {
         olInteresse.clear();
         olInteresse.addAll(InteresseController.getInstance().getInteresses());
         tableInteresse.setItems(olInteresse);
     }
 
-    /**
-     * Registrar um interesse
+    /** Registra um interesse chamando o método do servidor.
      * @param event evento de click
      */
     private void registrarInteresse(ActionEvent event) {
@@ -997,8 +978,7 @@ public class ClientUIController {
         return ok;
     }
 
-    /**
-     * Excluir um interesse
+    /** Exclui um interesse chamando o método do servidor.
      * @param event evento de click
      */
     private void excluirInteresse(ActionEvent event) {
