@@ -18,6 +18,7 @@ public class AgencyClientImpl extends UnicastRemoteObject implements AgencyClien
 
     /** Construtor único.
      * @throws RemoteException caso ocorra erro no RMI
+     * @param ui interface gráfica do usuáruo
      */
     public AgencyClientImpl(ClientUIController ui) throws RemoteException {
         super();

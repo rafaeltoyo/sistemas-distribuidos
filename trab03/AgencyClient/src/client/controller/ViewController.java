@@ -16,7 +16,9 @@ public class ViewController {
     /** Instância única do controlador */
     private static ViewController ourInstance = new ViewController();
 
-    /** Resgatar a instância única do controlador */
+    /** Resgatar a instância única do controlador
+     * @return instância do siglenton
+     */
     public static ViewController getInstance() {
         return ourInstance;
     }
