@@ -289,3 +289,9 @@ nbdist/
 
 
 # End of https://www.gitignore.io/api/java,eclipse,netbeans,intellij,intellij+all,intellij+iml,visualstudiocode
+
+nbproject/
+src/conf/
+test/
+web/
+build.xml
