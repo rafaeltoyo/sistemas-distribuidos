@@ -5,7 +5,12 @@ import shared.model.saldo.Dinheiro;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import server.DinheiroAdapter;
+import server.LocalDateAdapter;
 
 /** Esta classe é uma estrutura de armazenamento de informações de um voo.
  * @author Rafael Hideo Toyomoto
@@ -17,18 +22,25 @@ public class InfoVoo implements Serializable {
     private static int count = 0;
 
     /** Identificador do voo */
+    @XmlAttribute
     private int id;
 
     /** Local de origem (partida) */
+    @XmlElement
     private Cidade origem;
 
     /** Local de destino (chegada) */
+    @XmlElement
     private Cidade destino;
 
     /** Data do voo */
+    @XmlElement
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate data;
 
     /** Preço da passagem */
+    @XmlElement
+    @XmlJavaTypeAdapter(value = DinheiroAdapter.class)
     private Dinheiro precoPassagem;
 
     /** Poltronas disponíveis */

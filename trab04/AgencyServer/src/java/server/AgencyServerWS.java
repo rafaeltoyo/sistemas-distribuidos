@@ -87,7 +87,7 @@ public class AgencyServerWS {
     
     @GET
     @Path("/consultar_passagens")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_XML)
     public Response consultarPassagens(
             //@QueryParam("tipo_passagem") TipoPassagem tipo,
             //@QueryParam("origem") Cidade origem,
