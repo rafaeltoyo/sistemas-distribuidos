@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /** Representa:
  *   um conjunto de voos de ida;
@@ -18,14 +20,18 @@ import java.util.List;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
+@XmlRootElement
 public class ConjuntoPacote implements Serializable {
     /** Conjunto de voos de ida */
+    @XmlElement
     private ArrayList<InfoVoo> voosIda;
 
     /** Conjunto de voos de volta */
+    @XmlElement
     private ArrayList<InfoVoo> voosVolta;
 
     /** Conjunto de hotéis que podem receber o cliente no período informado */
+    @XmlElement
     private ArrayList<InfoHotelRet> hospedagens;
 
     /*------------------------------------------------------------------------*/

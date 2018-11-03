@@ -26,6 +26,8 @@ import javax.ws.rs.core.Response;
 import server.model.hotel.Hotel;
 import server.model.voo.Voo;
 import shared.model.cidade.Cidade;
+import shared.model.hotel.InfoHotelRet;
+import shared.model.pacote.ConjuntoPacote;
 import shared.model.saldo.Dinheiro;
 import shared.model.voo.InfoVoo;
 import shared.model.voo.TipoPassagem;
@@ -89,32 +91,16 @@ public class AgencyServerWS {
     @Path("/consultar_passagens")
     @Produces(MediaType.APPLICATION_XML)
     public Response consultarPassagens(
-            //@QueryParam("tipo_passagem") TipoPassagem tipo,
-            //@QueryParam("origem") Cidade origem,
-            //@QueryParam("destino") Cidade destino,
-            //@QueryParam("data_ida") String dataIdaStr,
-            //@QueryParam("data_volta") String dataVoltaStr,
+            @QueryParam("tipo_passagem") TipoPassagem tipo,
+            @QueryParam("origem") Cidade origem,
+            @QueryParam("destino") Cidade destino,
+            @QueryParam("data_ida") String dataIdaStr,
+            @QueryParam("data_volta") String dataVoltaStr,
             @QueryParam("num_pessoas") int numPessoas) {
         
         try {
-            TipoPassagem tipo = TipoPassagem.IDA_E_VOLTA;
-            Cidade origem = Cidade.CURITIBA;
-            Cidade destino = Cidade.SAO_PAULO;
-            String dataIdaStr = "2018-10-16";
-            String dataVoltaStr = "2018-10-18";
-
             LocalDate dataIda = LocalDate.parse(dataIdaStr);
             LocalDate dataVolta = LocalDate.parse(dataVoltaStr);
-
-            /*
-            List<Object> list = (List) agencyServerImpl.consultarPassagens(tipo, origem, destino, dataIda, dataVolta, numPessoas);
-
-            ResponseList ret = new ResponseList();
-            ret.setList(list);
-            
-            return ret;
-            */
-            
             
             List<InfoVoo> list = agencyServerImpl.consultarPassagens(tipo, origem, destino, dataIda, dataVolta, numPessoas);
             GenericEntity<List<InfoVoo>> entity = new GenericEntity<List<InfoVoo>>(list) {};
@@ -130,4 +116,142 @@ public class AgencyServerWS {
     
     /*------------------------------------------------------------------------*/
     
+    // FIXME: Alterar para PUT
+    @GET
+    @Path("/comprar_passagens")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String comprarPassagens(
+            @QueryParam("tipo_passagem") TipoPassagem tipo,
+            @QueryParam("id_voo_ida") int idVooIda,
+            @QueryParam("id_voo_volta") int idVooVolta,
+            @QueryParam("num_pessoas") int numPessoas) {
+        
+        try {
+            boolean success = agencyServerImpl.comprarPassagens(tipo, idVooIda, idVooVolta, numPessoas);
+            
+            if (success) {
+                return Boolean.TRUE.toString();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Boolean.FALSE.toString();
+    }
+    
+    /*------------------------------------------------------------------------*/
+    
+    @GET
+    @Path("/consultar_hospedagens")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response consultarHospedagens(
+            @QueryParam("local") Cidade local,
+            @QueryParam("data_ini") String dataIniStr,
+            @QueryParam("data_fim") String dataFimStr,
+            @QueryParam("num_quartos") int numQuartos,
+            @QueryParam("num_pessoas") int numPessoas) {
+        
+        try {
+            LocalDate dataIni = LocalDate.parse(dataIniStr);
+            LocalDate dataFim = LocalDate.parse(dataFimStr);
+            
+            List<InfoHotelRet> list = agencyServerImpl.consultarHospedagens(local, dataIni, dataFim, numQuartos, numPessoas);
+            GenericEntity<List<InfoHotelRet>> entity = new GenericEntity<List<InfoHotelRet>>(list) {};
+            
+            return Response.ok(entity).build();
+            
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    /*------------------------------------------------------------------------*/
+    
+    // FIXME: Alterar para PUT
+    @GET
+    @Path("/comprar_hospedagens")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String comprarHospedagem(
+            @QueryParam("id_hotel") int idHotel,
+            @QueryParam("data_ini") String dataIniStr,
+            @QueryParam("data_fim") String dataFimStr,
+            @QueryParam("num_quartos") int numQuartos) {
+        
+        try {
+            LocalDate dataIni = LocalDate.parse(dataIniStr);
+            LocalDate dataFim = LocalDate.parse(dataFimStr);
+            
+            boolean success = agencyServerImpl.comprarHospedagem(idHotel, dataIni, dataFim, numQuartos);
+            
+            if (success) {
+                return Boolean.TRUE.toString();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Boolean.FALSE.toString();
+    }
+    
+    /*------------------------------------------------------------------------*/
+    
+    @GET
+    @Path("/consultar_pacotes")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response consultarPacotes(
+            @QueryParam("origem") Cidade origem,
+            @QueryParam("destino") Cidade destino,
+            @QueryParam("data_ida") String dataIdaStr,
+            @QueryParam("data_volta") String dataVoltaStr,
+            @QueryParam("num_quartos") int numQuartos,
+            @QueryParam("num_pessoas") int numPessoas) {
+        
+        try {
+            LocalDate dataIda = LocalDate.parse(dataIdaStr);
+            LocalDate dataVolta = LocalDate.parse(dataVoltaStr);
+            
+            ConjuntoPacote list = agencyServerImpl.consultarPacotes(origem, destino, dataIda, dataVolta, numQuartos, numPessoas);
+            GenericEntity<ConjuntoPacote> entity = new GenericEntity<ConjuntoPacote>(list) {};
+            
+            return Response.ok(entity).build();
+            
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    /*------------------------------------------------------------------------*/
+    
+    // FIXME: Alterar para PUT
+    @GET
+    @Path("/comprar_pacote")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String comprarPacote(
+            @QueryParam("id_voo_ida") int idVooIda,
+            @QueryParam("id_voo_volta") int idVooVolta,
+            @QueryParam("id_hotel") int idHotel,
+            @QueryParam("data_ida") String dataIdaStr,
+            @QueryParam("data_volta") String dataVoltaStr,
+            @QueryParam("num_quartos") int numQuartos,
+            @QueryParam("num_pessoas") int numPessoas) {
+        
+        try {
+            LocalDate dataIda = LocalDate.parse(dataIdaStr);
+            LocalDate dataVolta = LocalDate.parse(dataVoltaStr);
+            
+            boolean success = agencyServerImpl.comprarPacote(idVooIda, idVooVolta, idHotel, dataIda, dataVolta, numQuartos, numPessoas);
+            
+            if (success) {
+                return Boolean.TRUE.toString();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Boolean.FALSE.toString();
+    }
 }

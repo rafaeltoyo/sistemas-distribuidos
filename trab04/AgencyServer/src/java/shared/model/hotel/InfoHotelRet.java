@@ -7,6 +7,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import server.DinheiroAdapter;
+import server.LocalDateAdapter;
 
 /** Classe que representa as informações de um hotel a serem enviadas como
  * resposta a um cliente.
@@ -15,32 +21,45 @@ import java.time.temporal.ChronoUnit;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
+@XmlRootElement
 public class InfoHotelRet implements Serializable {
     /** Identificador numérico do hotel */
+    @XmlAttribute
     private int id;
 
     /** Nome do hotel */
+    @XmlElement
     private String nome;
 
     /** Cidade do hotel */
+    @XmlElement
     private Cidade local;
 
     /** Número total de quartos do hotel */
+    @XmlElement
     private int numQuartos;
 
     /** Número de quartos disponíveis no período informado */
+    @XmlElement
     private int quartosDisponiveis;
 
     /** Data de entrada */
+    @XmlElement
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate dataEntrada;
 
     /** Número de diárias */
+    @XmlElement
     private long numDiarias;
 
     /** Preço da diária */
+    @XmlElement
+    @XmlJavaTypeAdapter(value = DinheiroAdapter.class)
     private Dinheiro precoDiaria;
 
     /** Preço total */
+    @XmlElement
+    @XmlJavaTypeAdapter(value = DinheiroAdapter.class)
     private Dinheiro precoTotal;
 
     /*------------------------------------------------------------------------*/
@@ -112,6 +131,18 @@ public class InfoHotelRet implements Serializable {
     }
 
     /*------------------------------------------------------------------------*/
+
+    public InfoHotelRet() {
+        this.id = -1;
+        this.nome = null;
+        this.local = null;
+        this.numQuartos = -1;
+        this.quartosDisponiveis = -1;
+        this.dataEntrada = null;
+        this.numDiarias = -1;
+        this.precoDiaria = null;
+        this.precoTotal = null;
+    }
 
     /** Construtor padrão.
      * @param infoHotel informações do hotel
