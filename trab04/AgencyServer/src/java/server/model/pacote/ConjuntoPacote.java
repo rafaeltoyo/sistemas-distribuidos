@@ -1,14 +1,13 @@
 package server.model.pacote;
 
-import server.model.hotel.InfoHotelRet;
-import server.model.voo.InfoVoo;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import server.model.hotel.InfoHotelRet;
+import server.model.voo.InfoVoo;
 
 /** Representa:
  *   um conjunto de voos de ida;

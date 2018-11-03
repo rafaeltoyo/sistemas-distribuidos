@@ -1,8 +1,5 @@
 package server.model.hotel;
 
-import server.model.cidade.Cidade;
-import server.model.saldo.Dinheiro;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,6 +8,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import server.model.cidade.Cidade;
+import server.model.saldo.Dinheiro;
 import server.webservice.DinheiroAdapter;
 import server.webservice.LocalDateAdapter;
 

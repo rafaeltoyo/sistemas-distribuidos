@@ -1,9 +1,8 @@
 package server.model.evento;
 
+import java.io.Serializable;
 import server.model.cidade.Cidade;
 import server.model.saldo.Dinheiro;
-
-import java.io.Serializable;
 
 /** Esta classe representa um interesse por parte do cliente.
  * @author Rafael Hideo Toyomoto

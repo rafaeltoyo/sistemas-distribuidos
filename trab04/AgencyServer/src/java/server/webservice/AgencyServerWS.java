@@ -5,31 +5,24 @@
  */
 package server.webservice;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import server.AgencyServerImpl;
-import server.model.hotel.Hotel;
-import server.model.voo.Voo;
 import server.model.cidade.Cidade;
 import server.model.hotel.InfoHotelRet;
 import server.model.pacote.ConjuntoPacote;
-import server.model.saldo.Dinheiro;
 import server.model.voo.InfoVoo;
 import server.model.voo.TipoPassagem;
 
@@ -101,7 +94,13 @@ public class AgencyServerWS {
         
         try {
             LocalDate dataIda = LocalDate.parse(dataIdaStr);
-            LocalDate dataVolta = LocalDate.parse(dataVoltaStr);
+            LocalDate dataVolta;
+            if (tipo == TipoPassagem.IDA_E_VOLTA) {
+                dataVolta = LocalDate.parse(dataVoltaStr);
+            }
+            else {
+                dataVolta = null;
+            }
             
             List<InfoVoo> list = agencyServerImpl.consultarPassagens(tipo, origem, destino, dataIda, dataVolta, numPessoas);
             GenericEntity<List<InfoVoo>> entity = new GenericEntity<List<InfoVoo>>(list) {};

@@ -1,9 +1,8 @@
 package server.remote;
 
-import server.model.mensagem.Mensagem;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import server.model.mensagem.Mensagem;
 
 /** Interface RMI para o cliente da agência.
  * @author Rafael Hideo Toyomoto

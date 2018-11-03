@@ -1,11 +1,10 @@
 package server.model.hotel;
 
-import server.model.saldo.Reserva;
-import server.model.cidade.Cidade;
-import server.model.saldo.Dinheiro;
-
 import java.time.LocalDate;
 import java.util.HashMap;
+import server.model.cidade.Cidade;
+import server.model.saldo.Dinheiro;
+import server.model.saldo.Reserva;
 
 /** Representa um hotel.
  * @author Rafael Hideo Toyomoto

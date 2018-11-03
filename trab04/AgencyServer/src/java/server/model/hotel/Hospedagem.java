@@ -1,9 +1,8 @@
 package server.model.hotel;
 
-import server.model.saldo.Reserva;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
+import server.model.saldo.Reserva;
 
 /** Representa um dia de um hotel, contabilizando o número de quartos livres.
  * @author Rafael Hideo Toyomoto

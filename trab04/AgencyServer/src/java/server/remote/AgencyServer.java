@@ -1,16 +1,13 @@
 package server.remote;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import server.model.cidade.Cidade;
 import server.model.evento.Interesse;
 import server.model.hotel.InfoHotelRet;
 import server.model.pacote.ConjuntoPacote;
 import server.model.voo.InfoVoo;
 import server.model.voo.TipoPassagem;
-
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 
 /** Interface RMI para o servidor da agência.
  * @author Rafael Hideo Toyomoto
