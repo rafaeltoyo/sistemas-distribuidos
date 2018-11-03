@@ -3,9 +3,9 @@ package server.controller;
 import server.model.evento.Evento;
 import server.model.hotel.Hotel;
 import server.model.voo.Voo;
-import shared.model.cidade.Cidade;
-import shared.model.evento.Interesse;
-import shared.remote.AgencyClient;
+import server.model.cidade.Cidade;
+import server.model.evento.Interesse;
+import server.remote.AgencyClient;
 
 import java.util.ArrayList;
 import java.util.Collections;

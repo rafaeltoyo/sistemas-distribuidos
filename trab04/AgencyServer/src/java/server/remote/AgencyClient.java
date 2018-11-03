@@ -1,6 +1,6 @@
-package shared.remote;
+package server.remote;
 
-import shared.model.mensagem.Mensagem;
+import server.model.mensagem.Mensagem;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

@@ -1,7 +1,7 @@
-package shared.model.voo;
+package server.model.voo;
 
-import shared.model.cidade.Cidade;
-import shared.model.saldo.Dinheiro;
+import server.model.cidade.Cidade;
+import server.model.saldo.Dinheiro;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -9,8 +9,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import server.DinheiroAdapter;
-import server.LocalDateAdapter;
+import server.webservice.DinheiroAdapter;
+import server.webservice.LocalDateAdapter;
 
 /** Esta classe é uma estrutura de armazenamento de informações de um voo.
  * @author Rafael Hideo Toyomoto

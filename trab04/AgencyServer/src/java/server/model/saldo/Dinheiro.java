@@ -1,4 +1,4 @@
-package shared.model.saldo;
+package server.model.saldo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

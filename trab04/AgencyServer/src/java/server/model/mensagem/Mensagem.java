@@ -1,4 +1,4 @@
-package shared.model.mensagem;
+package server.model.mensagem;
 
 import java.io.Serializable;
 

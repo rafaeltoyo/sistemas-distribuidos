@@ -1,9 +1,8 @@
 package server.model.voo;
 
 import server.model.saldo.Reserva;
-import shared.model.cidade.Cidade;
-import shared.model.saldo.Dinheiro;
-import shared.model.voo.InfoVoo;
+import server.model.cidade.Cidade;
+import server.model.saldo.Dinheiro;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

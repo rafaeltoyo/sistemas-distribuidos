@@ -1,7 +1,7 @@
-package shared.model.pacote;
+package server.model.pacote;
 
-import shared.model.hotel.InfoHotelRet;
-import shared.model.voo.InfoVoo;
+import server.model.hotel.InfoHotelRet;
+import server.model.voo.InfoVoo;
 
 import java.io.Serializable;
 import java.util.ArrayList;

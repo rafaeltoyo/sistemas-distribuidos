@@ -1,11 +1,11 @@
-package shared.remote;
+package server.remote;
 
-import shared.model.cidade.Cidade;
-import shared.model.evento.Interesse;
-import shared.model.hotel.InfoHotelRet;
-import shared.model.pacote.ConjuntoPacote;
-import shared.model.voo.InfoVoo;
-import shared.model.voo.TipoPassagem;
+import server.model.cidade.Cidade;
+import server.model.evento.Interesse;
+import server.model.hotel.InfoHotelRet;
+import server.model.pacote.ConjuntoPacote;
+import server.model.voo.InfoVoo;
+import server.model.voo.TipoPassagem;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

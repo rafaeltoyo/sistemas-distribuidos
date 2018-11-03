@@ -1,7 +1,7 @@
-package shared.model.hotel;
+package server.model.hotel;
 
-import shared.model.cidade.Cidade;
-import shared.model.saldo.Dinheiro;
+import server.model.cidade.Cidade;
+import server.model.saldo.Dinheiro;
 
 /** Esta classe é uma estrutura de armazenamento de informações de um hotel.
  * @author Rafael Hideo Toyomoto

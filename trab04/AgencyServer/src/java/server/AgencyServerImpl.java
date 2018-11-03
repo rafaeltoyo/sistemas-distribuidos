@@ -7,15 +7,15 @@ import server.model.hotel.Hospedagem;
 import server.model.hotel.Hotel;
 import server.model.saldo.Reserva;
 import server.model.voo.Voo;
-import shared.model.cidade.Cidade;
-import shared.model.evento.Interesse;
-import shared.model.hotel.InfoHotelRet;
-import shared.model.mensagem.Mensagem;
-import shared.model.pacote.ConjuntoPacote;
-import shared.model.voo.InfoVoo;
-import shared.model.voo.TipoPassagem;
-import shared.remote.AgencyClient;
-import shared.remote.AgencyServer;
+import server.model.cidade.Cidade;
+import server.model.evento.Interesse;
+import server.model.hotel.InfoHotelRet;
+import server.model.mensagem.Mensagem;
+import server.model.pacote.ConjuntoPacote;
+import server.model.voo.InfoVoo;
+import server.model.voo.TipoPassagem;
+import server.remote.AgencyClient;
+import server.remote.AgencyServer;
 
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
@@ -23,7 +23,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import shared.model.saldo.Dinheiro;
+import server.model.saldo.Dinheiro;
 
 /** Representa o servidor da agência.
  * @author Rafael Hideo Toyomoto

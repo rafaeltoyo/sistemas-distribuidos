@@ -1,7 +1,6 @@
 package server.model.evento;
 
-import shared.model.evento.Interesse;
-import shared.remote.AgencyClient;
+import server.remote.AgencyClient;
 
 /** Representa um registro de interesse de um cliente em um hotel, com os
  * devidos parâmetros.

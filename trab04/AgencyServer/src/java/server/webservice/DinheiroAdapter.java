@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server;
+package server.webservice;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import shared.model.saldo.Dinheiro;
+import server.model.saldo.Dinheiro;
 
 /**
  *

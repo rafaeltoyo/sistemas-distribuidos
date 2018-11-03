@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server;
+package server.webservice;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -23,14 +23,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import server.AgencyServerImpl;
 import server.model.hotel.Hotel;
 import server.model.voo.Voo;
-import shared.model.cidade.Cidade;
-import shared.model.hotel.InfoHotelRet;
-import shared.model.pacote.ConjuntoPacote;
-import shared.model.saldo.Dinheiro;
-import shared.model.voo.InfoVoo;
-import shared.model.voo.TipoPassagem;
+import server.model.cidade.Cidade;
+import server.model.hotel.InfoHotelRet;
+import server.model.pacote.ConjuntoPacote;
+import server.model.saldo.Dinheiro;
+import server.model.voo.InfoVoo;
+import server.model.voo.TipoPassagem;
 
 /**
  * REST Web Service

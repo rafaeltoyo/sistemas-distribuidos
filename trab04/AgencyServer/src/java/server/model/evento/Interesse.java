@@ -1,7 +1,7 @@
-package shared.model.evento;
+package server.model.evento;
 
-import shared.model.cidade.Cidade;
-import shared.model.saldo.Dinheiro;
+import server.model.cidade.Cidade;
+import server.model.saldo.Dinheiro;
 
 import java.io.Serializable;
 

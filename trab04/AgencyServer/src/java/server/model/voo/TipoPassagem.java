@@ -1,4 +1,4 @@
-package shared.model.voo;
+package server.model.voo;
 
 /** Este enum representa os tipos de passagem.
  * @author Rafael Hideo Toyomoto
