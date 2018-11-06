@@ -10,8 +10,9 @@ __email__ = "toyomoto@alunos.utfpr.edu.br"
 __status__ = "Production"
 # ==================================================================================================================== #
 
-import datetime
+from datetime import datetime
 from src.model.Cidade import Cidade
+from src.model.Dinheiro import Dinheiro
 
 
 class Voo(object):
@@ -22,6 +23,7 @@ class Voo(object):
             origem: Cidade,
             destino: Cidade,
             data: datetime,
+            preco: Dinheiro,
             poltronas_disp: int):
         """
         Construtor padrão
@@ -33,6 +35,8 @@ class Voo(object):
         :type destino: Cidade
         :param data: Data desse voo
         :type data: datetime
+        :param preco: Preço do voo
+        :type preco: Dinheiro
         :param poltronas_disp: Número de poltronas disponíveis nesse voo
         :type poltronas_disp: int
         """
@@ -40,6 +44,25 @@ class Voo(object):
         self.origem = origem
         self.destino = destino
         self.data = data
+        self.preco = preco
         self.poltronas_disp = poltronas_disp
+
+
+    def __str__(self):
+        return "{} {} {} {} {} {}".format(self.id, self.origem, self.destino, self.data, self.preco, self.poltronas_disp)
+
+
+# ==================================================================================================================== #
+
+
+def create_from_XML(xml) -> Voo:
+
+    id = int(1)
+    origem = Cidade.CURITIBA
+    destino = Cidade.CURITIBA
+    data = datetime.now()
+    poltronas_disp = 10
+
+    return Voo(id, origem, destino, data, poltronas_disp)
 
 # ==================================================================================================================== #

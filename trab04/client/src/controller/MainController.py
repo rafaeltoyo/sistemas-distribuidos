@@ -4,7 +4,7 @@
 #   Author
 # ==================================================================================================================== #
 
-import requests
+from src.controller.RequestController import RequestController
 
 
 class MainController(object):
@@ -12,7 +12,10 @@ class MainController(object):
     def __init__(self):
         pass
 
-    def consultar(self):
-        pass
+    def run(self):
+
+        request_ctrl = RequestController()
+
+        request_ctrl.get_passagens()
 
 # ==================================================================================================================== #

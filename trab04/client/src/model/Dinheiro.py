@@ -10,33 +10,16 @@ __email__ = "toyomoto@alunos.utfpr.edu.br"
 __status__ = "Production"
 # ==================================================================================================================== #
 
-from enum import Enum
 
+class Dinheiro(object):
 
-class Cidade(Enum):
+    def __init__(self, value):
+        self.__value = float(value.replace('R$ ', ''))
 
-    # Porto Alegre - RS
-    PORTO_ALEGRE = "Porto Alegre"
+    def __str__(self):
+        return str(self.__value)
 
-    # Florianópolis - SC
-    FLORIANOPOLIS = "Florianópolis"
-
-    # Curitiba - PR
-    CURITIBA = "Curitiba"
-
-    # Londrina - PR
-    LONDRINA = "Londrina"
-
-    # Foz do Iguaçu - PR
-    FOZ_DO_IGUACU = "Foz do Iguaçu"
-
-    # São Paulo - SP
-    SAO_PAULO = "São Paulo"
-
-    # Rio de Janeiro - RJ
-    RIO_DE_JANEIRO = "Rio de Janeiro"
-
-    # Belo Horizonte - MG
-    BELO_HORIZONTE = "Belo Horizonte"
+    def __float__(self):
+        return self.__value
 
 # ==================================================================================================================== #

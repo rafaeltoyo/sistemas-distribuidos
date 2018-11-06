@@ -4,13 +4,12 @@
 #   Author
 # ==================================================================================================================== #
 
-import requests
-import json
+from src.controller.MainController import MainController
 
 
 def main():
-    req = requests.get("https://www.google.com.br/")
-    print(req.content)
+    main_ctrl = MainController()
+    main_ctrl.run()
 
 
 if __name__ == "__main__":
