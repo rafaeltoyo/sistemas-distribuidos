@@ -11,7 +11,7 @@ __status__ = "Production"
 # ==================================================================================================================== #
 
 from datetime import datetime
-from src.model.Cidade import Cidade
+from src.enum.Cidade import Cidade
 from src.model.Dinheiro import Dinheiro
 
 
