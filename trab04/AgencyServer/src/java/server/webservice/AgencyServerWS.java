@@ -5,6 +5,7 @@
  */
 package server.webservice;
 
+import server.webservice.compra.CompraPassagem;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -25,6 +26,8 @@ import server.model.hotel.InfoHotelRet;
 import server.model.pacote.ConjuntoPacote;
 import server.model.voo.InfoVoo;
 import server.model.voo.TipoPassagem;
+import server.webservice.compra.CompraHospedagem;
+import server.webservice.compra.CompraPacote;
 
 /**
  * REST Web Service
@@ -116,7 +119,7 @@ public class AgencyServerWS {
     
     /*------------------------------------------------------------------------*/
     
-    // FIXME: Alterar para PUT
+    /*
     @GET
     @Path("/comprar_passagens")
     @Produces(MediaType.TEXT_PLAIN)
@@ -135,6 +138,41 @@ public class AgencyServerWS {
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+        return Boolean.FALSE.toString();
+    }
+    */
+    
+    /** Realiza a compra de passagens.
+     * O formato do XML esperado é o seguinte:
+     * <pre>
+     * {@code 
+     * <?xml version="1.0" encoding="UTF-8"?> 
+     *     <compraPassagem> 
+     *         <tipo>IDA_E_VOLTA</tipo> 
+     *         <idVooIda>4</idVooIda> 
+     *         <idVooVolta>9</idVooVolta> 
+     *         <numPessoas>1</numPessoas> 
+     *     </compraPassagem> 
+     * }
+     * </pre>
+     * @param cp objeto que contém os parâmetros de compra
+     * @return "true" se houve sucesso, "false" caso contrário
+     */
+    @PUT
+    @Path("/comprar_passagens")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String comprarPassagens(CompraPassagem cp) {
+        try {
+            boolean success = agencyServerImpl.comprarPassagens(cp.getTipo(), cp.getIdVooIda(), cp.getIdVooVolta(), cp.getNumPessoas());
+            
+            if (success) {
+                return Boolean.TRUE.toString();
+            }
+        }
+        catch (Exception e) {
+            //e.printStackTrace();
         }
         return Boolean.FALSE.toString();
     }
@@ -162,7 +200,7 @@ public class AgencyServerWS {
             
         }
         catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }
@@ -170,6 +208,7 @@ public class AgencyServerWS {
     /*------------------------------------------------------------------------*/
     
     // FIXME: Alterar para PUT
+    /*
     @GET
     @Path("/comprar_hospedagens")
     @Produces(MediaType.TEXT_PLAIN)
@@ -191,6 +230,42 @@ public class AgencyServerWS {
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+        return Boolean.FALSE.toString();
+    }
+    */
+    
+    /** Realiza a compra de hospedagem.
+     * O formato do XML esperado é o seguinte:
+     * <pre>
+     * {@code 
+     * <?xml version="1.0" encoding="UTF-8"?> 
+     *     <compraHospedagem> 
+     *         <idHotel>1</idHotel> 
+     *         <dataIni>2018-10-18</dataIni> 
+     *         <dataFim>2018-10-20</dataFim> 
+     *         <numQuartos>1</numQuartos> 
+     *     </compraHospedagem> 
+     * }
+     * </pre>
+     * @param ch objeto que contém os parâmetros de compra
+     * @return "true" se houve sucesso, "false" caso contrário
+     */
+    @PUT
+    @Path("/comprar_hospedagens")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String comprarHospedagem(CompraHospedagem ch) {
+        
+        try {
+            boolean success = agencyServerImpl.comprarHospedagem(ch.getIdHotel(), ch.getDataIni(), ch.getDataFim(), ch.getNumQuartos());
+            
+            if (success) {
+                return Boolean.TRUE.toString();
+            }
+        }
+        catch (Exception e) {
+            //e.printStackTrace();
         }
         return Boolean.FALSE.toString();
     }
@@ -227,6 +302,7 @@ public class AgencyServerWS {
     /*------------------------------------------------------------------------*/
     
     // FIXME: Alterar para PUT
+    /*
     @GET
     @Path("/comprar_pacote")
     @Produces(MediaType.TEXT_PLAIN)
@@ -251,6 +327,45 @@ public class AgencyServerWS {
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+        return Boolean.FALSE.toString();
+    }
+    */
+    
+    /** Realiza a compra de um pacote.
+     * O formato do XML esperado é o seguinte:
+     * <pre>
+     * {@code 
+     * <?xml version="1.0" encoding="UTF-8"?> 
+     *     <compraPassagem> 
+     *         <idVooIda>4</idVooIda> 
+     *         <idVooVolta>9</idVooVolta> 
+     *         <idHotel>1</idHotel> 
+     *         <dataIda>2018-10-18</dataIda> 
+     *         <dataVolta>2018-10-20</dataVolta> 
+     *         <numQuartos>1</numQuartos> 
+     *         <numPessoas>1</numPessoas> 
+     *     </compraPassagem> 
+     * }
+     * </pre>
+     * @param cp objeto que contém os parâmetros de compra
+     * @return "true" se houve sucesso, "false" caso contrário
+     */
+    @PUT
+    @Path("/comprar_pacote")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String comprarPacote(CompraPacote cp) {
+        
+        try {
+            boolean success = agencyServerImpl.comprarPacote(cp.getIdVooIda(), cp.getIdVooVolta(), cp.getIdHotel(), cp.getDataIda(), cp.getDataVolta(), cp.getNumQuartos(), cp.getNumPessoas());
+            
+            if (success) {
+                return Boolean.TRUE.toString();
+            }
+        }
+        catch (Exception e) {
+            //e.printStackTrace();
         }
         return Boolean.FALSE.toString();
     }
