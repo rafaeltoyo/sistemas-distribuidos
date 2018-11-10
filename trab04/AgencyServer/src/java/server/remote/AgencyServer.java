@@ -9,7 +9,7 @@ import server.model.pacote.ConjuntoPacote;
 import server.model.voo.InfoVoo;
 import server.model.voo.TipoPassagem;
 
-/** Interface RMI para o servidor da agência.
+/** Interface para o servidor da agência.
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
@@ -48,9 +48,7 @@ public interface AgencyServer {
 
     /*------------------------------------------------------------------------*/
 
-    /** Retorna um mapa cujas chaves são os hotéis e os valores são listas de
-     * hospedagens (data + número de quartos disponíveis), com base nos
-     * parâmetros fornecidos.
+    /** Retorna as informações de hotéis que atendem aos parâmetros fornecidos.
      * @param local cidade do hotel
      * @param dataIni data de chegada (primeira diária)
      * @param dataFim data de saída (não é inclusa no resultado)

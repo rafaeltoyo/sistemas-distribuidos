@@ -84,6 +84,10 @@ public class InfoVoo implements Serializable {
 
     /*------------------------------------------------------------------------*/
     
+    /** Construtor sem argumentos para permitir que o objeto seja retornado
+     * pelos métodos do web service como XML.
+     * Inicializa todos os atributos com valores inválidos.
+     */
     public InfoVoo() {
         this.id = (count++);
         this.origem = null;

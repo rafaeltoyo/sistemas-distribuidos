@@ -1,20 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package server.webservice;
 
 import java.util.Set;
 import javax.ws.rs.core.Application;
 
-/**
- *
- * @author Victor
+/** Configurações do web service REST.
+ * @author Rafael Hideo Toyomoto
+ * @author Victor Barpp Gomes
  */
 @javax.ws.rs.ApplicationPath("webresources")
 public class ApplicationConfig extends Application {
 
+    /** Retorna um conjunto de classes que possuem web services.
+     * Método gerado automaticamente.
+     * @return conjunto de classes
+     */
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new java.util.HashSet<>();

@@ -131,6 +131,10 @@ public class InfoHotelRet implements Serializable {
 
     /*------------------------------------------------------------------------*/
 
+    /** Construtor sem argumentos para permitir que o objeto seja retornado
+     * pelos métodos do web service como XML.
+     * Inicializa todos os atributos com valores inválidos.
+     */
     public InfoHotelRet() {
         this.id = -1;
         this.nome = null;

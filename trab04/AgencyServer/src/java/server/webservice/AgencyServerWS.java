@@ -5,7 +5,6 @@
  */
 package server.webservice;
 
-import server.webservice.compra.CompraPassagem;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +27,7 @@ import server.model.voo.InfoVoo;
 import server.model.voo.TipoPassagem;
 import server.webservice.compra.CompraHospedagem;
 import server.webservice.compra.CompraPacote;
+import server.webservice.compra.CompraPassagem;
 
 /**
  * REST Web Service
@@ -36,15 +36,11 @@ import server.webservice.compra.CompraPacote;
  */
 @Path("server")
 public class AgencyServerWS {
-    
-    /*========================================================================*/
-    /*========================================================================*/
-    // Coisas autogeradas
-
+    /** Atributo autogerado. */
     @Context
     private UriInfo context;
 
-    /**
+    /** Método autogerado.
      * Retrieves representation of an instance of server.AgencyServerWS
      * @return an instance of java.lang.String
      */
@@ -52,12 +48,10 @@ public class AgencyServerWS {
     //@Path("/get")
     @Produces(MediaType.APPLICATION_XML)
     public String getXml() {
-        //TODO return proper representation object
-        return "{}";
-        //throw new UnsupportedOperationException();
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     }
 
-    /**
+    /** Método autogerado.
      * PUT method for updating or creating an instance of AgencyServerWS
      * @param content representation for the resource
      */
@@ -67,8 +61,7 @@ public class AgencyServerWS {
     public void putXml(String content) {
     }
     
-    /*========================================================================*/
-    /*========================================================================*/
+    /*------------------------------------------------------------------------*/
     
     /** Instância da classe servidor */
     private static AgencyServerImpl agencyServerImpl = new AgencyServerImpl();
@@ -84,6 +77,16 @@ public class AgencyServerWS {
     
     /*------------------------------------------------------------------------*/
     
+    /** Retorna uma lista de passagens que atendem aos atributos fornecidos
+     * nos parâmetros.
+     * @param tipo somente ida ou ida e volta
+     * @param origem local de origem do voo
+     * @param destino local de destino do voo
+     * @param dataIda data do voo de ida
+     * @param dataVolta data do voo de volta, caso o tipo seja ida e volta
+     * @param numPessoas número de passagens desejadas
+     * @return lista de passagens aéreas disponíveis que atendem aos parâmetros
+     */
     @GET
     @Path("/consultar_passagens")
     @Produces(MediaType.APPLICATION_XML)
@@ -155,6 +158,14 @@ public class AgencyServerWS {
     
     /*------------------------------------------------------------------------*/
     
+    /** Retorna as informações de hotéis que atendem aos parâmetros fornecidos.
+     * @param local cidade do hotel
+     * @param dataIni data de chegada (primeira diária)
+     * @param dataFim data de saída (não é inclusa no resultado)
+     * @param numQuartos número de quartos desejados
+     * @param numPessoas número de pessoas (total, não por quarto)
+     * @return mapa com informações de hotel e hospedagem
+     */
     @GET
     @Path("/consultar_hospedagens")
     @Produces(MediaType.APPLICATION_XML)
@@ -219,7 +230,20 @@ public class AgencyServerWS {
     }
     
     /*------------------------------------------------------------------------*/
-    
+
+    /** Faz uma consulta de voos e hotéis para os dados fornecidos, e retorna os
+     * resultados.
+     * No servidor, não existem pacotes explícitos, apenas voos e hotéis.
+     * @param origem local de origem do voo
+     * @param destino local de destino do voo e cidade do hotel
+     * @param dataIda data do voo de ida e de chegada no hotel
+     * @param dataVolta data do voo de volta e de saída do hotel (não é incluída
+     *                  reserva de hotel para a data de saída)
+     * @param numQuartos número de quartos de hotel desejados
+     * @param numPessoas número de passagens desejadas
+     * @return conjunto de voos de ida, voos de volta e hospedagens que atendem
+     * os dados fornecidos
+     */
     @GET
     @Path("/consultar_pacotes")
     @Produces(MediaType.APPLICATION_XML)
