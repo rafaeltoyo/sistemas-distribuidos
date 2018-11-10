@@ -293,5 +293,4 @@ nbdist/
 nbproject/
 src/conf/
 test/
-web/
 build.xml
