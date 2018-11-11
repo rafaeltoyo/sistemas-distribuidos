@@ -1,16 +1,15 @@
 package server.controller;
 
-import server.model.evento.Evento;
-import server.model.hotel.Hotel;
-import server.model.voo.Voo;
-import shared.model.cidade.Cidade;
-import shared.model.evento.Interesse;
-import shared.remote.AgencyClient;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import server.model.cidade.Cidade;
+import server.model.evento.Evento;
+import server.model.evento.Interesse;
+import server.model.hotel.Hotel;
+import server.model.voo.Voo;
+import server.remote.AgencyClient;
 
 /** Esta classe é um singleton responsável pelo controle de eventos.
  * @author Rafael Hideo Toyomoto
