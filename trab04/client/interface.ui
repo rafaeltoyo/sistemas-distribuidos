@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>2</number>
+      </property>
+      <widget class="QWidget" name="tabVoo">
+       <attribute name="title">
+        <string>Voo</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="vboxTabVoo">
+        <item>
+         <layout class="QGridLayout" name="gridFormVoo">
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelVoos">
+            <property name="font">
+             <font>
+              <pointsize>20</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Voos</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelOrigemVoo">
+            <property name="text">
+             <string>Cidade de origem:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="choiceOrigemVoo"/>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="labelDestinoVoo">
+            <property name="text">
+             <string>Cidade de destino:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QComboBox" name="choiceDestinoVoo"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelDataIdaVoo">
+            <property name="text">
+             <string>Data de ida:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDateEdit" name="dateVooIda"/>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="labelDataVoltaVoo">
+            <property name="text">
+             <string>Data de volta:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelNumPessoasVoo">
+            <property name="text">
+             <string>Número de pessoas:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="spinnerNumPessoasVoo"/>
+          </item>
+          <item row="3" column="4">
+           <widget class="QPushButton" name="buttonConsultarVoo">
+            <property name="text">
+             <string>Consultar</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QDateEdit" name="dateVooVolta"/>
+          </item>
+          <item row="1" column="4" rowspan="2">
+           <widget class="QGroupBox" name="gboxTipoVoo">
+            <property name="title">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QRadioButton" name="radioSomenteIdaVoo">
+               <property name="text">
+                <string>Somente ida</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioIdaEVoltaVoo">
+               <property name="text">
+                <string>Ida e volta</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="vboxVooIda">
+          <item>
+           <widget class="QLabel" name="labelVooIda">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Voos de ida</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="tableVooIda"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="vboxVooVolta">
+          <item>
+           <widget class="QLabel" name="labelVooVolta">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Voos de volta</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="tableVooVolta"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="buttonComprarVoo">
+          <property name="text">
+           <string>Comprar</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabHospedagem">
+       <attribute name="title">
+        <string>Hospedagem</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <layout class="QGridLayout" name="gridFormHosp">
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelCidadeHosp">
+            <property name="text">
+             <string>Cidade:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="choiceCidadeHosp"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelDataIniHosp">
+            <property name="text">
+             <string>Data de chegada:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDateEdit" name="dateChegadaHosp"/>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="labelDataFimHosp">
+            <property name="text">
+             <string>Data de saída:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QDateEdit" name="dateSaidaHosp"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelNumQuartosHosp">
+            <property name="text">
+             <string>Número de quartos:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="spinnerNumQuartosHosp"/>
+          </item>
+          <item row="3" column="2">
+           <widget class="QLabel" name="labelNumPessoasHosp">
+            <property name="text">
+             <string>Número de pessoas:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QSpinBox" name="spinnerNumPessoasHosp"/>
+          </item>
+          <item row="3" column="4">
+           <widget class="QPushButton" name="buttonConsultarHosp">
+            <property name="text">
+             <string>Consultar</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <widget class="QLabel" name="labelHosp">
+            <property name="font">
+             <font>
+              <pointsize>20</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Hospedagens</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tableHospedagem"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="buttonComprarHosp">
+          <property name="text">
+           <string>Comprar</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabPacote">
+       <attribute name="title">
+        <string>Pacote</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <layout class="QGridLayout" name="gridFormPacote">
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelPacote">
+            <property name="font">
+             <font>
+              <pointsize>20</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Pacotes</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelOrigemPacote">
+            <property name="text">
+             <string>Cidade de origem:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="choiceOrigemPacote"/>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="labelDestinoPacote">
+            <property name="text">
+             <string>Cidade de destino:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QComboBox" name="choiceDestinoPacote"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelDataIdaPacote">
+            <property name="text">
+             <string>Data de ida:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDateEdit" name="datePacoteIda"/>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="labelDataVoltaPacote">
+            <property name="text">
+             <string>Data de volta:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelNumQuartosPacote">
+            <property name="text">
+             <string>Número de quartos:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="spinnerNumQuartosPacote"/>
+          </item>
+          <item row="3" column="4">
+           <widget class="QPushButton" name="buttonConsultarPacote">
+            <property name="text">
+             <string>Consultar</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QDateEdit" name="datePacoteVolta"/>
+          </item>
+          <item row="3" column="2">
+           <widget class="QLabel" name="labelNumPessoasPacote">
+            <property name="text">
+             <string>Número de pessoas:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QSpinBox" name="spinnerNumPessoasPacote"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="vboxVooIdaPac">
+          <item>
+           <widget class="QLabel" name="labelVooIdaPac">
+            <property name="text">
+             <string>Voo de ida</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableView" name="tableVooIdaPac"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="vboxVooVoltaPac">
+          <item>
+           <widget class="QLabel" name="labelVooVoltaPac">
+            <property name="text">
+             <string>Voo de volta</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableView" name="tableVooVoltaPac"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="vboxHospedagemPac">
+          <item>
+           <widget class="QLabel" name="labelHospedagemPac">
+            <property name="text">
+             <string>Hospedagem</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableView" name="tableHospedagemPac"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="buttonComprarPacote">
+          <property name="text">
+           <string>Comprar</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

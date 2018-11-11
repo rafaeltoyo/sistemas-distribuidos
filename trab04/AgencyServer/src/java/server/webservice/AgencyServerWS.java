@@ -25,6 +25,9 @@ import server.model.hotel.InfoHotelRet;
 import server.model.pacote.ConjuntoPacote;
 import server.model.voo.InfoVoo;
 import server.model.voo.TipoPassagem;
+import server.webservice.compra.CompraHospedagem;
+import server.webservice.compra.CompraPacote;
+import server.webservice.compra.CompraPassagem;
 
 /**
  * REST Web Service
@@ -33,15 +36,11 @@ import server.model.voo.TipoPassagem;
  */
 @Path("server")
 public class AgencyServerWS {
-    
-    /*========================================================================*/
-    /*========================================================================*/
-    // Coisas autogeradas
-
+    /** Atributo autogerado. */
     @Context
     private UriInfo context;
 
-    /**
+    /** Método autogerado.
      * Retrieves representation of an instance of server.AgencyServerWS
      * @return an instance of java.lang.String
      */
@@ -49,12 +48,10 @@ public class AgencyServerWS {
     //@Path("/get")
     @Produces(MediaType.APPLICATION_XML)
     public String getXml() {
-        //TODO return proper representation object
-        return "{}";
-        //throw new UnsupportedOperationException();
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     }
 
-    /**
+    /** Método autogerado.
      * PUT method for updating or creating an instance of AgencyServerWS
      * @param content representation for the resource
      */
@@ -64,8 +61,7 @@ public class AgencyServerWS {
     public void putXml(String content) {
     }
     
-    /*========================================================================*/
-    /*========================================================================*/
+    /*------------------------------------------------------------------------*/
     
     /** Instância da classe servidor */
     private static AgencyServerImpl agencyServerImpl = new AgencyServerImpl();
@@ -81,6 +77,16 @@ public class AgencyServerWS {
     
     /*------------------------------------------------------------------------*/
     
+    /** Retorna uma lista de passagens que atendem aos atributos fornecidos
+     * nos parâmetros.
+     * @param tipo somente ida ou ida e volta
+     * @param origem local de origem do voo
+     * @param destino local de destino do voo
+     * @param dataIda data do voo de ida
+     * @param dataVolta data do voo de volta, caso o tipo seja ida e volta
+     * @param numPessoas número de passagens desejadas
+     * @return lista de passagens aéreas disponíveis que atendem aos parâmetros
+     */
     @GET
     @Path("/consultar_passagens")
     @Produces(MediaType.APPLICATION_XML)
@@ -109,38 +115,57 @@ public class AgencyServerWS {
             
         }
         catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }
     
     /*------------------------------------------------------------------------*/
     
-    // FIXME: Alterar para PUT
-    @GET
+    /** Realiza a compra de passagens.
+     * O formato do XML esperado é o seguinte:
+     * <pre>
+     * {@code 
+     * <?xml version="1.0" encoding="UTF-8"?> 
+     *     <compraPassagem> 
+     *         <tipo>IDA_E_VOLTA</tipo> 
+     *         <idVooIda>4</idVooIda> 
+     *         <idVooVolta>9</idVooVolta> 
+     *         <numPessoas>1</numPessoas> 
+     *     </compraPassagem> 
+     * }
+     * </pre>
+     * @param cp objeto que contém os parâmetros de compra
+     * @return "true" se houve sucesso, "false" caso contrário
+     */
+    @PUT
     @Path("/comprar_passagens")
+    @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.TEXT_PLAIN)
-    public String comprarPassagens(
-            @QueryParam("tipo_passagem") TipoPassagem tipo,
-            @QueryParam("id_voo_ida") int idVooIda,
-            @QueryParam("id_voo_volta") int idVooVolta,
-            @QueryParam("num_pessoas") int numPessoas) {
-        
+    public String comprarPassagens(CompraPassagem cp) {
         try {
-            boolean success = agencyServerImpl.comprarPassagens(tipo, idVooIda, idVooVolta, numPessoas);
+            boolean success = agencyServerImpl.comprarPassagens(cp.getTipo(), cp.getIdVooIda(), cp.getIdVooVolta(), cp.getNumPessoas());
             
             if (success) {
                 return Boolean.TRUE.toString();
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return Boolean.FALSE.toString();
     }
     
     /*------------------------------------------------------------------------*/
     
+    /** Retorna as informações de hotéis que atendem aos parâmetros fornecidos.
+     * @param local cidade do hotel
+     * @param dataIni data de chegada (primeira diária)
+     * @param dataFim data de saída (não é inclusa no resultado)
+     * @param numQuartos número de quartos desejados
+     * @param numPessoas número de pessoas (total, não por quarto)
+     * @return mapa com informações de hotel e hospedagem
+     */
     @GET
     @Path("/consultar_hospedagens")
     @Produces(MediaType.APPLICATION_XML)
@@ -162,41 +187,63 @@ public class AgencyServerWS {
             
         }
         catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }
     
     /*------------------------------------------------------------------------*/
     
-    // FIXME: Alterar para PUT
-    @GET
+    /** Realiza a compra de hospedagem.
+     * O formato do XML esperado é o seguinte:
+     * <pre>
+     * {@code 
+     * <?xml version="1.0" encoding="UTF-8"?> 
+     *     <compraHospedagem> 
+     *         <idHotel>1</idHotel> 
+     *         <dataIni>2018-10-18</dataIni> 
+     *         <dataFim>2018-10-20</dataFim> 
+     *         <numQuartos>1</numQuartos> 
+     *     </compraHospedagem> 
+     * }
+     * </pre>
+     * @param ch objeto que contém os parâmetros de compra
+     * @return "true" se houve sucesso, "false" caso contrário
+     */
+    @PUT
     @Path("/comprar_hospedagens")
+    @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.TEXT_PLAIN)
-    public String comprarHospedagem(
-            @QueryParam("id_hotel") int idHotel,
-            @QueryParam("data_ini") String dataIniStr,
-            @QueryParam("data_fim") String dataFimStr,
-            @QueryParam("num_quartos") int numQuartos) {
+    public String comprarHospedagem(CompraHospedagem ch) {
         
         try {
-            LocalDate dataIni = LocalDate.parse(dataIniStr);
-            LocalDate dataFim = LocalDate.parse(dataFimStr);
-            
-            boolean success = agencyServerImpl.comprarHospedagem(idHotel, dataIni, dataFim, numQuartos);
+            boolean success = agencyServerImpl.comprarHospedagem(ch.getIdHotel(), ch.getDataIni(), ch.getDataFim(), ch.getNumQuartos());
             
             if (success) {
                 return Boolean.TRUE.toString();
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return Boolean.FALSE.toString();
     }
     
     /*------------------------------------------------------------------------*/
-    
+
+    /** Faz uma consulta de voos e hotéis para os dados fornecidos, e retorna os
+     * resultados.
+     * No servidor, não existem pacotes explícitos, apenas voos e hotéis.
+     * @param origem local de origem do voo
+     * @param destino local de destino do voo e cidade do hotel
+     * @param dataIda data do voo de ida e de chegada no hotel
+     * @param dataVolta data do voo de volta e de saída do hotel (não é incluída
+     *                  reserva de hotel para a data de saída)
+     * @param numQuartos número de quartos de hotel desejados
+     * @param numPessoas número de passagens desejadas
+     * @return conjunto de voos de ida, voos de volta e hospedagens que atendem
+     * os dados fornecidos
+     */
     @GET
     @Path("/consultar_pacotes")
     @Produces(MediaType.APPLICATION_XML)
@@ -219,38 +266,47 @@ public class AgencyServerWS {
             
         }
         catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }
     
     /*------------------------------------------------------------------------*/
     
-    // FIXME: Alterar para PUT
-    @GET
+    /** Realiza a compra de um pacote.
+     * O formato do XML esperado é o seguinte:
+     * <pre>
+     * {@code 
+     * <?xml version="1.0" encoding="UTF-8"?> 
+     *     <compraPassagem> 
+     *         <idVooIda>4</idVooIda> 
+     *         <idVooVolta>9</idVooVolta> 
+     *         <idHotel>1</idHotel> 
+     *         <dataIda>2018-10-18</dataIda> 
+     *         <dataVolta>2018-10-20</dataVolta> 
+     *         <numQuartos>1</numQuartos> 
+     *         <numPessoas>1</numPessoas> 
+     *     </compraPassagem> 
+     * }
+     * </pre>
+     * @param cp objeto que contém os parâmetros de compra
+     * @return "true" se houve sucesso, "false" caso contrário
+     */
+    @PUT
     @Path("/comprar_pacote")
+    @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.TEXT_PLAIN)
-    public String comprarPacote(
-            @QueryParam("id_voo_ida") int idVooIda,
-            @QueryParam("id_voo_volta") int idVooVolta,
-            @QueryParam("id_hotel") int idHotel,
-            @QueryParam("data_ida") String dataIdaStr,
-            @QueryParam("data_volta") String dataVoltaStr,
-            @QueryParam("num_quartos") int numQuartos,
-            @QueryParam("num_pessoas") int numPessoas) {
+    public String comprarPacote(CompraPacote cp) {
         
         try {
-            LocalDate dataIda = LocalDate.parse(dataIdaStr);
-            LocalDate dataVolta = LocalDate.parse(dataVoltaStr);
-            
-            boolean success = agencyServerImpl.comprarPacote(idVooIda, idVooVolta, idHotel, dataIda, dataVolta, numQuartos, numPessoas);
+            boolean success = agencyServerImpl.comprarPacote(cp.getIdVooIda(), cp.getIdVooVolta(), cp.getIdHotel(), cp.getDataIda(), cp.getDataVolta(), cp.getNumQuartos(), cp.getNumPessoas());
             
             if (success) {
                 return Boolean.TRUE.toString();
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return Boolean.FALSE.toString();
     }
