@@ -294,6 +294,14 @@ class Ui_MainWindow(object):
         self.dateVooIda.setDate(QtCore.QDate.currentDate())
         self.dateVooVolta.setDate(QtCore.QDate.currentDate())
 
+        # Habilita calendário
+        self.dateChegadaHosp.setCalendarPopup(True)
+        self.datePacoteIda.setCalendarPopup(True)
+        self.datePacoteVolta.setCalendarPopup(True)
+        self.dateSaidaHosp.setCalendarPopup(True)
+        self.dateVooIda.setCalendarPopup(True)
+        self.dateVooVolta.setCalendarPopup(True)
+
         # Seleciona "Somente ida" por padrão nos botões radio
         self.radioSomenteIdaVoo.setChecked(True)
 
