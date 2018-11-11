@@ -40,6 +40,8 @@ class MainController(object):
         self.__ui = Ui_MainWindow()
         self.__ui.setupUi(window)
         self.__ui.buttonConsultarVoo.clicked.connect(self.consultarVoo)
+        self.__ui.buttonConsultarHosp.clicked.connect(self.consultarHotel)
+        self.__ui.buttonConsultarPacote.clicked.connect(self.consultarPacote)
 
         # TODO: Bind nos botões com as funções de dinamização da tela
         # TODO: Ajustar Listagens
@@ -81,6 +83,42 @@ class MainController(object):
 
             self.__ui.updateTableVooIda(passagens_ida)
             self.__ui.updateTableVooVolta(passagens_volta)
+        except Exception as e:
+            print(e)
+
+    def consultarHotel(self):
+        cidade = Cidade(self.__ui.choiceCidadeHosp.currentText())
+        dataIni = datetime.strptime(self.__ui.dateChegadaHosp.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
+        dataFim = datetime.strptime(self.__ui.dateSaidaHosp.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
+        numQuartos = self.__ui.spinnerNumQuartosHosp.value()
+        numPessoas = self.__ui.spinnerNumPessoasHosp.value()
+
+        # Realizar a consulta
+        try:
+            hospedagens = self.requests.get_hospedagens(cidade, dataIni, dataFim, numQuartos, numPessoas)
+
+            print(hospedagens)
+
+            # TODO: stuff
+            #self.__ui.updateTableHospedagem(hospedagens)
+        except Exception as e:
+            print(e)
+
+    def consultarPacote(self):
+        origem = Cidade(self.__ui.choiceOrigemPacote.currentText())
+        destino = Cidade(self.__ui.choiceDestinoPacote.currentText())
+        dataIda = datetime.strptime(self.__ui.datePacoteIda.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
+        dataVolta = datetime.strptime(self.__ui.datePacoteVolta.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
+        numQuartos = self.__ui.spinnerNumQuartosPacote.value()
+        numPessoas = self.__ui.spinnerNumPessoasPacote.value()
+
+        # Realizar a consulta
+        try:
+            pacotes = self.requests.get_pacotes(origem, destino, dataIda, dataVolta, numPessoas, numQuartos)
+
+            print(pacotes)
+
+            # TODO: stuff
         except Exception as e:
             print(e)
 
