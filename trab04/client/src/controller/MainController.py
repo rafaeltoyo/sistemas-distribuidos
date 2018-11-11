@@ -61,11 +61,11 @@ class MainController(object):
             print("ERROR!")
             return
 
-        origem = Cidade.CURITIBA
-        destino = Cidade.FLORIANOPOLIS
-        dataIda = datetime.strptime("2018-10-17", "%Y-%m-%d")
-        dataVolta = datetime.strptime("2018-10-20", "%Y-%m-%d")
-        numPessoas = 1
+        origem = Cidade(self.__ui.choiceOrigemVoo.currentText())
+        destino = Cidade(self.__ui.choiceDestinoVoo.currentText())
+        dataIda = datetime.strptime(self.__ui.dateVooIda.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
+        dataVolta = datetime.strptime(self.__ui.dateVooVolta.date().toString("yyyy-MM-dd"), "%Y-%m-%d")
+        numPessoas = self.__ui.spinnerNumPessoasVoo.value()
 
         # Realizar a consulta
         try:
