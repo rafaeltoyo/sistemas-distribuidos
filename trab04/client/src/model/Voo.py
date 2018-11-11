@@ -17,6 +17,24 @@ from src.model.Dinheiro import Dinheiro
 
 class Voo(object):
 
+    @staticmethod
+    def parse(content):
+        """
+        Função de gerar um objeto Voo a partir do dicionário construído do XML do Response do servidor
+        :param content: Dicionário dos dados para o Voo
+        :type content: dict
+        :return: Instância do Voo parseado
+        :rtype: Voo
+        """
+        return Voo(
+            int(content['@id']),
+            Cidade[content['origem']],
+            Cidade[content['destino']],
+            datetime.strptime(content['data'], "%Y-%m-%d"),
+            Dinheiro(content['precoPassagem']),
+            int(content['poltronasDisp'])
+        )
+
     def __init__(
             self,
             id: int,
@@ -47,22 +65,14 @@ class Voo(object):
         self.preco = preco
         self.poltronas_disp = poltronas_disp
 
-
     def __str__(self):
-        return "{} {} {} {} {} {}".format(self.id, self.origem, self.destino, self.data, self.preco, self.poltronas_disp)
-
-
-# ==================================================================================================================== #
-
-
-def create_from_XML(xml) -> Voo:
-
-    id = int(1)
-    origem = Cidade.CURITIBA
-    destino = Cidade.CURITIBA
-    data = datetime.now()
-    poltronas_disp = 10
-
-    return Voo(id, origem, destino, data, poltronas_disp)
+        return "{} {} {} {} {} {}".format(
+            self.id,
+            self.origem,
+            self.destino,
+            self.data,
+            self.preco,
+            self.poltronas_disp
+        )
 
 # ==================================================================================================================== #

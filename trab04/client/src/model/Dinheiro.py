@@ -14,10 +14,14 @@ __status__ = "Production"
 class Dinheiro(object):
 
     def __init__(self, value):
-        self.__value = float(value.replace('R$ ', ''))
+        """
+        Construtor de um objeto que representa dinheiro
+        :param value:
+        """
+        self.__value = float(value.replace('R$ ', '') if isinstance(value, str) else value)
 
     def __str__(self):
-        return str(self.__value)
+        return "R$ %.2f" % self.__value
 
     def __float__(self):
         return self.__value

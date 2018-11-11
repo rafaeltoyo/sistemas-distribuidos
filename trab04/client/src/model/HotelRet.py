@@ -17,6 +17,27 @@ from src.model.Dinheiro import Dinheiro
 
 class HotelRet(object):
 
+    @staticmethod
+    def parse(content):
+        """
+        Função de gerar um objeto HotelRet a partir do dicionário construído do XML do Response do servidor
+        :param content: Dicionário dos dados para o HotelRet
+        :type content: dict
+        :return: Instância do HotelRet parseado
+        :rtype: HotelRet
+        """
+        return HotelRet(
+            int(content['@id']),
+            str(content['nome']),
+            Cidade[content['local']],
+            int(content['numQuartos']),
+            int(content['quartosDisponiveis']),
+            datetime.strptime(content['dataEntrada'], "%Y-%m-%d"),
+            int(content['numDiarias']),
+            Dinheiro(content['precoDiaria']),
+            Dinheiro(content['precoTotal'])
+        )
+
     def __init__(self,
              id: int,
              nome: str,
@@ -58,22 +79,17 @@ class HotelRet(object):
         self.preco_diaria = preco_diaria
         self.preco_total = preco_total
 
-
-# ==================================================================================================================== #
-
-
-def create_from_XML(xml) -> HotelRet:
-
-    id = 1
-    nome = "teste"
-    local = Cidade.CURITIBA
-    num_quartos = 10
-    quartos_disp = 10
-    data_entrada = datetime.now()
-    num_diarias = 10
-    preco_diaria = Dinheiro()
-    preco_total = Dinheiro()
-
-    return HotelRet(id, nome, local, num_quartos, quartos_disp, data_entrada, num_diarias, preco_diaria, preco_total)
+    def __str__(self):
+        return "{} {} {} {}/{} {} {} {} {}".format(
+            self.id,
+            self.nome,
+            self.local,
+            self.quartos_disp,
+            self.num_quartos,
+            self.data_entrada,
+            self.num_diarias,
+            self.preco_diaria,
+            self.preco_total
+        )
 
 # ==================================================================================================================== #
