@@ -10,20 +10,15 @@ __email__ = "toyomoto@alunos.utfpr.edu.br"
 __status__ = "Production"
 # ==================================================================================================================== #
 
+from enum import Enum
 
-class Dinheiro(object):
 
-    def __init__(self, value):
-        """
-        Construtor de um objeto que representa dinheiro
-        :param value:
-        """
-        self.__value = float(value.replace('R$ ', '') if isinstance(value, str) else value)
+class TipoVoo(Enum):
 
-    def __str__(self):
-        return "R$ %.2f" % self.__value
+    # Porto Alegre - RS
+    IDA_E_VOLTA = "IDA_E_VOLTA"
 
-    def __float__(self):
-        return self.__value
+    # Florianópolis - SC
+    SOMENTE_IDA = "SOMENTE_IDA"
 
 # ==================================================================================================================== #
