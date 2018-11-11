@@ -14,7 +14,11 @@ __status__ = "Production"
 
 from datetime import datetime
 
+from PyQt5 import QtWidgets
+
 from src.controller.RequestController import RequestController
+from src.view.interface import Ui_MainWindow
+
 from src.enum.Cidade import Cidade
 from src.enum.TipoVoo import TipoVoo
 
@@ -24,11 +28,64 @@ class MainController(object):
     def __init__(self):
         self.requests = RequestController()
 
+        # Ao invés dos [], pode passar argumentos
+        self.__app = QtWidgets.QApplication([])
+
+    def __del__(self):
+        self.__app = None
+
     def run(self):
-        # provisório
-        self.teste()
+        window = QtWidgets.QMainWindow()
+
+        self.__ui = Ui_MainWindow()
+        self.__ui.setupUi(window)
+        self.__ui.buttonConsultarVoo.clicked.connect(self.consultarVoo)
+
+        # TODO: Bind nos botões com as funções de dinamização da tela
+        # TODO: Ajustar Listagens
+
+        window.show()
+        try:
+            self.__app.exec_()
+        except Exception as e:
+            print("Error!", str(e))
+
+    def consultarVoo(self):
+        type = None
+        if self.__ui.radioSomenteIdaVoo.isChecked():
+            type = TipoVoo.SOMENTE_IDA
+        elif self.__ui.radioIdaEVoltaVoo.isChecked():
+            type = TipoVoo.IDA_E_VOLTA
+        else:
+            # FIXME: alerta
+            print("ERROR!")
+            return
+
+        origem = Cidade.CURITIBA
+        destino = Cidade.FLORIANOPOLIS
+        dataIda = datetime.strptime("2018-10-17", "%Y-%m-%d")
+        dataVolta = datetime.strptime("2018-10-20", "%Y-%m-%d")
+        numPessoas = 1
+
+        # Realizar a consulta
+        try:
+            passagens = self.requests.get_passagens(type, origem, destino, dataIda, dataVolta, numPessoas)
+
+            passagens_ida = []
+            passagens_volta = []
+            for p in passagens:
+                if p.origem == origem:
+                    passagens_ida.append(p)
+                elif p.destino == origem:
+                    passagens_volta.append(p)
+
+            self.__ui.updateTableVooIda(passagens_ida)
+            self.__ui.updateTableVooVolta(passagens_volta)
+        except Exception as e:
+            print(e)
 
     def teste(self):
+        # FIXME: Exemplo de uso do webservice
 
         # Realizar a consulta
         passagens = self.requests.get_passagens(

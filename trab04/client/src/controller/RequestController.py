@@ -79,9 +79,10 @@ class RequestController(object):
             'origem': str(origem.name),
             'destino': str(destino.name),
             'data_ida': dataIda.strftime("%Y-%m-%d"),
-            'data_volta': dataVolta.strftime("%Y-%m-%d"),
+            'data_volta': dataVolta.strftime("%Y-%m-%d") if tipoVoo == TipoVoo.IDA_E_VOLTA else "",
             'num_pessoas': numPessoas if numPessoas > 0 else 0
         }
+        print(data)
 
         # Realizar a consulta e salvar o Response do servidor
         response = requests.get(self.__url + "consultar_passagens", params=data)
@@ -90,7 +91,9 @@ class RequestController(object):
 
         # Trabalhar os dados retornados
         voos = []
-        for item in result['infoVooes']['infoVoo']:
+        r = result['infoVooes']['infoVoo']
+        r = r if isinstance(r, list) else [r]
+        for item in r:
             voo = Voo.parse(item)
             voos.append(voo)
 
@@ -164,7 +167,9 @@ class RequestController(object):
 
         # Trabalhar os dados retornados
         hospedagens = []
-        for item in result['infoHotelRets']['infoHotelRet']:
+        r = result['infoHotelRets']['infoHotelRet']
+        r = r if isinstance(r, list) else [r]
+        for item in r:
             hotel = HotelRet(
                 int(item['@id']),
                 item['nome'],

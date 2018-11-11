@@ -18,7 +18,15 @@ __status__ = "Production"
 #
 # WARNING! All changes made in this file will be lost!
 
+from datetime import timedelta
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
+from src.enum.Cidade import Cidade
+from src.enum.TipoVoo import TipoVoo
+from src.model.HotelRet import HotelRet
+from src.model.Voo import Voo
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -241,7 +249,7 @@ class Ui_MainWindow(object):
         self.labelVooIdaPac = QtWidgets.QLabel(self.tabPacote)
         self.labelVooIdaPac.setObjectName("labelVooIdaPac")
         self.vboxVooIdaPac.addWidget(self.labelVooIdaPac)
-        self.tableVooIdaPac = QtWidgets.QTableView(self.tabPacote)
+        self.tableVooIdaPac = QtWidgets.QTableWidget(self.tabPacote)
         self.tableVooIdaPac.setObjectName("tableVooIdaPac")
         self.vboxVooIdaPac.addWidget(self.tableVooIdaPac)
         self.verticalLayout_10.addLayout(self.vboxVooIdaPac)
@@ -250,7 +258,7 @@ class Ui_MainWindow(object):
         self.labelVooVoltaPac = QtWidgets.QLabel(self.tabPacote)
         self.labelVooVoltaPac.setObjectName("labelVooVoltaPac")
         self.vboxVooVoltaPac.addWidget(self.labelVooVoltaPac)
-        self.tableVooVoltaPac = QtWidgets.QTableView(self.tabPacote)
+        self.tableVooVoltaPac = QtWidgets.QTableWidget(self.tabPacote)
         self.tableVooVoltaPac.setObjectName("tableVooVoltaPac")
         self.vboxVooVoltaPac.addWidget(self.tableVooVoltaPac)
         self.verticalLayout_10.addLayout(self.vboxVooVoltaPac)
@@ -259,7 +267,7 @@ class Ui_MainWindow(object):
         self.labelHospedagemPac = QtWidgets.QLabel(self.tabPacote)
         self.labelHospedagemPac.setObjectName("labelHospedagemPac")
         self.vboxHospedagemPac.addWidget(self.labelHospedagemPac)
-        self.tableHospedagemPac = QtWidgets.QTableView(self.tabPacote)
+        self.tableHospedagemPac = QtWidgets.QTableWidget(self.tabPacote)
         self.tableHospedagemPac.setObjectName("tableHospedagemPac")
         self.vboxHospedagemPac.addWidget(self.tableHospedagemPac)
         self.verticalLayout_10.addLayout(self.vboxHospedagemPac)
@@ -273,12 +281,19 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        # Ajustar os textos dos elementos
+        self.__retranslateUi(MainWindow)
+
+        # Ir para aba 0 (primeira)
+        self.tabWidget.setCurrentIndex(0)
+
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    def retranslateUi(self, MainWindow):
+    def __retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
+
+        # ============================================================================================================ #
+        #   Text
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.labelVoos.setText(_translate("MainWindow", "Voos"))
         self.labelOrigemVoo.setText(_translate("MainWindow", "Cidade de origem:"))
@@ -316,3 +331,74 @@ class Ui_MainWindow(object):
         self.buttonComprarPacote.setText(_translate("MainWindow", "Comprar"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabPacote), _translate("MainWindow", "Pacote"))
 
+        # ============================================================================================================ #
+        #   Combobox
+        self.choiceOrigemVoo.addItems([item.value for item in Cidade])
+        self.choiceDestinoVoo.addItems([item.value for item in Cidade])
+        self.choiceCidadeHosp.addItems([item.value for item in Cidade])
+        self.choiceDestinoPacote.addItems([item.value for item in Cidade])
+        self.choiceOrigemPacote.addItems([item.value for item in Cidade])
+
+        # ============================================================================================================ #
+        #   Table
+        for iter_table in [self.tableVooIda, self.tableVooVolta, self.tableVooIdaPac, self.tableVooVoltaPac]:
+            iter_table.setColumnCount(6)
+            iter_table.setHorizontalHeaderLabels(["ID", "Origem", "Destino", "Data", "Preço", "Polt. disp."])
+        for iter_table in [self.tableHospedagem, self.tableHospedagemPac]:
+            iter_table.setColumnCount(9)
+            iter_table.setHorizontalHeaderLabels(
+                ["ID", "Nome", "Local", "Quartos", "Data Entrada", "Data Saída", "Diárias", "Preço por dia",
+                 "Preço total"])
+
+    def __updateTableVoo(self, table: QtWidgets.QTableWidget, data):
+        table.clearContents()
+        table.setRowCount(len(data))
+        row_i = 0
+
+        for item in data:
+            if not isinstance(item, Voo):
+                continue
+            table.setItem(row_i, 0, QtWidgets.QTableWidgetItem(str(item.id)))
+            table.setItem(row_i, 1, QtWidgets.QTableWidgetItem(str(item.origem.name)))
+            table.setItem(row_i, 2, QtWidgets.QTableWidgetItem(str(item.destino.name)))
+            table.setItem(row_i, 3, QtWidgets.QTableWidgetItem(item.data.strftime("%d/%m/%Y")))
+            table.setItem(row_i, 4, QtWidgets.QTableWidgetItem(str(item.preco)))
+            table.setItem(row_i, 5, QtWidgets.QTableWidgetItem(str(item.poltronas_disp)))
+            row_i += 1
+
+    def __updateTableHospedagem(self, table: QtWidgets.QTableWidget, data):
+        table.clearContents()
+        table.setRowCount(len(data))
+        row_i = 0
+
+        for item in data:
+            if not isinstance(item, HotelRet):
+                continue
+            table.setItem(row_i, 0, str(item.id))
+            table.setItem(row_i, 1, item.nome)
+            table.setItem(row_i, 2, item.local.name)
+            table.setItem(row_i, 3, str(item.quartos_disp) + "/" + str(item.num_quartos))
+            table.setItem(row_i, 4, item.data_entrada.strftime("%d/%m/%Y"))
+            table.setItem(row_i, 5, (item.data_entrada + timedelta(days=item.num_diarias)).strftime("%d/%m/%Y"))
+            table.setItem(row_i, 6, str(item.num_diarias))
+            table.setItem(row_i, 7, str(item.preco_diaria))
+            table.setItem(row_i, 8, str(item.preco_total))
+            row_i += 1
+
+    def updateTableVooIda(self, data):
+        self.__updateTableVoo(self.tableVooIda, data)
+
+    def updateTableVooVolta(self, data):
+        self.__updateTableVoo(self.tableVooVolta, data)
+
+    def updateTableVooIdaPac(self, data):
+        self.__updateTableVoo(self.tableVooIdaPac, data)
+
+    def updateTableVooVoltaPac(self, data):
+        self.__updateTableVoo(self.tableVooVoltaPac, data)
+
+    def updateTableHospedagem(self, data):
+        self.__updateTableHospedagem(self.tableHospedagem, data)
+
+    def updateTableHospedagemPac(self, data):
+        self.__updateTableHospedagem(self.tableHospedagemPac, data)
