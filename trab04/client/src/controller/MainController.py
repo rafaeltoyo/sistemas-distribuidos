@@ -1,7 +1,15 @@
+# -*- coding: utf-8 -*-
+
 # ==================================================================================================================== #
-#   Thiago Bispo dá o cu
-# -------------------------------------------------------------------------------------------------------------------- #
-#   Author
+__author__ = "Rafael Hideo Toyomoto, Victor Barpp Gomes"
+__copyright__ = "Copyright 2018, TBDC"
+__credits__ = ["Rafael Hideo Toyomoto", "Victor Barpp Gomes"]
+
+__license__ = "TBDC"
+__version__ = "1.0"
+__maintainer__ = "Rafael Hideo Toyomoto"
+__email__ = "toyomoto@alunos.utfpr.edu.br"
+__status__ = "Production"
 # ==================================================================================================================== #
 
 from datetime import datetime

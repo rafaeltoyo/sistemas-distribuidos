@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # ==================================================================================================================== #
 __author__ = "Rafael Hideo Toyomoto, Victor Barpp Gomes"
 __copyright__ = "Copyright 2018, TBDC"
