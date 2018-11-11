@@ -31,6 +31,8 @@ class MainController(object):
         # Ao invés dos [], pode passar argumentos
         self.__app = QtWidgets.QApplication([])
 
+        self.__ui = None
+
     def __del__(self):
         self.__app = None
 

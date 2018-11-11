@@ -319,6 +319,14 @@ class Ui_MainWindow(object):
         self.tableHospedagemPac.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.tableHospedagemPac.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
+        # Esconde o índice das linhas
+        self.tableVooIda.verticalHeader().setVisible(False)
+        self.tableVooVolta.verticalHeader().setVisible(False)
+        self.tableHospedagem.verticalHeader().setVisible(False)
+        self.tableVooIdaPac.verticalHeader().setVisible(False)
+        self.tableVooVoltaPac.verticalHeader().setVisible(False)
+        self.tableHospedagemPac.verticalHeader().setVisible(False)
+
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def __retranslateUi(self, MainWindow):
