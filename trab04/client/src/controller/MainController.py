@@ -97,10 +97,7 @@ class MainController(object):
         try:
             hospedagens = self.requests.get_hospedagens(cidade, dataIni, dataFim, numQuartos, numPessoas)
 
-            print(hospedagens)
-
-            # TODO: stuff
-            #self.__ui.updateTableHospedagem(hospedagens)
+            self.__ui.updateTableHospedagem(hospedagens)
         except Exception as e:
             print(e)
 
@@ -116,9 +113,9 @@ class MainController(object):
         try:
             pacotes = self.requests.get_pacotes(origem, destino, dataIda, dataVolta, numPessoas, numQuartos)
 
-            print(pacotes)
-
-            # TODO: stuff
+            self.__ui.updateTableVooIdaPac(pacotes['voosIda'])
+            self.__ui.updateTableVooVoltaPac(pacotes['voosVolta'])
+            self.__ui.updateTableHospedagemPac(pacotes['hospedagens'])
         except Exception as e:
             print(e)
 

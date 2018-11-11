@@ -392,15 +392,15 @@ class Ui_MainWindow(object):
         for item in data:
             if not isinstance(item, HotelRet):
                 continue
-            table.setItem(row_i, 0, str(item.id))
-            table.setItem(row_i, 1, item.nome)
-            table.setItem(row_i, 2, item.local.name)
-            table.setItem(row_i, 3, str(item.quartos_disp) + "/" + str(item.num_quartos))
-            table.setItem(row_i, 4, item.data_entrada.strftime("%d/%m/%Y"))
-            table.setItem(row_i, 5, (item.data_entrada + timedelta(days=item.num_diarias)).strftime("%d/%m/%Y"))
-            table.setItem(row_i, 6, str(item.num_diarias))
-            table.setItem(row_i, 7, str(item.preco_diaria))
-            table.setItem(row_i, 8, str(item.preco_total))
+            table.setItem(row_i, 0, QtWidgets.QTableWidgetItem(str(item.id)))
+            table.setItem(row_i, 1, QtWidgets.QTableWidgetItem(item.nome))
+            table.setItem(row_i, 2, QtWidgets.QTableWidgetItem(item.local.name))
+            table.setItem(row_i, 3, QtWidgets.QTableWidgetItem(str(item.quartos_disp) + "/" + str(item.num_quartos)))
+            table.setItem(row_i, 4, QtWidgets.QTableWidgetItem(item.data_entrada.strftime("%d/%m/%Y")))
+            table.setItem(row_i, 5, QtWidgets.QTableWidgetItem((item.data_entrada + timedelta(days=item.num_diarias)).strftime("%d/%m/%Y")))
+            table.setItem(row_i, 6, QtWidgets.QTableWidgetItem(str(item.num_diarias)))
+            table.setItem(row_i, 7, QtWidgets.QTableWidgetItem(str(item.preco_diaria)))
+            table.setItem(row_i, 8, QtWidgets.QTableWidgetItem(str(item.preco_total)))
             row_i += 1
 
     def updateTableVooIda(self, data):
