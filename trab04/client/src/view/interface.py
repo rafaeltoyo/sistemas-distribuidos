@@ -23,7 +23,6 @@ from datetime import timedelta
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from src.enum.Cidade import Cidade
-from src.enum.TipoVoo import TipoVoo
 from src.model.HotelRet import HotelRet
 from src.model.Voo import Voo
 
@@ -286,6 +285,17 @@ class Ui_MainWindow(object):
 
         # Ir para aba 0 (primeira)
         self.tabWidget.setCurrentIndex(0)
+
+        # Coloca a data atual nos seletores de data
+        self.dateChegadaHosp.setDate(QtCore.QDate.currentDate())
+        self.datePacoteIda.setDate(QtCore.QDate.currentDate())
+        self.datePacoteVolta.setDate(QtCore.QDate.currentDate())
+        self.dateSaidaHosp.setDate(QtCore.QDate.currentDate())
+        self.dateVooIda.setDate(QtCore.QDate.currentDate())
+        self.dateVooVolta.setDate(QtCore.QDate.currentDate())
+
+        # Seleciona "Somente ida" por padrão nos botões radio
+        self.radioSomenteIdaVoo.setChecked(True)
 
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
