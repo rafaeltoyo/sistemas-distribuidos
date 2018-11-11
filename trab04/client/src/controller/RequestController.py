@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # ==================================================================================================================== #
 __author__ = "Rafael Hideo Toyomoto, Victor Barpp Gomes"
 __copyright__ = "Copyright 2018, TBDC"
@@ -77,9 +79,10 @@ class RequestController(object):
             'origem': str(origem.name),
             'destino': str(destino.name),
             'data_ida': dataIda.strftime("%Y-%m-%d"),
-            'data_volta': dataVolta.strftime("%Y-%m-%d"),
+            'data_volta': dataVolta.strftime("%Y-%m-%d") if tipoVoo == TipoVoo.IDA_E_VOLTA else "",
             'num_pessoas': numPessoas if numPessoas > 0 else 0
         }
+        print(data)
 
         # Realizar a consulta e salvar o Response do servidor
         response = requests.get(self.__url + "consultar_passagens", params=data)
@@ -88,7 +91,9 @@ class RequestController(object):
 
         # Trabalhar os dados retornados
         voos = []
-        for item in result['infoVooes']['infoVoo']:
+        r = result['infoVooes']['infoVoo']
+        r = r if isinstance(r, list) else [r]
+        for item in r:
             voo = Voo.parse(item)
             voos.append(voo)
 
@@ -112,14 +117,16 @@ class RequestController(object):
 
         # Montar os parâmetros para a compra
         data = {
-            'tipo_passagem': str(TipoVoo.SOMENTE_IDA.name if vooVolta is None else TipoVoo.IDA_E_VOLTA.name),
-            'id_voo_ida': vooIda.id if vooIda is not None else "",
-            'id_voo_volta': vooVolta.id if vooVolta is not None else "",
-            'num_pessoas': numPessoas
+            'tipo': str(TipoVoo.SOMENTE_IDA.name if vooVolta is None else TipoVoo.IDA_E_VOLTA.name),
+            'idVooIda': vooIda.id if vooIda is not None else "",
+            'idVooVolta': vooVolta.id if vooVolta is not None else "",
+            'numPessoas': numPessoas
         }
 
         # Realizar a compra no servidor
-        return requests.get(self.__url + "comprar_passagens", params=data)
+        xml = xmltodict.unparse({'compraPassagem': data})
+        headers = {'Content-Type': 'application/xml'}
+        return requests.put(self.__url + "comprar_passagens", data=xml, headers=headers)
 
     # ================================================================================================================ #
 
@@ -160,7 +167,9 @@ class RequestController(object):
 
         # Trabalhar os dados retornados
         hospedagens = []
-        for item in result['infoHotelRets']['infoHotelRet']:
+        r = result['infoHotelRets']['infoHotelRet']
+        r = r if isinstance(r, list) else [r]
+        for item in r:
             hotel = HotelRet(
                 int(item['@id']),
                 item['nome'],
@@ -197,14 +206,16 @@ class RequestController(object):
 
         # Montar os parâmetros para a compra
         data = {
-            'id_hotel': hotel.id if hotel is not None else "",
-            'data_ini': dataInicio.strftime("%Y-%m-%d"),
-            'data_fim': dataFim.strftime("%Y-%m-%d"),
-            'num_quartos': numQuartos
+            'idHotel': hotel.id if hotel is not None else "",
+            'dataIni': dataInicio.strftime("%Y-%m-%d"),
+            'dataFim': dataFim.strftime("%Y-%m-%d"),
+            'numQuartos': numQuartos
         }
 
         # Realizar a compra no servidor
-        return requests.get(self.__url + "comprar_hospedagens", params=data)
+        xml = xmltodict.unparse({'compraHospedagem': data})
+        headers = {'Content-Type': 'application/xml'}
+        return requests.put(self.__url + "comprar_hospedagens", data=xml, headers=headers)
 
     # ================================================================================================================ #
 
@@ -300,16 +311,18 @@ class RequestController(object):
 
         # Montar os parâmetros para a compra
         data = {
-            'id_voo_ida': vooIda.id if vooIda is not None else "",
-            'id_voo_volta': vooVolta.id if vooVolta is not None else "",
-            'id_hotel': hotel.id,
-            'data_ida': dataIda.strftime("%Y-%m-%d"),
-            'data_volta': dataVolta.strftime("%Y-%m-%d"),
-            'num_quartos': numQuartos if numQuartos > 0 else 0,
-            'num_pessoas': numPessoas if numPessoas > 0 else 0
+            'idVooIda': vooIda.id if vooIda is not None else "",
+            'idVooVolta': vooVolta.id if vooVolta is not None else "",
+            'idHotel': hotel.id,
+            'dataIda': dataIda.strftime("%Y-%m-%d"),
+            'dataVolta': dataVolta.strftime("%Y-%m-%d"),
+            'numQuartos': numQuartos if numQuartos > 0 else 0,
+            'numPessoas': numPessoas if numPessoas > 0 else 0
         }
 
         # Realizar a compra no servidor
-        return requests.get(self.__url + "comprar_pacote", params=data)
+        xml = xmltodict.unparse({'compraPacote': data})
+        headers = {'Content-Type': 'application/xml'}
+        return requests.put(self.__url + "comprar_pacote", data=xml, headers=headers)
 
 # ==================================================================================================================== #
