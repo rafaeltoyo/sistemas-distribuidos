@@ -79,12 +79,12 @@ class MainController(object):
         print("\n#" + ("=" * 78) + "#")
 
         # Comprar
-        print(self.requests.put_passagem(passagens[0], passagens[1], 1))
         """
+        print(self.requests.put_passagem(passagens[0], passagens[1], 1))
         
         print(self.requests.put_hospedagem(hospedagens[0], datetime.strptime("2018-10-17", "%Y-%m-%d"),
                                            datetime.strptime("2018-10-20", "%Y-%m-%d"), 2))
-        
+
         print(self.requests.put_pacote(pacotes['voosIda'][0], pacotes['voosVolta'][0], pacotes['hospedagens'][1],
                                        datetime.strptime("2018-10-17", "%Y-%m-%d"),
                                        datetime.strptime("2018-10-20", "%Y-%m-%d"), 2, 2))

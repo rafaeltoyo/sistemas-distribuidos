@@ -208,7 +208,7 @@ class RequestController(object):
         }
 
         # Realizar a compra no servidor
-        xml = xmltodict.unparse({'compraPassagem': data})
+        xml = xmltodict.unparse({'compraHospedagem': data})
         headers = {'Content-Type': 'application/xml'}
         return requests.put(self.__url + "comprar_hospedagens", data=xml, headers=headers)
 
@@ -316,7 +316,7 @@ class RequestController(object):
         }
 
         # Realizar a compra no servidor
-        xml = xmltodict.unparse({'compraPassagem': data})
+        xml = xmltodict.unparse({'compraPacote': data})
         headers = {'Content-Type': 'application/xml'}
         return requests.put(self.__url + "comprar_pacote", data=xml, headers=headers)
 
