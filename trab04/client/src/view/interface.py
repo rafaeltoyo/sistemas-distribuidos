@@ -305,6 +305,20 @@ class Ui_MainWindow(object):
         # Seleciona "Somente ida" por padrão nos botões radio
         self.radioSomenteIdaVoo.setChecked(True)
 
+        # Modo de seleção das tabelas
+        self.tableVooIda.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableVooIda.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableVooVolta.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableVooVolta.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableHospedagem.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableHospedagem.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableVooIdaPac.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableVooIdaPac.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableVooVoltaPac.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableVooVoltaPac.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableHospedagemPac.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableHospedagemPac.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def __retranslateUi(self, MainWindow):
