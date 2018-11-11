@@ -10,8 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import server.model.cidade.Cidade;
 import server.model.saldo.Dinheiro;
-import server.webservice.DinheiroAdapter;
-import server.webservice.LocalDateAdapter;
+import server.webservice.xmladapters.DinheiroAdapter;
+import server.webservice.xmladapters.LocalDateAdapter;
 
 /** Classe que representa as informações de um hotel a serem enviadas como
  * resposta a um cliente.
@@ -131,6 +131,10 @@ public class InfoHotelRet implements Serializable {
 
     /*------------------------------------------------------------------------*/
 
+    /** Construtor sem argumentos para permitir que o objeto seja retornado
+     * pelos métodos do web service como XML.
+     * Inicializa todos os atributos com valores inválidos.
+     */
     public InfoHotelRet() {
         this.id = -1;
         this.nome = null;
