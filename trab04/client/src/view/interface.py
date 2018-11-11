@@ -334,7 +334,7 @@ class Ui_MainWindow(object):
 
         # ============================================================================================================ #
         #   Text
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Cliente"))
         self.labelVoos.setText(_translate("MainWindow", "Voos"))
         self.labelOrigemVoo.setText(_translate("MainWindow", "Cidade de origem:"))
         self.labelDestinoVoo.setText(_translate("MainWindow", "Cidade de destino:"))
