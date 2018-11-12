@@ -22,6 +22,7 @@ from src.view.interface import Ui_MainWindow
 from src.enum.Cidade import Cidade
 from src.enum.TipoVoo import TipoVoo
 from src.model.Dinheiro import Dinheiro
+from src.model.HotelRet import HotelRet
 from src.model.Voo import Voo
 
 class MainController(object):
@@ -156,9 +157,36 @@ class MainController(object):
             # TODO: alert
             print("Compra falhou")
 
-
     def comprarHospedagem(self):
-        pass
+        numPessoas = self.__ui.spinnerNumPessoasHosp.value()
+        numQuartos = self.__ui.spinnerNumQuartosHosp.value()
+
+        linhaHotel = self.__ui.tableHospedagem.selectedItems()
+
+        if len(linhaHotel) != 9:
+            # TODO: alert
+            print("Form inválido")
+            return
+
+        # Sim, isso é triste
+        dictHotel = {}
+        for item in linhaHotel:
+            dictHotel[item.column()] = item.text()
+
+        print(dictHotel)
+
+        dataEntrada = datetime.strptime(dictHotel[4], "%d/%m/%Y")
+        dataSaida = datetime.strptime(dictHotel[5], "%d/%m/%Y")
+        hotel = HotelRet(dictHotel[0], dictHotel[1], Cidade[dictHotel[2]], numQuartos, numQuartos, dataEntrada, int(dictHotel[6]), Dinheiro(dictHotel[7]), Dinheiro(dictHotel[8]))
+        print(hotel)
+
+        response = self.requests.put_hospedagem(hotel, dataEntrada, dataSaida, numQuartos)
+        if response.text == "true":
+            # TODO: alert
+            print("Deu boa")
+        else:
+            # TODO: alert
+            print("Compra falhou")
 
     def comprarPacote(self):
         pass
