@@ -23,7 +23,6 @@ from datetime import timedelta
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from src.enum.Cidade import Cidade
-from src.enum.TipoVoo import TipoVoo
 from src.model.HotelRet import HotelRet
 from src.model.Voo import Voo
 
@@ -287,6 +286,47 @@ class Ui_MainWindow(object):
         # Ir para aba 0 (primeira)
         self.tabWidget.setCurrentIndex(0)
 
+        # Coloca a data atual nos seletores de data
+        self.dateChegadaHosp.setDate(QtCore.QDate.currentDate())
+        self.datePacoteIda.setDate(QtCore.QDate.currentDate())
+        self.datePacoteVolta.setDate(QtCore.QDate.currentDate())
+        self.dateSaidaHosp.setDate(QtCore.QDate.currentDate())
+        self.dateVooIda.setDate(QtCore.QDate.currentDate())
+        self.dateVooVolta.setDate(QtCore.QDate.currentDate())
+
+        # Habilita calendário
+        self.dateChegadaHosp.setCalendarPopup(True)
+        self.datePacoteIda.setCalendarPopup(True)
+        self.datePacoteVolta.setCalendarPopup(True)
+        self.dateSaidaHosp.setCalendarPopup(True)
+        self.dateVooIda.setCalendarPopup(True)
+        self.dateVooVolta.setCalendarPopup(True)
+
+        # Seleciona "Somente ida" por padrão nos botões radio
+        self.radioSomenteIdaVoo.setChecked(True)
+
+        # Modo de seleção das tabelas
+        self.tableVooIda.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableVooIda.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableVooVolta.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableVooVolta.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableHospedagem.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableHospedagem.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableVooIdaPac.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableVooIdaPac.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableVooVoltaPac.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableVooVoltaPac.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableHospedagemPac.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tableHospedagemPac.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+
+        # Esconde o índice das linhas
+        self.tableVooIda.verticalHeader().setVisible(False)
+        self.tableVooVolta.verticalHeader().setVisible(False)
+        self.tableHospedagem.verticalHeader().setVisible(False)
+        self.tableVooIdaPac.verticalHeader().setVisible(False)
+        self.tableVooVoltaPac.verticalHeader().setVisible(False)
+        self.tableHospedagemPac.verticalHeader().setVisible(False)
+
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def __retranslateUi(self, MainWindow):
@@ -294,7 +334,7 @@ class Ui_MainWindow(object):
 
         # ============================================================================================================ #
         #   Text
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Cliente"))
         self.labelVoos.setText(_translate("MainWindow", "Voos"))
         self.labelOrigemVoo.setText(_translate("MainWindow", "Cidade de origem:"))
         self.labelDestinoVoo.setText(_translate("MainWindow", "Cidade de destino:"))
@@ -374,15 +414,15 @@ class Ui_MainWindow(object):
         for item in data:
             if not isinstance(item, HotelRet):
                 continue
-            table.setItem(row_i, 0, str(item.id))
-            table.setItem(row_i, 1, item.nome)
-            table.setItem(row_i, 2, item.local.name)
-            table.setItem(row_i, 3, str(item.quartos_disp) + "/" + str(item.num_quartos))
-            table.setItem(row_i, 4, item.data_entrada.strftime("%d/%m/%Y"))
-            table.setItem(row_i, 5, (item.data_entrada + timedelta(days=item.num_diarias)).strftime("%d/%m/%Y"))
-            table.setItem(row_i, 6, str(item.num_diarias))
-            table.setItem(row_i, 7, str(item.preco_diaria))
-            table.setItem(row_i, 8, str(item.preco_total))
+            table.setItem(row_i, 0, QtWidgets.QTableWidgetItem(str(item.id)))
+            table.setItem(row_i, 1, QtWidgets.QTableWidgetItem(item.nome))
+            table.setItem(row_i, 2, QtWidgets.QTableWidgetItem(item.local.name))
+            table.setItem(row_i, 3, QtWidgets.QTableWidgetItem(str(item.quartos_disp) + "/" + str(item.num_quartos)))
+            table.setItem(row_i, 4, QtWidgets.QTableWidgetItem(item.data_entrada.strftime("%d/%m/%Y")))
+            table.setItem(row_i, 5, QtWidgets.QTableWidgetItem((item.data_entrada + timedelta(days=item.num_diarias)).strftime("%d/%m/%Y")))
+            table.setItem(row_i, 6, QtWidgets.QTableWidgetItem(str(item.num_diarias)))
+            table.setItem(row_i, 7, QtWidgets.QTableWidgetItem(str(item.preco_diaria)))
+            table.setItem(row_i, 8, QtWidgets.QTableWidgetItem(str(item.preco_total)))
             row_i += 1
 
     def updateTableVooIda(self, data):

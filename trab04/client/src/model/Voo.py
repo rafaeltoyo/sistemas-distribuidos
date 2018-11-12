@@ -13,11 +13,38 @@ __status__ = "Production"
 # ==================================================================================================================== #
 
 from datetime import datetime
+from PyQt5 import QtWidgets
+
 from src.enum.Cidade import Cidade
 from src.model.Dinheiro import Dinheiro
 
 
 class Voo(object):
+
+    @staticmethod
+    def transform(content, numPessoas):
+        """
+        Função de gerar um objeto Voo a partir de uma linha da tabela do aplicativo
+        :param content: Lista com os elementos QtWidgets.QTableWidgetItem
+        :type content: list
+        :param numPessoas: Número de pessoas para esse Voo
+        :type numPessoas: int
+        :return: Instância do Voo transformada
+        :rtype: Voo
+        """
+        data = {}
+        item: QtWidgets.QTableWidgetItem
+        for item in content:
+            data[item.column()] = item.text()
+
+        return Voo(
+            int(data[0]),
+            Cidade[data[1]],
+            Cidade[data[2]],
+            datetime.strptime(data[3], "%d/%m/%Y"),
+            Dinheiro(data[4]),
+            numPessoas if numPessoas > 0 else 1
+        )
 
     @staticmethod
     def parse(content):
