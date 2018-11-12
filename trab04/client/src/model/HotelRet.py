@@ -13,11 +13,44 @@ __status__ = "Production"
 # ==================================================================================================================== #
 
 from datetime import datetime
+from PyQt5 import QtWidgets
+
 from src.enum.Cidade import Cidade
 from src.model.Dinheiro import Dinheiro
 
 
 class HotelRet(object):
+
+    @staticmethod
+    def transform(content, numQuartos):
+        """
+        Função de gerar um objeto Hospedagem a partir de uma linha da tabela do aplicativo
+        :param content: Lista com os elementos QtWidgets.QTableWidgetItem
+        :type content: list
+        :param numQuartos: Número de quartos para esse Hospedagem
+        :type numQuartos: int
+        :return: Instância do Hospedagem transformada + Data de entrada + Data de saída
+        """
+        data = {}
+        item: QtWidgets.QTableWidgetItem
+        for item in content:
+            data[item.column()] = item.text()
+
+        return [
+            HotelRet(
+                int(data[0]),
+                str(data[1]),
+                Cidade[data[2]],
+                numQuartos,
+                numQuartos,
+                datetime.strptime(data[4], "%d/%m/%Y"),
+                int(data[6]),
+                Dinheiro(data[7]),
+                Dinheiro(data[8])
+            ),
+            datetime.strptime(data[4], "%d/%m/%Y"),
+            datetime.strptime(data[5], "%d/%m/%Y")
+        ]
 
     @staticmethod
     def parse(content):
@@ -41,15 +74,15 @@ class HotelRet(object):
         )
 
     def __init__(self,
-             id: int,
-             nome: str,
-             local: Cidade,
-             num_quartos: int,
-             quartos_disp: int,
-             data_entrada: datetime,
-             num_diarias: int,
-             preco_diaria: Dinheiro,
-             preco_total: Dinheiro):
+                 id: int,
+                 nome: str,
+                 local: Cidade,
+                 num_quartos: int,
+                 quartos_disp: int,
+                 data_entrada: datetime,
+                 num_diarias: int,
+                 preco_diaria: Dinheiro,
+                 preco_total: Dinheiro):
         """
 
         :param id: ID do hotel
