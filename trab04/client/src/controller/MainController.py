@@ -58,11 +58,11 @@ class MainController(object):
         """
 
         # Criar uma janela (principal)
-        window = QtWidgets.QMainWindow()
+        self.__window = QtWidgets.QMainWindow()
 
         # Gerar os componentes nessa janela
         self.__ui = Ui_MainWindow()
-        self.__ui.setupUi(window)
+        self.__ui.setupUi(self.__window)
         self.__ui.buttonConsultarVoo.clicked.connect(self.consultarVoo)
         self.__ui.buttonConsultarHosp.clicked.connect(self.consultarHotel)
         self.__ui.buttonConsultarPacote.clicked.connect(self.consultarPacote)
@@ -71,13 +71,27 @@ class MainController(object):
         self.__ui.buttonComprarPacote.clicked.connect(self.comprarPacote)
 
         # Apresentar a janela
-        window.show()
+        self.__window.show()
         try:
             # Loop de execução da aplicação
             self.__app.exec_()
         except Exception as e:
             # Algum erro aconteceu durante a execução do programa
             print("Error!", str(e))
+
+    def alert(self, msg):
+        """
+        Exibir um popup de alerta
+        :param msg: Mensagem a ser exibida
+        :type msg: str
+        :return: não retorna nada
+        """
+        popup = QtWidgets.QDialog(self.__window)
+        popup.setFixedWidth(150)
+        popup.setFixedHeight(80)
+        popup.label = QtWidgets.QLabel(msg, popup)
+        popup.label.setMargin(10)
+        popup.show()
 
     def consultarVoo(self):
         """
@@ -92,8 +106,7 @@ class MainController(object):
         elif self.__ui.radioIdaEVoltaVoo.isChecked():
             type = TipoVoo.IDA_E_VOLTA
         else:
-            # FIXME: alerta
-            print("ERROR!")
+            self.alert("Selecione um tipo de voo!")
             return
 
         # Obter a cidade de origem do Voo
@@ -124,7 +137,7 @@ class MainController(object):
             self.__ui.updateTableVooIda(passagens_ida)
             self.__ui.updateTableVooVolta(passagens_volta)
         except Exception as e:
-            print(e)
+            self.alert(str(e))
 
     def consultarHotel(self):
         """
@@ -150,7 +163,7 @@ class MainController(object):
             # Atualizar as tabelas com os dados
             self.__ui.updateTableHospedagem(hospedagens)
         except Exception as e:
-            print(e)
+            self.alert(str(e))
 
     def consultarPacote(self):
         """
@@ -180,7 +193,7 @@ class MainController(object):
             self.__ui.updateTableVooVoltaPac(pacotes['voosVolta'])
             self.__ui.updateTableHospedagemPac(pacotes['hospedagens'])
         except Exception as e:
-            print(e)
+            self.alert(str(e))
 
     def comprarVoo(self):
         """
@@ -199,8 +212,7 @@ class MainController(object):
 
         # Validar as linhas selecionadas
         if len(linhaVooIda) != 6 or (tipoPassagem == TipoVoo.IDA_E_VOLTA and len(linhaVooVolta) != 6):
-            # TODO: alert
-            print("Form inválido")
+            self.alert("Form inválido!")
             return
 
         # Converter a linha da tabela em um objeto Voo
@@ -212,11 +224,10 @@ class MainController(object):
         response = self.requests.put_passagem(vooIda, vooVolta, numPessoas)
         # Verificar resposta
         if response.text == "true":
-            # TODO: alert
-            print("Deu boa")
+            self.alert("Compra realizada com sucesso!")
+            self.consultarVoo()
         else:
-            # TODO: alert
-            print("Compra falhou")
+            self.alert("Um erro ocorreu na compra!")
 
     def comprarHospedagem(self):
         """
@@ -233,8 +244,7 @@ class MainController(object):
         linhaHotel = self.__ui.tableHospedagem.selectedItems()
 
         if len(linhaHotel) != 9:
-            # TODO: alert
-            print("Form inválido")
+            self.alert("Form inválido!")
             return
 
         # Converter a linha da tabela em um objeto HotelRet
@@ -244,11 +254,10 @@ class MainController(object):
         response = self.requests.put_hospedagem(hotel, dataEntrada, dataSaida, numQuartos)
         # Verificar resposta
         if response.text == "true":
-            # TODO: alert
-            print("Deu boa")
+            self.alert("Compra realizada com sucesso!")
+            self.consultarHotel()
         else:
-            # TODO: alert
-            print("Compra falhou")
+            self.alert("Um erro ocorreu na compra!")
 
     def comprarPacote(self):
         """
@@ -270,8 +279,7 @@ class MainController(object):
 
         # Validar as linhas selecionadas
         if len(linhaVooIda) != 6 or len(linhaVooVolta) != 6 or len(linhaHotel) != 9:
-            # TODO: alert
-            print("Form inválido")
+            self.alert("Form inválido!")
             return
 
         # Converter a linha da tabela em um objeto Voo
@@ -285,10 +293,9 @@ class MainController(object):
         response = self.requests.put_pacote(vooIda, vooVolta, hotel, dataEntrada, dataSaida, numQuartos, numPessoas)
         # Verificar resposta
         if response.text == "true":
-            # TODO: alert
-            print("Deu boa")
+            self.alert("Compra realizada com sucesso!")
+            self.consultarPacote()
         else:
-            # TODO: alert
-            print("Compra falhou")
+            self.alert("Um erro ocorreu na compra!")
 
 # ==================================================================================================================== #
