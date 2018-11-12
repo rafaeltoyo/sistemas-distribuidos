@@ -21,7 +21,8 @@ from src.view.interface import Ui_MainWindow
 
 from src.enum.Cidade import Cidade
 from src.enum.TipoVoo import TipoVoo
-
+from src.model.Dinheiro import Dinheiro
+from src.model.Voo import Voo
 
 class MainController(object):
 
@@ -44,6 +45,9 @@ class MainController(object):
         self.__ui.buttonConsultarVoo.clicked.connect(self.consultarVoo)
         self.__ui.buttonConsultarHosp.clicked.connect(self.consultarHotel)
         self.__ui.buttonConsultarPacote.clicked.connect(self.consultarPacote)
+        self.__ui.buttonComprarVoo.clicked.connect(self.comprarVoo)
+        self.__ui.buttonComprarHosp.clicked.connect(self.comprarHospedagem)
+        self.__ui.buttonComprarPacote.clicked.connect(self.comprarPacote)
 
         # TODO: Bind nos botões com as funções de dinamização da tela
         # TODO: Ajustar Listagens
@@ -120,6 +124,44 @@ class MainController(object):
             self.__ui.updateTableHospedagemPac(pacotes['hospedagens'])
         except Exception as e:
             print(e)
+
+    def comprarVoo(self):
+        numPessoas = self.__ui.spinnerNumPessoasVoo.value()
+        tipoPassagem = TipoVoo.IDA_E_VOLTA if self.__ui.radioIdaEVoltaVoo.isChecked() else TipoVoo.SOMENTE_IDA
+
+        linhaVooIda = self.__ui.tableVooIda.selectedItems()
+        linhaVooVolta = self.__ui.tableVooVolta.selectedItems()
+
+        if len(linhaVooIda) != 6 or (tipoPassagem == TipoVoo.IDA_E_VOLTA and len(linhaVooVolta) != 6):
+            # TODO: alert
+            print("Form inválido")
+            return
+
+        # Sim, isso é triste
+        dictVooIda = {}
+        for item in linhaVooIda:
+            dictVooIda[item.column()] = item.text()
+        dictVooVolta = {}
+        for item in linhaVooVolta:
+            dictVooVolta[item.column()] = item.text()
+
+        vooIda = Voo(dictVooIda[0], Cidade[dictVooIda[1]], Cidade[dictVooIda[2]], datetime.strptime(dictVooIda[3], "%d/%m/%Y"), Dinheiro(dictVooIda[4]), numPessoas)
+        vooVolta = Voo(dictVooVolta[0], Cidade[dictVooVolta[1]], Cidade[dictVooVolta[2]], datetime.strptime(dictVooVolta[3], "%d/%m/%Y"), Dinheiro(dictVooVolta[4]), numPessoas) if tipoPassagem == TipoVoo.IDA_E_VOLTA else None
+
+        response = self.requests.put_passagem(vooIda, vooVolta, numPessoas)
+        if response.text == "true":
+            # TODO: alert
+            print("Deu boa")
+        else:
+            # TODO: alert
+            print("Compra falhou")
+
+
+    def comprarHospedagem(self):
+        pass
+
+    def comprarPacote(self):
+        pass
 
     def teste(self):
         # FIXME: Exemplo de uso do webservice
