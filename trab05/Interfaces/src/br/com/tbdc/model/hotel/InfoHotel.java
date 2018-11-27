@@ -1,7 +1,7 @@
-package br.com.tbdc.coordenador.hotel;
+package br.com.tbdc.model.hotel;
 
-import br.com.tbdc.coordenador.cidade.Cidade;
-import br.com.tbdc.coordenador.saldo.Dinheiro;
+import br.com.tbdc.model.cidade.Cidade;
+import br.com.tbdc.model.saldo.Dinheiro;
 
 /** Esta classe é uma estrutura de armazenamento de informações de um hotel.
  * @author Rafael Hideo Toyomoto
