@@ -1,4 +1,4 @@
-package br.com.tbdc.coordenador.voo;
+package br.com.tbdc.model.voo;
 
 /** Este enum representa os tipos de passagem.
  * @author Rafael Hideo Toyomoto

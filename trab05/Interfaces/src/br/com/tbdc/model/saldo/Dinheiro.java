@@ -1,4 +1,4 @@
-package br.com.tbdc.coordenador.saldo;
+package br.com.tbdc.model.saldo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

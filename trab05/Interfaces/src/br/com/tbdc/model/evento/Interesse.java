@@ -1,7 +1,7 @@
-package br.com.tbdc.coordenador.evento;
+package br.com.tbdc.model.evento;
 
-import br.com.tbdc.coordenador.cidade.Cidade;
-import br.com.tbdc.coordenador.saldo.Dinheiro;
+import br.com.tbdc.model.cidade.Cidade;
+import br.com.tbdc.model.saldo.Dinheiro;
 
 import java.io.Serializable;
 

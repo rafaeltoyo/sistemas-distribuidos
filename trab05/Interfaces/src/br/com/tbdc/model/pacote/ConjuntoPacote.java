@@ -1,7 +1,7 @@
-package br.com.tbdc.coordenador.pacote;
+package br.com.tbdc.model.pacote;
 
-import br.com.tbdc.coordenador.hotel.InfoHotelRet;
-import br.com.tbdc.coordenador.voo.InfoVoo;
+import br.com.tbdc.model.hotel.InfoHotelRet;
+import br.com.tbdc.model.voo.InfoVoo;
 
 import java.io.Serializable;
 import java.util.ArrayList;

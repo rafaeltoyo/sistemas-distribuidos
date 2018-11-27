@@ -1,4 +1,4 @@
-package br.com.tbdc.coordenador.mensagem;
+package br.com.tbdc.model.mensagem;
 
 import java.io.Serializable;
 

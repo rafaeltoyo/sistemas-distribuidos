@@ -1,10 +1,10 @@
 package br.com.tbdc.coordenador;
 
-import br.com.tbdc.coordenador.cidade.Cidade;
-import br.com.tbdc.coordenador.hotel.InfoHotelRet;
-import br.com.tbdc.coordenador.pacote.ConjuntoPacote;
-import br.com.tbdc.coordenador.voo.InfoVoo;
-import br.com.tbdc.coordenador.voo.TipoPassagem;
+import br.com.tbdc.model.cidade.Cidade;
+import br.com.tbdc.model.hotel.InfoHotelRet;
+import br.com.tbdc.model.pacote.ConjuntoPacote;
+import br.com.tbdc.model.voo.InfoVoo;
+import br.com.tbdc.model.voo.TipoPassagem;
 import br.com.tbdc.rmi.InterfaceCoordenador;
 
 import java.rmi.RemoteException;
