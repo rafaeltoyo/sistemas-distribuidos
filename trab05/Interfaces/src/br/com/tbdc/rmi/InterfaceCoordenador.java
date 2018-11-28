@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 /**
  * =====================================================================================================================
- * Interface RMI para o servidor da agência.
+ * Interface RMI para o servidor da agência para compra do cliente.
  * =====================================================================================================================
  *
  * @author Rafael Hideo Toyomoto
@@ -147,5 +147,4 @@ public interface InterfaceCoordenador extends Remote {
                           int numQuartos,
                           int numPessoas) throws RemoteException;
 
-    /* ============================================================================================================== */
 }
