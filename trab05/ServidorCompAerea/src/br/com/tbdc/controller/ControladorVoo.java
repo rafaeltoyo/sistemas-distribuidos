@@ -33,7 +33,7 @@ public class ControladorVoo {
     /** Retorna a instância do singleton.
      * @return instância do singleton
      */
-    public static synchronized ControladorVoo getInstance() {
+    public static ControladorVoo getInstance() {
         return instance;
     }
 
