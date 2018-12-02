@@ -1,6 +1,6 @@
 package br.com.tbdc;
 
-import br.com.tbdc.server.ServidorCompAerea;
+import br.com.tbdc.server.ServidorHotel;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -16,13 +16,12 @@ public class Main {
         try {
             Registry registry = LocateRegistry.getRegistry(REGISTRY_PORT);
 
-            ServidorCompAerea servidor = new ServidorCompAerea();
-            registry.rebind("servidor_comp_aerea", servidor);
+            ServidorHotel servidor = new ServidorHotel();
+            registry.rebind("servidor_hotel", servidor);
         }
         catch (RemoteException e) {
             e.printStackTrace();
             System.exit(-1);
         }
     }
-
 }

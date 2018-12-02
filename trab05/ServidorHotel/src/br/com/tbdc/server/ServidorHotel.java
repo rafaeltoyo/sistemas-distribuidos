@@ -6,6 +6,7 @@ import br.com.tbdc.model.hotel.InfoHotelRet;
 import br.com.tbdc.rmi.InterfaceHospedagens;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -14,9 +15,12 @@ import java.util.ArrayList;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class ServidorHotel implements InterfaceHospedagens {
+public class ServidorHotel extends UnicastRemoteObject implements InterfaceHospedagens {
 
-    /* Atributos, getters/setters, construtores */
+    /** Construtor em branco. */
+    public ServidorHotel() throws RemoteException {
+        super();
+    }
 
     /*------------------------------------------------------------------------*/
 

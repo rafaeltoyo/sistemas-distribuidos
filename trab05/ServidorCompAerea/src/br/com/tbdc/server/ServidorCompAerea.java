@@ -8,6 +8,7 @@ import br.com.tbdc.model.voo.Voo;
 import br.com.tbdc.rmi.InterfacePassagens;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -16,9 +17,11 @@ import java.util.ArrayList;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class ServidorCompAerea implements InterfacePassagens {
+public class ServidorCompAerea extends UnicastRemoteObject implements InterfacePassagens {
 
-    /* Atributos, getters/setters, construtores */
+    public ServidorCompAerea() throws RemoteException {
+        super();
+    }
 
     /*------------------------------------------------------------------------*/
 
