@@ -13,21 +13,12 @@ import java.util.ArrayList;
 
 /** Classe utilizada para a comunicação entre este servidor (Companhia Aérea)
  * com o servidor Coordenador, via RMI.
+ * @author Rafael Hideo Toyomoto
+ * @author Victor Barpp Gomes
  */
 public class ServidorCompAerea implements InterfacePassagens {
 
-    private ArrayList<Voo> voos = new ArrayList<>();
-
-    /**
-     * Adiciona um voo à lista de voos do servidor, busca registros de
-     * interesse que são atendidos por esse voo e envia notificação aos
-     * respectivos clientes.
-     *
-     * @param voo voo já instanciado e inicializado
-     */
-    public void adicionarVoo(Voo voo) {
-        voos.add(voo);
-    }
+    /* Atributos, getters/setters, construtores */
 
     /*------------------------------------------------------------------------*/
 
