@@ -20,7 +20,7 @@ public class Main {
             // Cria o serviço de nomes
             Registry registry = LocateRegistry.createRegistry(REGISTRY_PORT);
 
-            ServidorCoordenador servidor = new ServidorCoordenador();
+            ServidorCoordenador servidor = new ServidorCoordenador(registry);
             registry.rebind("servidor_coordenador", servidor);
         }
         catch (RemoteException e) {

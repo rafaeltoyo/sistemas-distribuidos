@@ -4,7 +4,6 @@ import br.com.tbdc.controller.ControladorVoo;
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.voo.InfoVoo;
 import br.com.tbdc.model.voo.TipoPassagem;
-import br.com.tbdc.model.voo.Voo;
 import br.com.tbdc.rmi.InterfacePassagens;
 
 import java.rmi.RemoteException;
