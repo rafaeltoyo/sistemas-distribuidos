@@ -1,15 +1,10 @@
 package br.com.tbdc;
 
-import br.com.tbdc.controller.ControladorVoo;
-import br.com.tbdc.model.cidade.Cidade;
-import br.com.tbdc.model.voo.Voo;
-import br.com.tbdc.server.ServidorCompAerea;
+import br.com.tbdc.server.ServidorHotel;
 
-import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.time.LocalDate;
 
 public class Main {
     /** Porta do serviço de nomes */
@@ -21,15 +16,12 @@ public class Main {
         try {
             Registry registry = LocateRegistry.getRegistry(REGISTRY_PORT);
 
-            ServidorCompAerea servidor = new ServidorCompAerea();
-            registry.rebind("servidor_comp_aerea", servidor);
-
-            ControladorVoo.getInstance().adicionarVoo(new Voo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 12, 3), 10, br.com.tbdc.model.saldo.Dinheiro.reais(new BigDecimal(1.5))));
+            ServidorHotel servidor = new ServidorHotel();
+            registry.rebind("servidor_hotel", servidor);
         }
         catch (RemoteException e) {
             e.printStackTrace();
             System.exit(-1);
         }
     }
-
 }

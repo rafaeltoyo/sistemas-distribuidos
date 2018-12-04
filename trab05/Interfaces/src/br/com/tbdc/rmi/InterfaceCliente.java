@@ -11,4 +11,5 @@ import java.rmi.Remote;
  * @author Victor Barpp Gomes
  */
 public interface InterfaceCliente extends Remote {
+
 }
