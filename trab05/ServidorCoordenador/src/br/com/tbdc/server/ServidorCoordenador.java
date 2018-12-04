@@ -1,4 +1,4 @@
-package br.com.tbdc.coordenador;
+package br.com.tbdc.server;
 
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.hotel.InfoHotelRet;
@@ -24,6 +24,8 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
     /** Serviço de nomes */
     private Registry registry;
 
+    private ServidorResposta servidorResposta;
+
     /*------------------------------------------------------------------------*/
 
     /**
@@ -35,6 +37,7 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
     public ServidorCoordenador(Registry registry) throws RemoteException {
         super();
         this.registry = registry;
+        this.servidorResposta = new ServidorResposta();
     }
 
     /*------------------------------------------------------------------------*/
@@ -154,7 +157,28 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
      */
     @Override
     public boolean comprarPacote(int idVooIda, int idVooVolta, int idHotel, LocalDate dataIda, LocalDate dataVolta, int numQuartos, int numPessoas) throws RemoteException {
-        // TODO
-        return false;
+
+        InterfacePassagens servidorCompAerea;
+        InterfaceHospedagens servidorHotel;
+        ServidorResposta s = new ServidorResposta(100);
+
+        try {
+            servidorCompAerea = (InterfacePassagens) registry.lookup("servidor_comp_aerea");
+            servidorHotel = (InterfaceHospedagens) registry.lookup("servidor_hotel");
+        }
+        catch (NotBoundException e) {
+            return false;
+        }
+
+        servidorCompAerea.comprarPacote(TipoPassagem.IDA_E_VOLTA, idVooIda, idVooVolta, numPessoas, s);
+        servidorHotel.comprarPacote(idHotel, dataIda, dataVolta, numQuartos, s);
+
+        boolean r = s.esperar(2);
+        if (!r) {
+            // abortar
+        } else {
+            // commit
+        }
+        return r;
     }
 }

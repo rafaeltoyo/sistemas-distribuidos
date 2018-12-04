@@ -56,4 +56,10 @@ public interface InterfaceHospedagens extends Remote {
                               LocalDate dataFim,
                               int numQuartos) throws RemoteException;
 
+    boolean comprarPacote(int idHotel,
+                          LocalDate dataIni,
+                          LocalDate dataFim,
+                          int numQuartos,
+                          InterfaceTransacao coordenador) throws RemoteException;
+
 }

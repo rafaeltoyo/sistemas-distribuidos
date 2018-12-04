@@ -60,4 +60,10 @@ public interface InterfacePassagens extends Remote {
                              int idVooVolta,
                              int numPessoas) throws RemoteException;
 
+    boolean comprarPacote(TipoPassagem tipo,
+                          int idVooIda,
+                          int idVooVolta,
+                          int numPessoas,
+                          InterfaceTransacao coordenador) throws RemoteException;
+
 }
