@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 public class DataStorage {
 
@@ -38,18 +40,33 @@ public class DataStorage {
         }
     }
 
-    public synchronized void writeData(String data) {
-        this.writeData(data, false);
+    public synchronized void readData(Function<String, Boolean> parser) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String text = null;
+            while ((text = reader.readLine()) != null) {
+                if (!parser.apply(text)) {
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public synchronized void writeData(String data, boolean reset) {
+    public synchronized boolean writeData(String data) {
+        return this.writeData(data, false);
+    }
+
+    public synchronized boolean writeData(String data, boolean reset) {
         if (file.canWrite()) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, !reset))) {
                 writer.write(data);
+                return true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return false;
     }
 
 }
