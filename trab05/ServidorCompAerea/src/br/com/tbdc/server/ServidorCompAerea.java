@@ -5,6 +5,7 @@ import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.voo.InfoVoo;
 import br.com.tbdc.model.voo.TipoPassagem;
 import br.com.tbdc.rmi.InterfacePassagens;
+import br.com.tbdc.rmi.InterfaceTransacao;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

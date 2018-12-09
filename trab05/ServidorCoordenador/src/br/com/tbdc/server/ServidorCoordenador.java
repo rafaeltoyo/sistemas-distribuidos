@@ -35,6 +35,20 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
     public ServidorCoordenador(Registry registry) throws RemoteException {
         super();
         this.registry = registry;
+
+        TransactionController.getInstance();
+
+        int id1 = TransactionController.getInstance().beginTransaction();
+        int id2 = TransactionController.getInstance().beginTransaction();
+        int id3 = TransactionController.getInstance().beginTransaction();
+        int id4 = TransactionController.getInstance().beginTransaction();
+
+        TransactionController.getInstance().prepare(id1);
+        TransactionController.getInstance().prepare(id2);
+        TransactionController.getInstance().prepare(id3);
+
+        TransactionController.getInstance().commit(id2);
+        TransactionController.getInstance().rollback(id3);
     }
 
     /*------------------------------------------------------------------------*/
@@ -168,9 +182,6 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
         InterfacePassagens servidorCompAerea;
         InterfaceHospedagens servidorHotel;
 
-        // Criar um controle para esperar as resposta
-        ServidorResposta s = new ServidorResposta(100);
-
         try {
             // Pegar os participantes pelo registro de nomes
             servidorCompAerea = (InterfacePassagens) registry.lookup("servidor_comp_aerea");
@@ -181,16 +192,22 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
         }
 
         // Inicio da transação
-        // TODO: Salvar transação em Log com status de Pendente
+        int id = TransactionController.getInstance().beginTransaction();
+
+        // Criar um serviço para esperar as resposta
+        ServidorResposta service = new ServidorResposta(id);
 
         // Iniciar o processo de comprar Pacote
         // Enviar pergunta ao servidor de passagens
-        servidorCompAerea.comprarPacote(TipoPassagem.IDA_E_VOLTA, idVooIda, idVooVolta, numPessoas, s);
+        servidorCompAerea.comprarPacote(TipoPassagem.IDA_E_VOLTA, idVooIda, idVooVolta, numPessoas, service);
         // Enviar pergunta ao servidor de hospedagens
-        servidorHotel.comprarPacote(idHotel, dataIda, dataVolta, numQuartos, s);
+        servidorHotel.comprarPacote(idHotel, dataIda, dataVolta, numQuartos, service);
+
+        // Jogar transação para provisória
+        TransactionController.getInstance().prepare(id);
 
         // Esperar por duas respostas
-        if (s.esperar(2)) {
+        if (service.esperar(2)) {
             // TODO: Commit da transação e atualizar Log para Confirmado
             return true;
         }
