@@ -1,5 +1,6 @@
 package br.com.tbdc.server;
 
+import br.com.tbdc.data.Transaction;
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.hotel.InfoHotelRet;
 import br.com.tbdc.model.pacote.ConjuntoPacote;
@@ -208,11 +209,35 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
 
         // Esperar por duas respostas
         if (service.esperar(2)) {
-            // TODO: Commit da transação e atualizar Log para Confirmado
+
+            // Criar outro serviço para esperar as resposta
+            ServidorResposta serviceCommit = new ServidorResposta(id);
+
+            // Confirmar transação localmente
+            TransactionController.getInstance().commit(id);
+
+            // Confirmar transação para os participantes
+            servidorCompAerea.efetivarPacote(serviceCommit);
+            servidorHotel.efetivarPacote(serviceCommit);
+
+            // Esperar todos efetivarem com sucesso
+            serviceCommit.esperar(2);
             return true;
         }
         else {
-            // TODO: Abortar transação e atualizar Log para Abortado
+
+            // Criar outro serviço para esperar as resposta
+            ServidorResposta serviceRollback = new ServidorResposta(id);
+
+            // Confirmar transação localmente
+            TransactionController.getInstance().rollback(id);
+
+            // Confirmar transação para os participantes
+            servidorCompAerea.abortarPacote(serviceRollback);
+            servidorHotel.abortarPacote(serviceRollback);
+
+            // Esperar todos efetivarem com sucesso
+            serviceRollback.esperar(2);
             return false;
         }
     }
