@@ -2,6 +2,7 @@ package br.com.tbdc.model;
 
 import br.com.tbdc.model.saldo.Reserva;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class Hospedagem {
+public class Hospedagem implements Serializable {
     /** Informações da hospedagem */
     private InfoHospedagem infoHospedagem;
 

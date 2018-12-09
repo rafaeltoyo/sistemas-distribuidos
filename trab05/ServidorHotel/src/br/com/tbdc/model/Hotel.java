@@ -5,6 +5,7 @@ import br.com.tbdc.model.hotel.InfoHotel;
 import br.com.tbdc.model.saldo.Dinheiro;
 import br.com.tbdc.model.saldo.Reserva;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashMap;
 
@@ -12,7 +13,7 @@ import java.util.HashMap;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class Hotel {
+public class Hotel implements Serializable {
     /** Informações do hotel */
     private InfoHotel infoHotel;
 
