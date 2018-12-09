@@ -15,11 +15,17 @@ public class ServidorResposta extends UnicastRemoteObject implements InterfaceTr
         this.id = idTransacao;
     }
 
+    public void resetId(int idTransacao) {
+        this.id = idTransacao;
+        this.response.clear();
+    }
+
     public boolean esperar(int num_participante) {
 
         // Para cada participante ...
         for (int i = 0; i < num_participante; i++) {
 
+            // Resultado da etapa de pergunta aos participantes
             boolean quero;
 
             try {
@@ -39,8 +45,14 @@ public class ServidorResposta extends UnicastRemoteObject implements InterfaceTr
 
     @Override
     public boolean responder(int idTransacao, boolean resposta) throws RemoteException {
-        response.offer(resposta);
 
+        // Validar a resposta com o id de transação
+        if (idTransacao == this.id) {
+            // Tudo certo, podemos adicionar na fila
+            response.offer(resposta);
+            return true;
+        }
+        // Resposta não é para essa transação
         return false;
     }
 

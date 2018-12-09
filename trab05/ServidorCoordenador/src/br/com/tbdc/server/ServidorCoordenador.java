@@ -24,8 +24,6 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
     /** Serviço de nomes */
     private Registry registry;
 
-    private ServidorResposta servidorResposta;
-
     /*------------------------------------------------------------------------*/
 
     /**
@@ -37,7 +35,6 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
     public ServidorCoordenador(Registry registry) throws RemoteException {
         super();
         this.registry = registry;
-        this.servidorResposta = new ServidorResposta();
     }
 
     /*------------------------------------------------------------------------*/
@@ -116,10 +113,12 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
     public ConjuntoPacote consultarPacotes(Cidade origem, Cidade destino,
                                            LocalDate dataIda, LocalDate dataVolta, int numQuartos,
                                            int numPessoas) throws RemoteException {
+        // Referência para os participantes
         InterfacePassagens servidorCompAerea;
         InterfaceHospedagens servidorHotel;
 
         try {
+            // Pegar os participantes pelo registro de nomes
             servidorCompAerea = (InterfacePassagens) registry.lookup("servidor_comp_aerea");
             servidorHotel = (InterfaceHospedagens) registry.lookup("servidor_hotel");
         }
@@ -135,13 +134,20 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
 
         ConjuntoPacote conjuntoPacote = new ConjuntoPacote();
         if (!voos.isEmpty() && !hosps.isEmpty()) {
+
+            // Pegar todos Voos
             for (InfoVoo v : voos) {
+                // Ida
                 if (v.getOrigem() == origem) {
                     conjuntoPacote.adicionarVooIda(v);
-                } else {
+                }
+                // Volta
+                else {
                     conjuntoPacote.adicionarVooVolta(v);
                 }
             }
+
+            // Pegar todos Hoteis
             for (InfoHotelRet ihr : hosps) {
                 conjuntoPacote.adicionarHospedagem(ihr);
             }
@@ -158,11 +164,15 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
     @Override
     public boolean comprarPacote(int idVooIda, int idVooVolta, int idHotel, LocalDate dataIda, LocalDate dataVolta, int numQuartos, int numPessoas) throws RemoteException {
 
+        // Referência para os participantes
         InterfacePassagens servidorCompAerea;
         InterfaceHospedagens servidorHotel;
+
+        // Criar um controle para esperar as resposta
         ServidorResposta s = new ServidorResposta(100);
 
         try {
+            // Pegar os participantes pelo registro de nomes
             servidorCompAerea = (InterfacePassagens) registry.lookup("servidor_comp_aerea");
             servidorHotel = (InterfaceHospedagens) registry.lookup("servidor_hotel");
         }
@@ -170,15 +180,23 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
             return false;
         }
 
+        // Inicio da transação
+        // TODO: Salvar transação em Log com status de Pendente
+
+        // Iniciar o processo de comprar Pacote
+        // Enviar pergunta ao servidor de passagens
         servidorCompAerea.comprarPacote(TipoPassagem.IDA_E_VOLTA, idVooIda, idVooVolta, numPessoas, s);
+        // Enviar pergunta ao servidor de hospedagens
         servidorHotel.comprarPacote(idHotel, dataIda, dataVolta, numQuartos, s);
 
-        boolean r = s.esperar(2);
-        if (!r) {
-            // abortar
-        } else {
-            // commit
+        // Esperar por duas respostas
+        if (s.esperar(2)) {
+            // TODO: Commit da transação e atualizar Log para Confirmado
+            return true;
         }
-        return r;
+        else {
+            // TODO: Abortar transação e atualizar Log para Abortado
+            return false;
+        }
     }
 }
