@@ -62,4 +62,8 @@ public interface InterfaceHospedagens extends Remote {
                           int numQuartos,
                           InterfaceTransacao coordenador) throws RemoteException;
 
+    boolean efetivarPacote(InterfaceTransacao coordenador) throws RemoteException;
+
+    boolean abortarPacote(InterfaceTransacao coordenador) throws RemoteException;
+
 }

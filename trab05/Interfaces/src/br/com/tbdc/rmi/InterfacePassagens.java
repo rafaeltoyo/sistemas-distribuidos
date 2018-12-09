@@ -66,4 +66,8 @@ public interface InterfacePassagens extends Remote {
                           int numPessoas,
                           InterfaceTransacao coordenador) throws RemoteException;
 
+    boolean efetivarPacote(InterfaceTransacao coordenador) throws RemoteException;
+
+    boolean abortarPacote(InterfaceTransacao coordenador) throws RemoteException;
+
 }

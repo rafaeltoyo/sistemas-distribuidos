@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 /**
  * Representação de uma Transação
  */
-public class Transaction implements Cloneable {
+public class Transaction {
 
     /**
      * ID da Transação
