@@ -2,9 +2,12 @@ package br.com.tbdc.controller;
 
 import br.com.tbdc.model.Hospedagem;
 import br.com.tbdc.model.Hotel;
+import br.com.tbdc.model.HotelFile;
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.hotel.InfoHotelRet;
+import hamner.db.RecordsFileException;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +21,20 @@ public class ControladorHotel {
     /** Instância do singleton */
     private static final ControladorHotel instance = new ControladorHotel();
 
-    /** Lista de hotéis em memória */
-    private List<Hotel> hoteis;
+    /** Arquivo de hotéis */
+    private HotelFile hoteis;
 
     /*------------------------------------------------------------------------*/
 
     /** Construtor privado sem argumentos que apenas inicializa a lista de voos.
      */
     private ControladorHotel() {
-        hoteis = new ArrayList<>();
+        try {
+            hoteis = new HotelFile("hotel.jdb");
+        }
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
     }
 
     /** Retorna a instância do singleton.
@@ -42,7 +50,16 @@ public class ControladorHotel {
      * @param hotel hotel já instanciado e inicializado
      */
     public void adicionarHotel(Hotel hotel) {
-        hoteis.add(hotel);
+        hoteis.lockEscrita();
+        try {
+            hoteis.adicionarHotel(hotel);
+        }
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
+        finally {
+            hoteis.unlockEscrita();
+        }
     }
 
     /*------------------------------------------------------------------------*/
@@ -54,11 +71,17 @@ public class ControladorHotel {
      * @param dataFim data de fim do período (também é incluída no intervalo)
      */
     public void adicionarHospedagem(int idHotel, LocalDate dataIni, LocalDate dataFim) {
-        // Obtém o hotel
-        Hotel h = hoteis.stream().filter(item -> (item.getId() == idHotel)).findFirst().orElse(null);
-
-        if (h != null) {
+        hoteis.lockEscrita();
+        try {
+            Hotel h = hoteis.lerHotel(idHotel);
             h.adicionarHospedagem(dataIni, dataFim);
+            hoteis.atualizarHotel(h);
+        }
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
+        finally {
+            hoteis.unlockEscrita();
         }
     }
 
@@ -77,56 +100,68 @@ public class ControladorHotel {
         // Cria um vetor de InfoHotelRet para enviar ao cliente
         ArrayList<InfoHotelRet> result = new ArrayList<>();
 
-        for (Hotel h : hoteis) {
-            // Pula hotéis em outras cidades
-            if (!local.equals(h.getLocal())) {
-                continue;
-            }
+        hoteis.lockLeitura();
+        try {
+            // Pega todos os hotéis
+            ArrayList<Hotel> todosHoteis = hoteis.lerHoteis();
 
-            // Inicia a contagem de número de quartos disponíveis no número
-            // máximo de quartos do hotel
-            int quartosDisp = h.getInfoHotel().getNumQuartos();
-
-            // Flag usada depois do loop para adicionar um hotel ou não à lista
-            // de retorno
-            boolean podeReceber = true;
-
-            // Considera-se que o cliente sai na data de volta.
-            // Portanto, não são incluídas hospedagens para o dia de volta.
-            LocalDate data = dataIni.plusDays(0);
-            while (data.isBefore(dataFim)) {
-                Hospedagem hosp = h.getHospedagemData(data);
-                if (hosp == null) {
-                    // Deu ruim, esse hotel não está oferecendo hospedagem em
-                    // um dos dias do período
-                    podeReceber = false;
-                    break;
+            for (Hotel h : todosHoteis) {
+                // Pula hotéis em outras cidades
+                if (!local.equals(h.getLocal())) {
+                    continue;
                 }
 
-                int hospQuartosDisp = hosp.getQuartosDisp();
-                if (hospQuartosDisp < numPessoas) {
-                    // Deu ruim, esse hotel não pode receber o cliente em todos
-                    // os dias do período
-                    podeReceber = false;
-                    break;
+                // Inicia a contagem de número de quartos disponíveis no número
+                // máximo de quartos do hotel
+                int quartosDisp = h.getInfoHotel().getNumQuartos();
+
+                // Flag usada depois do loop para adicionar um hotel ou não à lista
+                // de retorno
+                boolean podeReceber = true;
+
+                // Considera-se que o cliente sai na data de volta.
+                // Portanto, não são incluídas hospedagens para o dia de volta.
+                LocalDate data = dataIni.plusDays(0);
+                while (data.isBefore(dataFim)) {
+                    Hospedagem hosp = h.getHospedagemData(data);
+                    if (hosp == null) {
+                        // Deu ruim, esse hotel não está oferecendo hospedagem em
+                        // um dos dias do período
+                        podeReceber = false;
+                        break;
+                    }
+
+                    int hospQuartosDisp = hosp.getQuartosDisp();
+                    if (hospQuartosDisp < numPessoas) {
+                        // Deu ruim, esse hotel não pode receber o cliente em todos
+                        // os dias do período
+                        podeReceber = false;
+                        break;
+                    }
+
+                    if (hospQuartosDisp < quartosDisp) {
+                        // Há um dia mais lotado, atualiza o número
+                        quartosDisp = hospQuartosDisp;
+                    }
+
+                    // FIXME: vamos só ignorar o número de pessoas?
+
+                    data = data.plusDays(1);
                 }
 
-                if (hospQuartosDisp < quartosDisp) {
-                    // Há um dia mais lotado, atualiza o número
-                    quartosDisp = hospQuartosDisp;
+                // Apenas envia o hotel se tiver vagas em todos os dias do período
+                if (podeReceber) {
+                    InfoHotelRet ihr = new InfoHotelRet(h.getInfoHotel(),
+                            quartosDisp, dataIni, dataFim, numQuartos);
+                    result.add(ihr);
                 }
-
-                // FIXME: vamos só ignorar o número de pessoas?
-
-                data = data.plusDays(1);
             }
-
-            // Apenas envia o hotel se tiver vagas em todos os dias do período
-            if (podeReceber) {
-                InfoHotelRet ihr = new InfoHotelRet(h.getInfoHotel(),
-                        quartosDisp, dataIni, dataFim, numQuartos);
-                result.add(ihr);
-            }
+        }
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
+        finally {
+            hoteis.unlockLeitura();
         }
 
         return result;
@@ -143,22 +178,40 @@ public class ControladorHotel {
      * @param numQuartos número de quartos desejados
      * @return true se e somente se a compra for bem sucedida */
     public boolean comprarHospedagem(int idHotel, LocalDate dataIni, LocalDate dataFim, int numQuartos) {
-        // Busca o hotel
-        Hotel hotel = null;
-        for (Hotel h : hoteis) {
-            if (h.getId() == idHotel) {
-                hotel = h;
-                break;
-            }
-        }
+        hoteis.lockEscrita();
 
-        if (hotel == null) {
-            // Hotel não existe
+        try {
+            ArrayList<Hotel> todosHoteis = hoteis.lerHoteis();
+
+            // Busca o hotel
+            Hotel hotel = null;
+            for (Hotel h : todosHoteis) {
+                if (h.getId() == idHotel) {
+                    hotel = h;
+                    break;
+                }
+            }
+
+            if (hotel == null) {
+                // Hotel não existe
+                return false;
+            }
+
+            // Faz a reserva, se possível, e retorna true se bem sucedido
+            if (hotel.reservar(dataIni, dataFim, numQuartos)) {
+                hoteis.atualizarHotel(hotel);
+                return true;
+            }
             return false;
         }
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
+        finally {
+            hoteis.unlockEscrita();
+        }
 
-        // Faz a reserva, se possível, e retorna true se bem sucedido
-        return hotel.reservar(dataIni, dataFim, numQuartos);
+        return false;
     }
 
 }
