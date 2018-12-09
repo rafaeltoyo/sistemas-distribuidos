@@ -5,6 +5,7 @@ import br.com.tbdc.rmi.InterfaceTransacao;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 public class ServidorResposta extends UnicastRemoteObject implements InterfaceTransacao {
 
@@ -22,24 +23,25 @@ public class ServidorResposta extends UnicastRemoteObject implements InterfaceTr
 
     public boolean esperar(int num_participante) {
 
-        // Para cada participante ...
-        for (int i = 0; i < num_participante; i++) {
+        int contador = 0;
 
-            // Resultado da etapa de pergunta aos participantes
-            boolean quero;
-
+        do {
             try {
-                // Esperar uma resposta
-                quero = response.take();
-            } catch (InterruptedException e) {
+                // Esperar uma resposta dos participantes
+                // FIXME: Colocar timeout
+                if (response.poll(10, TimeUnit.SECONDS)) {
+                    // Registrar resposta positiva
+                    contador++;
+                }
+                else {
+                    // Qualquer resposta negativa cancela a operação
+                    return false;
+                }
+            } catch (NullPointerException | InterruptedException e) {
                 return false;
             }
-
-            // Qualquer resposta negativa cancela a operacao
-            if (!quero) {
-                return false;
-            }
-        }
+        } while (contador < num_participante);
+        // Terminado o laço sem nenhum problema, todas respostas foram SIM.
         return true;
     }
 
