@@ -289,3 +289,6 @@ nbdist/
 
 
 # End of https://www.gitignore.io/api/java,eclipse,netbeans,intellij,intellij+all,intellij+iml,visualstudiocode
+
+# Ignora o arquivo binário de hotéis
+hotel.jdb

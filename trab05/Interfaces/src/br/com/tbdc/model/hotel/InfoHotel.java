@@ -3,11 +3,13 @@ package br.com.tbdc.model.hotel;
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.saldo.Dinheiro;
 
+import java.io.Serializable;
+
 /** Esta classe é uma estrutura de armazenamento de informações de um hotel.
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class InfoHotel {
+public class InfoHotel implements Serializable {
     /** Contagem de hotéis para o auto-incremento do identificador */
     private static int count = 0;
 
