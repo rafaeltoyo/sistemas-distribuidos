@@ -12,7 +12,7 @@ public class Main {
     private static final int REGISTRY_PORT = 11037;
 
     public static void main(String[] args) {
-        // testeDataStorage();
+        //testeDataStorage();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> System.exit(0)));
 
