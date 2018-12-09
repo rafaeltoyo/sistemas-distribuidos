@@ -7,18 +7,26 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Enumeration;
 
+/** Classe base para manipulação de RandomAccessFile para CRUD de registros.
+ * @author Derek Hamner
+ */
 public abstract class BaseRecordsFile {
-
+    /** Tamanho em bytes do cabeçalho do arquivo */
     protected static final int FILE_HEADERS_REGION_LENGTH = 16;
 
+    /** Tamanho em bytes do cabeçalho de um registro */
     protected static final int RECORD_HEADER_LENGTH = 16;
 
+    /** Tamanho máximo em bytes de uma chave */
     protected static final int MAX_KEY_LENGTH = 64;
 
+    /** Tamanho do índice de um registro */
     protected static final int INDEX_ENTRY_LENGTH = MAX_KEY_LENGTH + RECORD_HEADER_LENGTH;
 
+    /** Ponteiro para o número de registros. Fica no cabeçalho do arquivo. */
     protected static final long NUM_RECORDS_HEADER_LOCATION = 0;
 
+    /** Ponteiro para o início dos dados. Fica no cabeçalho do arquivo. */
     protected static final long DATA_START_HEADER_LOCATION = 4;
 
     /*------------------------------------------------------------------------*/
@@ -31,10 +39,18 @@ public abstract class BaseRecordsFile {
 
     /*------------------------------------------------------------------------*/
 
+    /** Retorna o tamanho do arquivo.
+     * @return tamanho do arquivo
+     * @throws IOException caso ocorra um erro de I/O
+     */
     protected long getFileLength() throws IOException {
         return file.length();
     }
 
+    /** Altera o tamanho do arquivo.
+     * @param length novo tamanho
+     * @throws IOException caso ocorra um erro de I/O
+     */
     protected void setFileLength(long length) throws IOException {
         file.setLength(length);
     }
@@ -45,7 +61,7 @@ public abstract class BaseRecordsFile {
      * É alocado espaço suficiente no índice para o tamanho inicial especificado.
      * @param filename nome do arquivo
      * @param initialSize tamanho inicial do arquivo
-     * @throws IOException caso a criação do arquivo falhe
+     * @throws IOException caso ocorra um erro de I/O
      * @throws RecordsFileException caso o arquivo já exista
      */
     protected BaseRecordsFile(String filename, int initialSize) throws IOException, RecordsFileException {
@@ -61,7 +77,7 @@ public abstract class BaseRecordsFile {
         writeDataStartPointerHeader(dataStartPointer);
     }
 
-    /** Abre um arquivo já existente e inicializa o ponteiro.
+    /** Abre um arquivo já existente.
      * @param filename nome do arquivo
      * @param accessFlags "r" ou "rw", como definido na RandomAccessFile
      * @throws IOException caso a abertura do arquivo falhe
@@ -82,6 +98,7 @@ public abstract class BaseRecordsFile {
     /** Retorna o cabeçalho para uma determinada chave.
      * @param key chave do registro
      * @return cabeçalho do registro
+     * @throws RecordsFileException caso a chave não exista
      */
     protected abstract RecordHeader keyToRecordHeader(String key) throws RecordsFileException;
 
@@ -91,6 +108,8 @@ public abstract class BaseRecordsFile {
      * @param key chave do registro
      * @param dataLength tamanho em bytes do registro
      * @return cabeçalho do novo registro
+     * @throws IOException caso ocorra um erro de I/O
+     * @throws RecordsFileException caso a chave já exista
      */
     protected abstract RecordHeader allocateRecord(String key, int dataLength) throws IOException, RecordsFileException;
 
@@ -107,7 +126,7 @@ public abstract class BaseRecordsFile {
     /** Volta o ponteiro para a posição do header de número de registros e lê
      * seu valor.
      * @return valor do header de número de registros
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      */
     protected int readNumRecordsHeader() throws IOException {
         file.seek(NUM_RECORDS_HEADER_LOCATION);
@@ -117,7 +136,7 @@ public abstract class BaseRecordsFile {
     /** Volta o ponteiro para a posição do header de número de registros e
      * escreve um novo valor.
      * @param numRecords novo número de registros
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      */
     protected void writeNumRecordsHeader(int numRecords) throws IOException {
         file.seek(NUM_RECORDS_HEADER_LOCATION);
@@ -129,7 +148,7 @@ public abstract class BaseRecordsFile {
     /** Move o ponteiro para a posição do header de início dos dados e lê seu
      * valor.
      * @return valor do header de início dos dados
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      */
     protected long readDataStartHeader() throws IOException {
         file.seek(DATA_START_HEADER_LOCATION);
@@ -139,7 +158,7 @@ public abstract class BaseRecordsFile {
     /** Volta o ponteiro para a posição do header de início dos dados e escreve
      * um novo valor.
      * @param dataStartPointer novo ponteiro
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      */
     protected void writeDataStartPointerHeader(long dataStartPointer) throws IOException {
         file.seek(DATA_START_HEADER_LOCATION);
@@ -160,7 +179,7 @@ public abstract class BaseRecordsFile {
     /** Lê a chave contida na posição pos do índice.
      * @param pos posição do índice
      * @return chave
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      */
     protected String readKeyFromIndex(int pos) throws IOException {
         file.seek(indexPositionToKeyFp(pos));
@@ -181,7 +200,7 @@ public abstract class BaseRecordsFile {
     /** Lê os headers de registro contidos na posição pos do índice.
      * @param pos posição do índice
      * @return headers de registro
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      */
     protected RecordHeader readRecordHeaderFromIndex(int pos) throws IOException {
         file.seek(indexPositionToRecordHeaderFp(pos));
@@ -190,7 +209,7 @@ public abstract class BaseRecordsFile {
 
     /** Escreve um header de registro na posição de índice contida no objeto.
      * @param header header de registro
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      */
     protected void writeRecordHeaderToIndex(RecordHeader header) throws IOException {
         file.seek(indexPositionToRecordHeaderFp(header.indexPosition));
@@ -204,7 +223,7 @@ public abstract class BaseRecordsFile {
      * @param key nova chave
      * @param newRecord novo registro
      * @param currentNumRecords número atual de registros
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      * @throws RecordsFileException caso a chave seja maior que o tamanho permitido
      */
     protected void addEntryToIndex(String key, RecordHeader newRecord, int currentNumRecords) throws IOException, RecordsFileException {
@@ -229,7 +248,8 @@ public abstract class BaseRecordsFile {
      * @param key chave a remover
      * @param header header de registro a remover
      * @param currentNumRecords número atual de registros
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
+     * @throws RecordsFileException caso ocorra erro ao pegar o último registro
      */
     protected void deleteEntryFromIndex(String key, RecordHeader header, int currentNumRecords) throws IOException, RecordsFileException {
         if (header.indexPosition != currentNumRecords - 1) {
@@ -252,8 +272,8 @@ public abstract class BaseRecordsFile {
     /** Lê os dados de um registro a partir do valor de sua chave.
      * @param key chave do registro
      * @return dados do registro
-     * @throws IOException caso não seja possível fazer seek no arquivo
-     * @throws RecordsFileException
+     * @throws IOException caso ocorra um erro de I/O
+     * @throws RecordsFileException caso a chave não exista
      */
     protected byte[] readRecordData(String key) throws IOException, RecordsFileException {
         return readRecordData(keyToRecordHeader(key));
@@ -262,7 +282,7 @@ public abstract class BaseRecordsFile {
     /** Lê os dados de um registro a partir do seu cabeçalho.
      * @param header cabeçalho do registro
      * @return dados do registro
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      */
     protected byte[] readRecordData(RecordHeader header) throws IOException {
         byte[] buf = new byte[header.dataCount];
@@ -279,8 +299,8 @@ public abstract class BaseRecordsFile {
      * O valor de tamanho de dados contido no header do registro é atualizado,
      * mas não é escrito no arquivo.
      * @param header cabeçalho do registro
-     * @param rw
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @param rw novos dados
+     * @throws IOException caso ocorra um erro de I/O
      * @throws RecordsFileException caso os novos dados não caibam no espaço
      * alocado para o registro
      */
@@ -300,7 +320,7 @@ public abstract class BaseRecordsFile {
      * mas não é escrito no arquivo.
      * @param header cabeçalho do registro
      * @param data novos dados do registro
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      * @throws RecordsFileException caso os novos dados não caibam no espaço
      * alocado para o registro
      */
@@ -317,6 +337,13 @@ public abstract class BaseRecordsFile {
 
     /*------------------------------------------------------------------------*/
 
+    /** Aumenta o tamanho do índice, caso o índice não comporte o número de
+     * registros fornecido em parâmetro.
+     * @param requiredNumRecords número de registros necessário
+     * @throws IOException caso ocorra um erro de I/O
+     * @throws RecordsFileException caso ocorra erro ao mover algum registro
+     * para o final do arquivo
+     */
     protected void insureIndexSpace(int requiredNumRecords) throws IOException, RecordsFileException {
         int currentNumRecords = getNumRecords();
 
@@ -349,10 +376,10 @@ public abstract class BaseRecordsFile {
 
     /*------------------------------------------------------------------------*/
 
-    /** Retorna uma enumeração das chaves de todos os registros do arquivo.
+    /** Retorna um conjunto com chaves de todos os registros do arquivo.
      * @return chaves de todos os registros do arquivo
      */
-    public abstract Enumeration enumerateKeys();
+    public abstract Enumeration<String> enumerateKeys();
 
     /*------------------------------------------------------------------------*/
 
@@ -372,8 +399,9 @@ public abstract class BaseRecordsFile {
     /*------------------------------------------------------------------------*/
 
     /** Insere um novo registro no arquivo.
-     * @param rw writer
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @param rw novo registro
+     * @throws IOException caso ocorra um erro de I/O
+     * @throws RecordsFileException caso a chave já exista
      */
     public synchronized void insertRecord(RecordWriter rw) throws IOException, RecordsFileException {
         String key = rw.getKey();
@@ -391,7 +419,7 @@ public abstract class BaseRecordsFile {
     /** Lê um registro do arquivo.
      * @param key chave do registro
      * @return registro
-     * @throws IOException caso não seja possível fazer seek no arquivo
+     * @throws IOException caso ocorra um erro de I/O
      * @throws RecordsFileException caso o registro não exista
      */
     public synchronized RecordReader readRecord(String key) throws IOException, RecordsFileException {
@@ -400,8 +428,9 @@ public abstract class BaseRecordsFile {
     }
 
     /** Atualiza o valor de um registro no arquivo.
-     * @param rw
-     * @throws IOException
+     * @param rw novos dados de registro
+     * @throws IOException caso ocorra um erro de I/O
+     * @throws RecordsFileException caso ocorra um erro de chave ou de espaço
      */
     public synchronized void updateRecord(RecordWriter rw) throws IOException, RecordsFileException {
         RecordHeader header = keyToRecordHeader(rw.getKey());
@@ -418,8 +447,8 @@ public abstract class BaseRecordsFile {
 
     /** Remove um registro do arquivo.
      * @param key chave do registro
-     * @throws IOException caso não seja possível fazer seek no arquivo
-     * @throws RecordsFileException
+     * @throws IOException caso ocorra um erro de I/O
+     * @throws RecordsFileException caso ocorra um erro de chave ou de espaço
      */
     public synchronized void deleteRecord(String key) throws IOException, RecordsFileException {
         RecordHeader recordToDelete = keyToRecordHeader(key);
@@ -459,7 +488,7 @@ public abstract class BaseRecordsFile {
 
     /** Fecha o arquivo.
      * @throws IOException caso não seja possível fechar a RandomAccessFile
-     * @throws RecordsFileException
+     * @throws RecordsFileException ???
      */
     public synchronized void close() throws IOException, RecordsFileException {
         try {
