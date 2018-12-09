@@ -1,10 +1,12 @@
 package br.com.tbdc.model.saldo;
 
+import java.io.Serializable;
+
 /** Esta classe representa uma compra de um voo ou hospedagem. É utilizada para
  * execução de rollback (quando necessário) na compra simultânea de vários
  * itens.
  */
-public class Reserva {
+public class Reserva implements Serializable {
     /** Quantidade da reserva */
     private int quantidade;
 

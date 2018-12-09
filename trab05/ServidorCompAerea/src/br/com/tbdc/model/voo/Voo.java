@@ -4,6 +4,7 @@ import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.saldo.Dinheiro;
 import br.com.tbdc.model.saldo.Reserva;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  * @author Rafael Hideo Toyomoto
  * @author Victor Barpp Gomes
  */
-public class Voo {
+public class Voo implements Serializable {
     /** Número de poltronas total */
     private int poltronasTotal;
 
