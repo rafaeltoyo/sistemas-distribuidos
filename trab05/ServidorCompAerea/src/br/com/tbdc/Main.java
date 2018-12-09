@@ -23,8 +23,6 @@ public class Main {
 
             ServidorCompAerea servidor = new ServidorCompAerea();
             registry.rebind("servidor_comp_aerea", servidor);
-
-            ControladorVoo.getInstance().adicionarVoo(new Voo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 12, 3), 10, br.com.tbdc.model.saldo.Dinheiro.reais(new BigDecimal(1.5))));
         }
         catch (RemoteException e) {
             e.printStackTrace();

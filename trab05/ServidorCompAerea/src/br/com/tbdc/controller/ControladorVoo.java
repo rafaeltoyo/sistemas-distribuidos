@@ -5,7 +5,10 @@ import br.com.tbdc.model.saldo.Reserva;
 import br.com.tbdc.model.voo.InfoVoo;
 import br.com.tbdc.model.voo.TipoPassagem;
 import br.com.tbdc.model.voo.Voo;
+import br.com.tbdc.model.voo.VooFile;
+import hamner.db.RecordsFileException;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,20 +23,25 @@ public class ControladorVoo {
     private static final ControladorVoo instance = new ControladorVoo();
 
     /** Lista de voos em memória */
-    private List<Voo> voos;
+    private VooFile voos;
 
     /*------------------------------------------------------------------------*/
 
     /** Construtor privado sem argumentos que apenas inicializa a lista de voos.
      */
     private ControladorVoo() {
-        voos = new ArrayList<>();
+        try {
+            voos = new VooFile("voo.jdb");
+        }
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
     }
 
     /** Retorna a instância do singleton.
      * @return instância do singleton
      */
-    public static ControladorVoo getInstance() {
+    public static synchronized ControladorVoo getInstance() {
         return instance;
     }
 
@@ -43,7 +51,16 @@ public class ControladorVoo {
      * @param voo voo já instanciado e inicializado
      */
     public void adicionarVoo(Voo voo) {
-        voos.add(voo);
+        voos.lockEscrita();
+        try {
+            voos.adicionarVoo(voo);
+        }
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
+        finally {
+            voos.unlockEscrita();
+        }
     }
 
     /*------------------------------------------------------------------------*/
@@ -62,19 +79,31 @@ public class ControladorVoo {
         // Armazenar o resultado da consulta
         ArrayList<InfoVoo> result = new ArrayList<>();
 
-        // Para todos os voos armazenados no servidor ...
-        for (Voo voo : voos) {
-            // Adiciona voos de ida
-            if (validarConsulta(voo, origem, destino, dataIda, numPessoas)) {
-                result.add(voo.getInfoVoo());
-            }
-            // Adiciona voos de volta
-            if (tipo == TipoPassagem.IDA_E_VOLTA) {
-                if (validarConsulta(voo, destino, origem, dataVolta, numPessoas)) {
+        voos.lockLeitura();
+        try {
+            ArrayList<Voo> todosVoos = voos.lerVoos();
+
+            // Para todos os voos armazenados no servidor ...
+            for (Voo voo : todosVoos) {
+                // Adiciona voos de ida
+                if (validarConsulta(voo, origem, destino, dataIda, numPessoas)) {
                     result.add(voo.getInfoVoo());
+                }
+                // Adiciona voos de volta
+                if (tipo == TipoPassagem.IDA_E_VOLTA) {
+                    if (validarConsulta(voo, destino, origem, dataVolta, numPessoas)) {
+                        result.add(voo.getInfoVoo());
+                    }
                 }
             }
         }
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
+        finally {
+            voos.unlockLeitura();
+        }
+
         return result;
     }
 
@@ -121,18 +150,40 @@ public class ControladorVoo {
      * @return true se e somente se a compra for bem sucedida
      */
     private boolean comprarPassagensSomenteIda(int idVoo, int numPessoas) {
-        Voo voo = null;
+        voos.lockEscrita();
 
-        // Busca o voo
-        for (Voo v : voos) {
-            if (v.getId() == idVoo) {
-                voo = v;
-                break;
+        try {
+            ArrayList<Voo> todosVoos = voos.lerVoos();
+
+            // Busca o voo
+            Voo voo = null;
+            for (Voo v : todosVoos) {
+                if (v.getId() == idVoo) {
+                    voo = v;
+                    break;
+                }
+            }
+
+            if (voo == null) {
+                // Voo não existe
+                return false;
+            }
+
+            // Retorna false se não encontrou o voo
+            // Retorna true se conseguir comprar o número desejado, e false caso contrário
+            if (voo.reservar(numPessoas) != null) {
+                voos.atualizarVoo(voo);
+                return true;
             }
         }
-        // Retorna false se não encontrou o voo
-        // Retorna true se conseguir comprar o número desejado, e false caso contrário
-        return voo != null && voo.reservar(numPessoas) != null;
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
+        finally {
+            voos.unlockEscrita();
+        }
+
+        return false;
     }
 
     /** Tenta efetuar compra de passagens de ida e volta.
@@ -143,37 +194,50 @@ public class ControladorVoo {
      * @return true se e somente se a compra for bem sucedida para ambos os voos
      */
     private boolean comprarPassagensIdaEVolta(int idVooIda, int idVooVolta, int numPessoas) {
-        Voo vooIda = null;
-        Voo vooVolta = null;
+        voos.lockEscrita();
 
-        // Busca os voos
-        for (Voo v : voos) {
-            if (v.getId() == idVooIda) {
-                vooIda = v;
-            } else if (v.getId() == idVooVolta) {
-                vooVolta = v;
+        try {
+            ArrayList<Voo> todosVoos = voos.lerVoos();
+
+            // Busca os voos
+            Voo vooIda = null;
+            Voo vooVolta = null;
+            for (Voo v : todosVoos) {
+                if (v.getId() == idVooIda) {
+                    vooIda = v;
+                } else if (v.getId() == idVooVolta) {
+                    vooVolta = v;
+                }
+                if (vooIda != null && vooVolta != null) {
+                    break;
+                }
             }
-            if (vooIda != null && vooVolta != null) {
-                break;
+
+            // Retorna false se não encontrou algum dos voos
+            if (vooIda == null || vooVolta == null) {
+                return false;
+            }
+
+            Reserva reservaVooIda = vooIda.reservar(numPessoas);
+            if (reservaVooIda != null) {
+                if (vooVolta.reservar(numPessoas) != null) {
+                    // Retorna true se conseguir comprar ida e volta
+                    voos.atualizarVoo(vooIda);
+                    voos.atualizarVoo(vooVolta);
+                    return true;
+                }
+                // Caso não consiga comprar a volta,
+                // faz rollback na compra do voo de ida e retorna false
+                vooIda.estornar(reservaVooIda);
             }
         }
-
-        // Retorna false se não encontrou algum dos voos
-        if (vooIda == null || vooVolta == null) {
-            return false;
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
+        finally {
+            voos.unlockEscrita();
         }
 
-        Reserva reservaVooIda = vooIda.reservar(numPessoas);
-        if (reservaVooIda != null) {
-            if (vooVolta.reservar(numPessoas) != null) {
-                // Retorna true se conseguir comprar ida e volta
-                return true;
-            }
-            // Caso não consiga comprar a volta,
-            // faz rollback na compra do voo de ida e retorna false
-            vooIda.estornar(reservaVooIda);
-        }
-        // Retorna false se não conseguir comprar o número desejado para a ida
         return false;
     }
 
