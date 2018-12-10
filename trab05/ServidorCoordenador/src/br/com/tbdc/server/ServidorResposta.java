@@ -4,12 +4,13 @@ import br.com.tbdc.rmi.InterfaceTransacao;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
 public class ServidorResposta extends UnicastRemoteObject implements InterfaceTransacao {
 
-    private SynchronousQueue<Boolean> response = new SynchronousQueue<>();
+    private LinkedBlockingQueue<Boolean> response = new LinkedBlockingQueue<>();
     private int id;
 
     public ServidorResposta(int idTransacao) throws RemoteException {
@@ -19,6 +20,10 @@ public class ServidorResposta extends UnicastRemoteObject implements InterfaceTr
     public void resetId(int idTransacao) {
         this.id = idTransacao;
         this.response.clear();
+    }
+
+    public int getIdTransacao() throws RemoteException {
+        return id;
     }
 
     public boolean esperar(int num_participante) {
@@ -32,6 +37,7 @@ public class ServidorResposta extends UnicastRemoteObject implements InterfaceTr
                 if (response.poll(10, TimeUnit.SECONDS)) {
                     // Registrar resposta positiva
                     contador++;
+                    System.out.println("counter is " + contador);
                 }
                 else {
                     // Qualquer resposta negativa cancela a operação
@@ -47,14 +53,23 @@ public class ServidorResposta extends UnicastRemoteObject implements InterfaceTr
 
     @Override
     public boolean responder(int idTransacao, boolean resposta) throws RemoteException {
+        System.out.println("got a response: " + resposta);
 
         // Validar a resposta com o id de transação
         if (idTransacao == this.id) {
             // Tudo certo, podemos adicionar na fila
-            response.offer(resposta);
+            System.out.println("adding to queue");
+            try {
+                response.put(resposta);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             return true;
         }
+
         // Resposta não é para essa transação
+        System.out.println("not adding to queue");
         return false;
     }
 

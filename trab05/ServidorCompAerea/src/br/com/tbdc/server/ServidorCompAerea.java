@@ -67,4 +67,35 @@ public class ServidorCompAerea extends UnicastRemoteObject implements InterfaceP
         return ControladorVoo.getInstance().comprarPassagens(tipo, idVooIda, idVooVolta, numPessoas);
     }
 
+    /*------------------------------------------------------------------------*/
+
+    @Override
+    public boolean comprarPacote(TipoPassagem tipo, int idVooIda, int idVooVolta, int numPessoas, InterfaceTransacao coordenador) throws RemoteException {
+        // Checagem de parâmetros
+        if (tipo == null)
+            throw new RemoteException("Tipo da passagem não pode ser nulo.");
+        if (idVooIda < 0)
+            throw new RemoteException("Identificador do voo de ida deve ser maior ou igual a 0.");
+        if (tipo == TipoPassagem.IDA_E_VOLTA && idVooVolta < 0)
+            throw new RemoteException("Identificador do voo de volta deve ser maior ou igual a 0.");
+        if (numPessoas < 1)
+            throw new RemoteException("É esperado número de pessoas maior ou igual a 1.");
+
+        // OK. Agora estamos em uma transação.
+        return ControladorVoo.getInstance().prepararCompraPacote(tipo, idVooIda, idVooVolta, numPessoas, coordenador);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    @Override
+    public boolean efetivarPacote(InterfaceTransacao coordenador) throws RemoteException {
+        return ControladorVoo.getInstance().efetivarCompraPacote(coordenador);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    @Override
+    public boolean abortarPacote(InterfaceTransacao coordenador) throws RemoteException {
+        return ControladorVoo.getInstance().abortarCompraPacote(coordenador);
+    }
 }
