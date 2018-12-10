@@ -7,20 +7,44 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * {@inheritDoc}
+ * <p>
+ * Servidor Resposta: Simula o servidor coordenador aguardando resposta para os participantes, mas é um serviço de
+ * monitoramento das respostas para o servidor coordenador utilizar.
+ */
 public class ServidorResposta extends UnicastRemoteObject implements InterfaceTransacao {
 
+    /**
+     * Fila responsável por receber as resposta
+     */
     private SynchronousQueue<Boolean> response = new SynchronousQueue<>();
+
+    /**
+     * ID da transação monitorada
+     */
     private int id;
 
+    /**
+     * =================================================================================================================
+     * Construtor genérico
+     * =================================================================================================================
+     *
+     * @param idTransacao ID da transação que receberá as respostas
+     * @throws RemoteException caso ocorra erro no RMI
+     */
     public ServidorResposta(int idTransacao) throws RemoteException {
         this.id = idTransacao;
     }
 
-    public void resetId(int idTransacao) {
-        this.id = idTransacao;
-        this.response.clear();
-    }
-
+    /**
+     * =================================================================================================================
+     * Esperar todas respostas solicitadas
+     * =================================================================================================================
+     *
+     * @param num_participante Número de resposta para receber
+     * @return Caso todas respostas forem SIM (True) retornar True, caso contrário retorna False
+     */
     public boolean esperar(int num_participante) {
 
         int contador = 0;
@@ -32,12 +56,12 @@ public class ServidorResposta extends UnicastRemoteObject implements InterfaceTr
                 if (response.poll(10, TimeUnit.SECONDS)) {
                     // Registrar resposta positiva
                     contador++;
-                }
-                else {
+                } else {
                     // Qualquer resposta negativa cancela a operação
                     return false;
                 }
-            } catch (NullPointerException | InterruptedException e) {
+            }//
+            catch (NullPointerException | InterruptedException e) {
                 return false;
             }
         } while (contador < num_participante);
@@ -45,6 +69,11 @@ public class ServidorResposta extends UnicastRemoteObject implements InterfaceTr
         return true;
     }
 
+    /**
+     * =================================================================================================================
+     * {@inheritDoc}
+     * =================================================================================================================
+     */
     @Override
     public boolean responder(int idTransacao, boolean resposta) throws RemoteException {
 

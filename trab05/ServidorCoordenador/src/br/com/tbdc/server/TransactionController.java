@@ -9,11 +9,28 @@ import java.util.HashMap;
 
 public class TransactionController {
 
+    /**
+     * Instância única do controlador
+     */
     private static TransactionController ourInstance;
-    private DataStorage log;
+    /**
+     * Espelho em memória dos dados do arquivo de Log
+     */
     private final HashMap<Integer, Transaction> transactions;
+    /**
+     * Classe responsável por abrir e gerenciar o arquivo de Log de transações
+     */
+    private DataStorage log;
+    /**
+     * Controle do próximo ID de uma nova transação
+     */
     private int currentId;
 
+    /**
+     * =================================================================================================================
+     * Construtor genérico (privado)
+     * =================================================================================================================
+     */
     private TransactionController() {
         this.currentId = 0;
         this.transactions = new HashMap<>();
@@ -29,6 +46,13 @@ public class TransactionController {
         }
     }
 
+    /**
+     * =================================================================================================================
+     * Resgatar a instância do controlador (singleton)
+     * =================================================================================================================
+     *
+     * @return Referência para a instância única do controlador
+     */
     public static synchronized TransactionController getInstance() {
         if (ourInstance == null) {
             ourInstance = new TransactionController();
@@ -36,6 +60,13 @@ public class TransactionController {
         return ourInstance;
     }
 
+    /**
+     * =================================================================================================================
+     * Iniciar uma transação
+     * =================================================================================================================
+     *
+     * @return ID da transação iniciada
+     */
     public int beginTransaction() {
         Transaction t;
         synchronized (transactions) {
@@ -47,7 +78,9 @@ public class TransactionController {
     }
 
     /**
+     * =================================================================================================================
      * Método para passar uma Transação de ATIVA para PENDENTE
+     * =================================================================================================================
      *
      * @param id ID da Transação a ser modificada
      * @return Sucesso da operação
@@ -74,7 +107,9 @@ public class TransactionController {
     }
 
     /**
-     * Método para passar uma Transação de PENDENTE para ABORTADA
+     * =================================================================================================================
+     * Método para passar uma Transação NÃO CONFIRMADA para ABORTADA
+     * =================================================================================================================
      *
      * @param id ID da Transação a ser modificada
      * @return Sucesso da operação
@@ -101,7 +136,9 @@ public class TransactionController {
     }
 
     /**
+     * =================================================================================================================
      * Método para passar uma Transação de PENDENTE para CONFIRMADA
+     * =================================================================================================================
      *
      * @param id ID da Transação a ser modificada
      * @return Sucesso da operação
@@ -128,7 +165,9 @@ public class TransactionController {
     }
 
     /**
+     * =================================================================================================================
      * Método para converter uma linha lida do arquivo de Log para um objeto Transação e armazena-lo corretamente.
+     * =================================================================================================================
      *
      * @param s Linha do arquivo de Log
      * @return Sucesso da operação
@@ -165,4 +204,25 @@ public class TransactionController {
         // Continuar o parser -> True
         return true;
     }
+
+    /**
+     * =================================================================================================================
+     * Método para consultar o Status de uma transação
+     * =================================================================================================================
+     *
+     * @param id ID da transação
+     * @return Status da transação solicitada
+     */
+    public Transaction.Status getTransactionStatus(int id) {
+
+        synchronized (this.transactions) {
+            Transaction t = this.transactions.get(id);
+            if (t != null) {
+                return t.getStatus();
+            }
+            return null;
+        }
+    }
+
+    // =================================================================================================================
 }

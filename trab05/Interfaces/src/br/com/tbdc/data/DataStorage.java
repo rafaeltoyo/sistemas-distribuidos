@@ -23,7 +23,8 @@ public class DataStorage {
         try {
             file.getParentFile().mkdirs();
             file.createNewFile();
-        } catch (IOException ignored) {
+        }//
+        catch (IOException ignored) {
         }
     }
 
@@ -34,7 +35,8 @@ public class DataStorage {
             while ((text = reader.readLine()) != null) {
                 System.out.println(text);
             }
-        } catch (IOException e) {
+        }//
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -47,7 +49,8 @@ public class DataStorage {
                     break;
                 }
             }
-        } catch (IOException e) {
+        }//
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -61,7 +64,8 @@ public class DataStorage {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, !reset))) {
                 writer.write(data);
                 return true;
-            } catch (IOException e) {
+            }//
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
