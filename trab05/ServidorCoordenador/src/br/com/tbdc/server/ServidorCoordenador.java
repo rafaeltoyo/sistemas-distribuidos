@@ -22,13 +22,15 @@ import java.util.ArrayList;
  */
 public class ServidorCoordenador extends UnicastRemoteObject implements InterfaceCoordenador {
 
-    /** Serviço de nomes */
+    /**
+     * Serviço de nomes
+     */
     private Registry registry;
 
-    /*------------------------------------------------------------------------*/
-
     /**
+     * =================================================================================================================
      * Construtor único.
+     * =================================================================================================================
      *
      * @param registry serviço de nomes
      * @throws RemoteException caso ocorra erro no RMI
@@ -36,26 +38,13 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
     public ServidorCoordenador(Registry registry) throws RemoteException {
         super();
         this.registry = registry;
-
         TransactionController.getInstance();
-
-        int id1 = TransactionController.getInstance().beginTransaction();
-        int id2 = TransactionController.getInstance().beginTransaction();
-        int id3 = TransactionController.getInstance().beginTransaction();
-        int id4 = TransactionController.getInstance().beginTransaction();
-
-        TransactionController.getInstance().prepare(id1);
-        TransactionController.getInstance().prepare(id2);
-        TransactionController.getInstance().prepare(id3);
-
-        TransactionController.getInstance().commit(id2);
-        TransactionController.getInstance().rollback(id3);
     }
 
-    /*------------------------------------------------------------------------*/
-
     /**
+     * =================================================================================================================
      * {@inheritDoc}
+     * =================================================================================================================
      */
     @Override
     public ArrayList<InfoVoo> consultarPassagens(TipoPassagem tipo, Cidade origem, Cidade destino, LocalDate dataIda, LocalDate dataVolta, int numPessoas) throws RemoteException {
@@ -65,48 +54,48 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
              * de nomes, e a referência antiga torna-se inválida. */
             InterfacePassagens servidorCompAerea = (InterfacePassagens) registry.lookup("servidor_comp_aerea");
             return servidorCompAerea.consultarPassagens(tipo, origem, destino, dataIda, dataVolta, numPessoas);
-        }
+        }//
         catch (NotBoundException e) {
             return new ArrayList<>();
         }
     }
 
-    /*------------------------------------------------------------------------*/
-
     /**
+     * =================================================================================================================
      * {@inheritDoc}
+     * =================================================================================================================
      */
     @Override
     public boolean comprarPassagens(TipoPassagem tipo, int idVooIda, int idVooVolta, int numPessoas) throws RemoteException {
         try {
             InterfacePassagens servidorCompAerea = (InterfacePassagens) registry.lookup("servidor_comp_aerea");
             return servidorCompAerea.comprarPassagens(tipo, idVooIda, idVooVolta, numPessoas);
-        }
+        }//
         catch (NotBoundException e) {
             return false;
         }
     }
 
-    /*------------------------------------------------------------------------*/
-
     /**
+     * =================================================================================================================
      * {@inheritDoc}
+     * =================================================================================================================
      */
     @Override
     public ArrayList<InfoHotelRet> consultarHospedagens(Cidade local, LocalDate dataIni, LocalDate dataFim, int numQuartos, int numPessoas) throws RemoteException {
         try {
             InterfaceHospedagens servidorHotel = (InterfaceHospedagens) registry.lookup("servidor_hotel");
             return servidorHotel.consultarHospedagens(local, dataIni, dataFim, numQuartos, numPessoas);
-        }
+        }//
         catch (NotBoundException e) {
             return new ArrayList<>();
         }
     }
 
-    /*------------------------------------------------------------------------*/
-
     /**
+     * =================================================================================================================
      * {@inheritDoc}
+     * =================================================================================================================
      */
     @Override
     public boolean comprarHospedagem(int idHotel, LocalDate dataIni,
@@ -114,16 +103,16 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
         try {
             InterfaceHospedagens servidorHotel = (InterfaceHospedagens) registry.lookup("servidor_hotel");
             return servidorHotel.comprarHospedagem(idHotel, dataIni, dataFim, numQuartos);
-        }
+        }//
         catch (NotBoundException e) {
             return false;
         }
     }
 
-    /*------------------------------------------------------------------------*/
-
     /**
+     * =================================================================================================================
      * {@inheritDoc}
+     * =================================================================================================================
      */
     public ConjuntoPacote consultarPacotes(Cidade origem, Cidade destino,
                                            LocalDate dataIda, LocalDate dataVolta, int numQuartos,
@@ -136,7 +125,7 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
             // Pegar os participantes pelo registro de nomes
             servidorCompAerea = (InterfacePassagens) registry.lookup("servidor_comp_aerea");
             servidorHotel = (InterfaceHospedagens) registry.lookup("servidor_hotel");
-        }
+        }//
         catch (NotBoundException e) {
             return new ConjuntoPacote();
         }
@@ -171,10 +160,10 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
         return conjuntoPacote;
     }
 
-    /*------------------------------------------------------------------------*/
-
     /**
+     * =================================================================================================================
      * {@inheritDoc}
+     * =================================================================================================================
      */
     @Override
     public boolean comprarPacote(int idVooIda, int idVooVolta, int idHotel, LocalDate dataIda, LocalDate dataVolta, int numQuartos, int numPessoas) throws RemoteException {
@@ -187,7 +176,7 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
             // Pegar os participantes pelo registro de nomes
             servidorCompAerea = (InterfacePassagens) registry.lookup("servidor_comp_aerea");
             servidorHotel = (InterfaceHospedagens) registry.lookup("servidor_hotel");
-        }
+        }//
         catch (NotBoundException e) {
             return false;
         }
@@ -223,7 +212,7 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
             // Esperar todos efetivarem com sucesso
             serviceCommit.esperar(2);
             return true;
-        }
+        }//
         else {
 
             // Criar outro serviço para esperar as resposta
@@ -240,5 +229,16 @@ public class ServidorCoordenador extends UnicastRemoteObject implements Interfac
             serviceRollback.esperar(2);
             return false;
         }
+    }
+
+    /**
+     * =================================================================================================================
+     * {@inheritDoc}
+     * =================================================================================================================
+     */
+    @Override
+    public Transaction.Status consultarStatusTransacao(int idTransacao) throws RemoteException {
+        Transaction.Status s = TransactionController.getInstance().getTransactionStatus(idTransacao);
+        return ((s != null)? s : Transaction.Status.ABORTED);
     }
 }

@@ -4,6 +4,7 @@ import br.com.tbdc.controller.ControladorHotel;
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.hotel.InfoHotelRet;
 import br.com.tbdc.rmi.InterfaceHospedagens;
+import br.com.tbdc.rmi.InterfaceTransacao;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -62,5 +63,39 @@ public class ServidorHotel extends UnicastRemoteObject implements InterfaceHospe
             throw new RemoteException("É esperado número de quartos maior ou igual a 1.");
 
         return ControladorHotel.getInstance().comprarHospedagem(idHotel, dataIni, dataFim, numQuartos);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    @Override
+    public boolean comprarPacote(int idHotel, LocalDate dataIni, LocalDate dataFim, int numQuartos, InterfaceTransacao coordenador) throws RemoteException {
+        // Checagem de parâmetros
+        if (idHotel < 0)
+            throw new RemoteException("O identificador do hotel deve ser maior ou igual a 1.");
+        if (dataIni == null)
+            throw new RemoteException("Data de início não pode ser nula.");
+        if (dataFim == null)
+            throw new RemoteException("Data de fim não pode ser nula.");
+        if (!dataFim.isAfter(dataIni))
+            throw new RemoteException("Data de fim deve ser posterior à data de início.");
+        if (numQuartos <= 0)
+            throw new RemoteException("É esperado número de quartos maior ou igual a 1.");
+
+        // OK. Agora estamos em uma transação.
+        return ControladorHotel.getInstance().prepararCompraPacote(idHotel, dataIni, dataFim, numQuartos, coordenador);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    @Override
+    public boolean efetivarPacote(InterfaceTransacao coordenador) throws RemoteException {
+        return ControladorHotel.getInstance().efetivarCompraPacote(coordenador);
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    @Override
+    public boolean abortarPacote(InterfaceTransacao coordenador) throws RemoteException {
+        return ControladorHotel.getInstance().abortarCompraPacote(coordenador);
     }
 }

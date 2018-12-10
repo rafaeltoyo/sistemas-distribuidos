@@ -2,6 +2,7 @@ package br.com.tbdc.client.controller;
 
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.hotel.InfoHotelRet;
+import br.com.tbdc.model.pacote.ConjuntoPacote;
 import br.com.tbdc.model.voo.InfoVoo;
 import br.com.tbdc.model.voo.TipoPassagem;
 import br.com.tbdc.rmi.InterfaceCoordenador;
@@ -31,6 +32,7 @@ import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClientUIController {
     /** Nome de host do serviço de nomes */
@@ -676,11 +678,14 @@ public class ClientUIController {
             return;
         }
 
-        ArrayList<InfoHotelRet> hospedagens = null;
-        ArrayList<InfoVoo> voos = null;
+        List<InfoHotelRet> hospedagens = null;
+        List<InfoVoo> voosIda = null;
+        List<InfoVoo> voosVolta = null;
         try {
-            hospedagens = serverRef.consultarHospedagens(destino, dataIda, dataVolta, numQuartos, numPessoas);
-            voos = serverRef.consultarPassagens(TipoPassagem.IDA_E_VOLTA, origem, destino, dataIda, dataVolta, numPessoas);
+            ConjuntoPacote pacotes = serverRef.consultarPacotes(origem, destino, dataIda, dataVolta, numQuartos, numPessoas);
+            hospedagens = pacotes.getHospedagens();
+            voosIda = pacotes.getVoosIda();
+            voosVolta = pacotes.getVoosVolta();
         } catch (RemoteException e) {
             // TODO: Mostrar mensagem de erro
             e.printStackTrace();
@@ -693,14 +698,11 @@ public class ClientUIController {
         if (hospedagens != null) {
             olInfoHotelPac.addAll(hospedagens);
         }
-        if (voos != null) {
-            for (InfoVoo v : voos) {
-                if (v.getOrigem() == origem) {
-                    olInfoVooIdaPac.add(v);
-                } else {
-                    olInfoVooVoltaPac.add(v);
-                }
-            }
+        if (voosIda != null) {
+            olInfoVooIdaPac.addAll(voosIda);
+        }
+        if (voosVolta != null) {
+            olInfoVooVoltaPac.addAll(voosVolta);
         }
 
         tableHospedagemPac.setItems(olInfoHotelPac);
@@ -792,6 +794,7 @@ public class ClientUIController {
             } catch (RemoteException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Falha na comunicação com o servidor.");
                 alert.show();
+                e.printStackTrace();
             }
         }
         consultarPacotes(event);

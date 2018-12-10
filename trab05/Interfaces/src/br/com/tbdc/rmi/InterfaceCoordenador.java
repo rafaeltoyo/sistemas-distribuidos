@@ -1,5 +1,6 @@
 package br.com.tbdc.rmi;
 
+import br.com.tbdc.data.Transaction;
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.hotel.InfoHotelRet;
 import br.com.tbdc.model.pacote.ConjuntoPacote;
@@ -146,5 +147,16 @@ public interface InterfaceCoordenador extends Remote {
                           LocalDate dataVolta,
                           int numQuartos,
                           int numPessoas) throws RemoteException;
+
+    /**
+     * =================================================================================================================
+     * Tenta comprar um pacote (voo ida + voo volta + hotel) com os parâmetros especificados.
+     * =================================================================================================================
+     *
+     * @param idTransacao ID da transação
+     * @return Status da transação passada
+     * @throws RemoteException caso ocorra erro no RMI
+     */
+    Transaction.Status consultarStatusTransacao(int idTransacao) throws RemoteException;
 
 }

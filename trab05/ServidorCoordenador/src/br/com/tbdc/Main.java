@@ -12,7 +12,6 @@ public class Main {
     private static final int REGISTRY_PORT = 11037;
 
     public static void main(String[] args) {
-        //testeDataStorage();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> System.exit(0)));
 
@@ -27,21 +26,6 @@ public class Main {
             e.printStackTrace();
             System.exit(-1);
         }
-    }
-
-    public static void testeDataStorage() {
-        DataStorage d = new DataStorage("teste.txt");
-        d.printData();
-
-        d.writeData("teste1\n", true);
-        d.writeData("teste2\n");
-
-        d.printData();
-
-        d.writeData("teste3\n");
-        d.writeData("teste4\n");
-
-        d.printData();
     }
 
 }
