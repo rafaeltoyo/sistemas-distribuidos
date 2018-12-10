@@ -25,4 +25,9 @@ public interface InterfaceTransacao extends Remote {
      */
     boolean responder(int idTransacao, boolean resposta) throws RemoteException;
 
+    /** Retorna o identificador da transação.
+     * @return ID da transação
+     */
+    int getIdTransacao() throws RemoteException;
+
 }

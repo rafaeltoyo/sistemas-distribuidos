@@ -6,9 +6,18 @@ import br.com.tbdc.model.voo.InfoVoo;
 import br.com.tbdc.model.voo.TipoPassagem;
 import br.com.tbdc.model.voo.Voo;
 import br.com.tbdc.model.voo.VooFile;
+import br.com.tbdc.rmi.InterfaceTransacao;
 import hamner.db.RecordsFileException;
+import javafx.util.Pair;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -242,5 +251,159 @@ public class ControladorVoo {
     }
 
     /*------------------------------------------------------------------------*/
+
+    public boolean prepararCompraPacote(TipoPassagem tipo, int idVooIda, int idVooVolta, int numPessoas, InterfaceTransacao coordenador) {
+        Thread separateThread = new Thread(() -> doPrepararCompraPacote(tipo, idVooIda, idVooVolta, numPessoas, coordenador));
+        separateThread.run();
+
+        return true;
+    }
+
+    private void doPrepararCompraPacote(TipoPassagem tipo, int idVooIda, int idVooVolta, int numPessoas, InterfaceTransacao coordenador) {
+        voos.lockEscrita();
+
+        try {
+            int idTransacao = coordenador.getIdTransacao();
+            String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
+
+            ArrayList<Voo> todosVoos = voos.lerVoos();
+
+            // Busca os voos
+            Voo vooIda = null;
+            Voo vooVolta = null;
+            for (Voo v : todosVoos) {
+                if (v.getId() == idVooIda) {
+                    vooIda = v;
+                } else if (v.getId() == idVooVolta) {
+                    vooVolta = v;
+                }
+                if (vooIda != null && vooVolta != null) {
+                    break;
+                }
+            }
+
+            // Responde false se não encontrou algum dos voos
+            if (vooIda == null || vooVolta == null) {
+                coordenador.responder(idTransacao, false);
+                return;
+            }
+
+            Reserva reservaVooIda = vooIda.reservar(numPessoas);
+            if (reservaVooIda != null) {
+                if (vooVolta.reservar(numPessoas) != null) {
+                    // Responde true se conseguir comprar ida e volta
+                    // Arquivo temporário
+                    FileOutputStream fileOut = new FileOutputStream(tempFilename);
+                    ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+                    objectOut.writeObject(new Pair<>(vooIda, vooVolta));
+                    objectOut.close();
+
+                    coordenador.responder(idTransacao, true);
+                    return;
+                }
+                // Caso não consiga comprar a volta,
+                // faz rollback na compra do voo de ida e retorna false
+                vooIda.estornar(reservaVooIda);
+            }
+
+            coordenador.responder(idTransacao, false);
+        }
+        catch (IOException | RecordsFileException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Inicia uma nova thread para tratar a fase 2 do protocolo "two-phase
+     * commit": o commit.
+     * @param coordenador interface à qual responder
+     * @return true, sempre
+     */
+    public boolean efetivarCompraPacote(InterfaceTransacao coordenador) {
+        Thread separateThread = new Thread(() -> doEfetivarCompraPacote(coordenador));
+        separateThread.run();
+
+        return true;
+    }
+
+    /** Executa realmente a fase 2 do protocolo "two-phase commit".
+     * Escreve o arquivo temporário no arquivo definitivo e libera a lock de
+     * escrita.
+     * Responde ao coordenador por meio da interface fornecida como parâmetro.
+     * @param coordenador interface à qual responder
+     */
+    private void doEfetivarCompraPacote(InterfaceTransacao coordenador) {
+        try {
+            int idTransacao = coordenador.getIdTransacao();
+            String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
+
+            FileInputStream fileIn = new FileInputStream(tempFilename);
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+            Pair<Voo, Voo> parVoos = (Pair<Voo, Voo>) objectIn.readObject();
+
+            Voo vooIda = parVoos.getKey();
+            Voo vooVolta = parVoos.getValue();
+
+            voos.atualizarVoo(vooIda);
+            voos.atualizarVoo(vooVolta);
+            coordenador.responder(idTransacao, true);
+
+            File f = new File(tempFilename);
+            f.delete();
+        }
+        catch (IOException | ClassNotFoundException | RecordsFileException e) {
+            // ???
+            e.printStackTrace();
+        }
+        finally {
+            // TODO
+            // Caso isso aqui não funcione, vamos ter que fazer a thread que
+            // pegou a lock dormir e notificar ela aqui.
+            voos.unlockEscrita();
+        }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    /** Inicia uma nova thread para tratar a fase 2 do protocolo "two-phase
+     * commit": o rollback.
+     * @param coordenador interface à qual responder
+     * @return true, sempre
+     */
+    public boolean abortarCompraPacote(InterfaceTransacao coordenador) {
+        Thread separateThread = new Thread(() -> doAbortarCompraPacote(coordenador));
+        separateThread.run();
+
+        return true;
+    }
+
+    /** Executa realmente a fase 2 do protocolo "two-phase commit".
+     * Apenas deleta o arquivo temporário no arquivo definitivo e libera a lock
+     * de escrita.
+     * Responde ao coordenador por meio da interface fornecida como parâmetro.
+     * @param coordenador interface à qual responder
+     */
+    private void doAbortarCompraPacote(InterfaceTransacao coordenador) {
+        try {
+            int idTransacao = coordenador.getIdTransacao();
+            String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
+
+            coordenador.responder(idTransacao, true);
+
+            File f = new File(tempFilename);
+            f.delete();
+        }
+        catch (RemoteException e) {
+            // ???
+            e.printStackTrace();
+        }
+        finally {
+            // TODO
+            // Caso isso aqui não funcione, vamos ter que fazer a thread que
+            // pegou a lock dormir e notificar ela aqui.
+            voos.unlockEscrita();
+        }
+    }
 
 }
