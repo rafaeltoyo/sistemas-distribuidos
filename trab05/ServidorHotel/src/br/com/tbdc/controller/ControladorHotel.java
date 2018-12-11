@@ -11,7 +11,6 @@ import hamner.db.RecordsFileException;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -339,6 +338,7 @@ public class ControladorHotel {
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
             Hotel hotel = (Hotel) objectIn.readObject();
+            fileIn.close();
 
             hoteis.atualizarHotel(hotel);
             coordenador.responder(idTransacao, true);
@@ -402,6 +402,32 @@ public class ControladorHotel {
             // TODO
             // Caso isso aqui não funcione, vamos ter que fazer a thread que
             // pegou a lock dormir e notificar ela aqui.
+            hoteis.unlockEscrita();
+        }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public void recuperarCompraPacote(int idTransacao) {
+        try {
+            String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
+
+            FileInputStream fileIn = new FileInputStream(tempFilename);
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+            Hotel hotel = (Hotel) objectIn.readObject();
+
+            hoteis.lockEscrita();
+            hoteis.atualizarHotel(hotel);
+
+            TransactionController.getInstance().commit(idTransacao);
+
+            File f = new File(tempFilename);
+            f.delete();
+        }
+        catch (IOException | RecordsFileException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        finally {
             hoteis.unlockEscrita();
         }
     }
