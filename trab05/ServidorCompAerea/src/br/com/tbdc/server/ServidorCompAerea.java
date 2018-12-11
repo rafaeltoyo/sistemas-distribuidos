@@ -21,6 +21,9 @@ public class ServidorCompAerea extends UnicastRemoteObject implements InterfaceP
 
     public ServidorCompAerea() throws RemoteException {
         super();
+
+        // Abrir o arquivo de Log
+        TransactionController.getInstance();
     }
 
     /*------------------------------------------------------------------------*/
