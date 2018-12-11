@@ -6,6 +6,7 @@ import br.com.tbdc.model.HotelFile;
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.hotel.InfoHotelRet;
 import br.com.tbdc.rmi.InterfaceTransacao;
+import br.com.tbdc.server.TransactionController;
 import hamner.db.RecordsFileException;
 
 import java.io.File;
@@ -254,17 +255,21 @@ public class ControladorHotel {
      * @param coordenador interface à qual responder
      */
     private void doPrepararCompraPacote(int idHotel, LocalDate dataIni, LocalDate dataFim, int numQuartos, InterfaceTransacao coordenador) {
-        System.out.println("try to get write lock");
+        // Travar o arquivo de Hoteis
         hoteis.lockEscrita();
 
         try {
+            // Resgatar o ID da Transação do Coordenador
             int idTransacao = coordenador.getIdTransacao();
+            // Registrar a transação como ATIVADA
+            TransactionController.getInstance().acceptTransaction(idTransacao, idHotel, dataIni, dataFim, numQuartos);
+
+            // Montar o arquivo temp para armazenar o objeto com a transação efetivada provisoriamente
             String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
 
-            ArrayList<Hotel> todosHoteis = hoteis.lerHoteis();
-
-            // Busca o hotel
+            // Busca os hoteis (Validar a possibilidade da transação)
             Hotel hotel = null;
+            ArrayList<Hotel> todosHoteis = hoteis.lerHoteis();
             for (Hotel h : todosHoteis) {
                 if (h.getId() == idHotel) {
                     hotel = h;
@@ -272,27 +277,31 @@ public class ControladorHotel {
                 }
             }
 
-            if (hotel == null) {
-                // Hotel não existe
-                coordenador.responder(idTransacao, false);
-                return;
+            // Foi encontrado o Hotel
+            if (hotel != null) {
+
+                // Faz a reserva, se possível, e responde true se bem sucedido
+                if (hotel.reservar(dataIni, dataFim, numQuartos)) {
+
+                    // Arquivo temporário
+                    FileOutputStream fileOut = new FileOutputStream(tempFilename);
+                    ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+                    objectOut.writeObject(hotel);
+                    objectOut.close();
+
+                    // Efetivar a transação de forma provisória
+                    TransactionController.getInstance().prepare(idTransacao);
+
+                    coordenador.responder(idTransacao, true);
+                    return;
+                }
+                // Caso não consiga reservar todos os dias no Hotel
             }
+            // Caso não consiga encontrar o Hotel
 
-            // Faz a reserva, se possível, e responde true se bem sucedido
-            if (hotel.reservar(dataIni, dataFim, numQuartos)) {
-                System.out.println("writing temp file");
-                // Arquivo temporário
-                FileOutputStream fileOut = new FileOutputStream(tempFilename);
-                ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-                objectOut.writeObject(hotel);
-                objectOut.close();
-
-                System.out.println("answering true");
-                coordenador.responder(idTransacao, true);
-                return;
-            }
-
-            System.out.println("answering false");
+            // Cancelar a transação
+            TransactionController.getInstance().rollback(idTransacao);
+            // Enviar resposta NEGATIVA
             coordenador.responder(idTransacao, false);
         }
         catch (RecordsFileException | IOException e) {
@@ -326,15 +335,15 @@ public class ControladorHotel {
             int idTransacao = coordenador.getIdTransacao();
             String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
 
-            System.out.println("reading temp file");
             FileInputStream fileIn = new FileInputStream(tempFilename);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+
             Hotel hotel = (Hotel) objectIn.readObject();
 
-            System.out.println("updating permanent file");
             hoteis.atualizarHotel(hotel);
-            System.out.println("answering true");
             coordenador.responder(idTransacao, true);
+
+            TransactionController.getInstance().commit(idTransacao);
 
             File f = new File(tempFilename);
             f.delete();
@@ -379,6 +388,8 @@ public class ControladorHotel {
             String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
 
             coordenador.responder(idTransacao, true);
+
+            TransactionController.getInstance().rollback(idTransacao);
 
             File f = new File(tempFilename);
             f.delete();
