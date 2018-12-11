@@ -45,26 +45,26 @@ public class GeradorArquivoInicial {
      * @throws RecordsFileException caso o método adicionarVoo jogue essa exceção
      */
     private static void popularServidor() throws IOException, RecordsFileException {
-        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 10, 16), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 10, 16), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 10, 17), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 10, 17), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 10, 18), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 10, 18), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 10, 19), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 10, 19), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 10, 20), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 10, 20), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 10, 16), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 10, 16), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 10, 17), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 10, 17), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 10, 18), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 10, 18), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 10, 19), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 10, 19), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 10, 20), 100, Dinheiro.reais(new BigDecimal(100.00)));
-        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 10, 20), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 12, 16), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 12, 16), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 12, 17), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 12, 17), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 12, 18), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 12, 18), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 12, 19), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 12, 19), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.FLORIANOPOLIS, LocalDate.of(2018, 12, 20), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.FLORIANOPOLIS, Cidade.CURITIBA, LocalDate.of(2018, 12, 20), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 12, 16), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 12, 16), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 12, 17), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 12, 17), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 12, 18), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 12, 18), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 12, 19), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 12, 19), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.CURITIBA, Cidade.SAO_PAULO, LocalDate.of(2018, 12, 20), 100, Dinheiro.reais(new BigDecimal(100.00)));
+        adicionarVoo(Cidade.SAO_PAULO, Cidade.CURITIBA, LocalDate.of(2018, 12, 20), 100, Dinheiro.reais(new BigDecimal(100.00)));
     }
 
     /** Cria um novo voo com os parâmetros especificados e escreve no arquivo.
