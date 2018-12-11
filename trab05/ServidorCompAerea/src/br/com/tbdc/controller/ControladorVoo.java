@@ -7,12 +7,12 @@ import br.com.tbdc.model.voo.TipoPassagem;
 import br.com.tbdc.model.voo.Voo;
 import br.com.tbdc.model.voo.VooFile;
 import br.com.tbdc.rmi.InterfaceTransacao;
+import br.com.tbdc.server.TransactionController;
 import hamner.db.RecordsFileException;
 import javafx.util.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,7 +20,6 @@ import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 /** Esta classe é um singleton que controla todos os voos do servidor por meio
  * de métodos CRUD.
@@ -260,52 +259,70 @@ public class ControladorVoo {
     }
 
     private void doPrepararCompraPacote(TipoPassagem tipo, int idVooIda, int idVooVolta, int numPessoas, InterfaceTransacao coordenador) {
+        // Travar o arquivo de Voos
         voos.lockEscrita();
 
         try {
+            // Resgatar o ID da Transação do Coordenador
             int idTransacao = coordenador.getIdTransacao();
+            // Registrar a transação como ATIVADA
+            TransactionController.getInstance().acceptTransaction(idTransacao, idVooIda, idVooVolta, numPessoas);
+
+            // Montar o arquivo temp para armazenar o objeto com a transação efetivada provisoriamente
             String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
 
-            ArrayList<Voo> todosVoos = voos.lerVoos();
-
-            // Busca os voos
+            // Busca os voos (Validar a possibilidade da transação)
             Voo vooIda = null;
             Voo vooVolta = null;
+            ArrayList<Voo> todosVoos = voos.lerVoos();
             for (Voo v : todosVoos) {
+
+                // Voo de Ida
                 if (v.getId() == idVooIda) {
                     vooIda = v;
-                } else if (v.getId() == idVooVolta) {
+                }
+                // Voo de Volta
+                else if (v.getId() == idVooVolta) {
                     vooVolta = v;
                 }
-                if (vooIda != null && vooVolta != null) {
-                    break;
+
+                // Os dois voos já foram encontrados, parar
+                if (vooIda != null && vooVolta != null) break;
+            }
+
+            // Foram encontrados os Voos de Ida e Volta solicitado
+            if (vooIda != null && vooVolta != null) {
+
+                // Tentar reservar o Voo de Ida
+                Reserva reservaVooIda = vooIda.reservar(numPessoas);
+                if (reservaVooIda != null) {
+
+                    // Se TRUE, Tentar reservar o Voo de Volta
+                    if (vooVolta.reservar(numPessoas) != null) {
+
+                        // Responde true se conseguir comprar ida e volta
+                        // Arquivo temporário
+                        FileOutputStream fileOut = new FileOutputStream(tempFilename);
+                        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+                        objectOut.writeObject(new Pair<>(vooIda, vooVolta));
+                        objectOut.close();
+
+                        // Efetivar a transação de forma provisória
+                        TransactionController.getInstance().prepare(idTransacao);
+
+                        coordenador.responder(idTransacao, true);
+                        return;
+                    }
+                    // Caso não consiga comprar a volta [...]
+                    vooIda.estornar(reservaVooIda); // Rollback na compra do Voo de Ida
                 }
+                // Caso não consiga comprar a ida [...]
             }
+            // Caso não consiga encontrar os Voos de Ida e Volta [...]
 
-            // Responde false se não encontrou algum dos voos
-            if (vooIda == null || vooVolta == null) {
-                coordenador.responder(idTransacao, false);
-                return;
-            }
-
-            Reserva reservaVooIda = vooIda.reservar(numPessoas);
-            if (reservaVooIda != null) {
-                if (vooVolta.reservar(numPessoas) != null) {
-                    // Responde true se conseguir comprar ida e volta
-                    // Arquivo temporário
-                    FileOutputStream fileOut = new FileOutputStream(tempFilename);
-                    ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-                    objectOut.writeObject(new Pair<>(vooIda, vooVolta));
-                    objectOut.close();
-
-                    coordenador.responder(idTransacao, true);
-                    return;
-                }
-                // Caso não consiga comprar a volta,
-                // faz rollback na compra do voo de ida e retorna false
-                vooIda.estornar(reservaVooIda);
-            }
-
+            // Cancelar a transação
+            TransactionController.getInstance().rollback(idTransacao);
+            // Enviar resposta NEGATIVA
             coordenador.responder(idTransacao, false);
         }
         catch (IOException | RecordsFileException e) {
@@ -349,6 +366,8 @@ public class ControladorVoo {
             voos.atualizarVoo(vooVolta);
             coordenador.responder(idTransacao, true);
 
+            TransactionController.getInstance().commit(idTransacao);
+
             File f = new File(tempFilename);
             f.delete();
         }
@@ -390,6 +409,8 @@ public class ControladorVoo {
             String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
 
             coordenador.responder(idTransacao, true);
+
+            TransactionController.getInstance().rollback(idTransacao);
 
             File f = new File(tempFilename);
             f.delete();
