@@ -21,7 +21,7 @@ public class Main {
         try {
             Registry registry = LocateRegistry.getRegistry(REGISTRY_PORT);
 
-            ServidorCompAerea servidor = new ServidorCompAerea();
+            ServidorCompAerea servidor = new ServidorCompAerea(registry);
             registry.rebind("servidor_comp_aerea", servidor);
         }
         catch (RemoteException e) {

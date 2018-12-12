@@ -1,8 +1,12 @@
 package br.com.tbdc.server;
 
+import br.com.tbdc.controller.ControladorVoo;
 import br.com.tbdc.data.DataStorage;
 import br.com.tbdc.data.Transaction;
+import br.com.tbdc.rmi.InterfaceCoordenador;
 
+import java.io.File;
+import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,6 +29,10 @@ public class TransactionController {
      * Controle do próximo ID de uma nova transação
      */
     private int currentId;
+    /**
+     * Referência ao coordenador para solicitar status de transações
+     */
+    private InterfaceCoordenador coordStatus;
 
     /**
      * =================================================================================================================
@@ -41,8 +49,14 @@ public class TransactionController {
         Collection<Transaction> c = this.transactions.values();
         for (Transaction t : c) {
             if (t.getStatus() != Transaction.Status.CONFIRMED && t.getStatus() != Transaction.Status.ABORTED) {
-                // TODO: Procurar pelo arquivo temporário, se achar confirma, se não aborta
-                this.rollback(t.getId());
+                // Se a transação estiver no estado ACTIVE, não foi enviada confirmação ao coordenador.
+                // Portanto, certamente a transação foi abortada.
+                if (t.getStatus() == Transaction.Status.ACTIVE) {
+                    this.rollback(t.getId());
+                }
+                else {
+                    attemptTransactionRecovery(t.getId());
+                }
             }
         }
     }
@@ -229,6 +243,48 @@ public class TransactionController {
                 return t.getStatus();
             }
             return null;
+        }
+    }
+
+    /**
+     * =================================================================================================================
+     * Método para salvar a referência do coordenador para solicitação de status
+     * =================================================================================================================
+     *
+     * @param coordStatus referência ao coordenador
+     */
+    public void setCoordStatus(InterfaceCoordenador coordStatus) {
+        this.coordStatus = coordStatus;
+    }
+
+    /**
+     * =================================================================================================================
+     * Método que tenta recuperar uma transação em estado WAITING a partir dos arquivos temporários
+     * =================================================================================================================
+     *
+     * @param transactionId identificador da transação a tentar recuperar
+     */
+    private void attemptTransactionRecovery(int transactionId) {
+        // Verifica se o arquivo existe
+        File tempFile = new File("temp" + File.separator + transactionId + ".tmp");
+        if (tempFile.isFile()) {
+            try {
+                // Se a transação foi confirmada pelo coordenador, recupera o objeto e dá commit
+                if (coordStatus.consultarStatusTransacao(transactionId) == Transaction.Status.CONFIRMED) {
+                    ControladorVoo.getInstance().recuperarCompraPacote(transactionId);
+                    this.commit(transactionId);
+                }
+                else {
+                    // Senão, apenas apaga o arquivo temporário e marca como abortada.
+                    this.rollback(transactionId);
+                    tempFile.delete();
+                }
+            }
+            catch (RemoteException e) {
+                // ???
+                this.rollback(transactionId);
+                tempFile.delete();
+            }
         }
     }
 

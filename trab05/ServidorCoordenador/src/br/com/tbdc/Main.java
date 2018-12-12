@@ -1,7 +1,6 @@
 package br.com.tbdc;
 
 import br.com.tbdc.server.ServidorCoordenador;
-import br.com.tbdc.data.DataStorage;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

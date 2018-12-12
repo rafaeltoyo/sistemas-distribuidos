@@ -13,6 +13,7 @@ import javafx.util.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -358,6 +359,7 @@ public class ControladorVoo {
             FileInputStream fileIn = new FileInputStream(tempFilename);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             Pair<Voo, Voo> parVoos = (Pair<Voo, Voo>) objectIn.readObject();
+            fileIn.close();
 
             Voo vooIda = parVoos.getKey();
             Voo vooVolta = parVoos.getValue();
@@ -423,6 +425,37 @@ public class ControladorVoo {
             // TODO
             // Caso isso aqui não funcione, vamos ter que fazer a thread que
             // pegou a lock dormir e notificar ela aqui.
+            voos.unlockEscrita();
+        }
+    }
+
+    /*------------------------------------------------------------------------*/
+
+    public void recuperarCompraPacote(int idTransacao) {
+        try {
+            String tempFilename = "temp" + File.separator + idTransacao + ".tmp";
+
+            FileInputStream fileIn = new FileInputStream(tempFilename);
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+            Pair<Voo, Voo> parVoos = (Pair<Voo, Voo>) objectIn.readObject();
+            fileIn.close();
+
+            Voo vooIda = parVoos.getKey();
+            Voo vooVolta = parVoos.getValue();
+
+            voos.lockEscrita();
+            voos.atualizarVoo(vooIda);
+            voos.atualizarVoo(vooVolta);
+
+            TransactionController.getInstance().commit(idTransacao);
+
+            File f = new File(tempFilename);
+            f.delete();
+        }
+        catch (IOException | RecordsFileException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        finally {
             voos.unlockEscrita();
         }
     }

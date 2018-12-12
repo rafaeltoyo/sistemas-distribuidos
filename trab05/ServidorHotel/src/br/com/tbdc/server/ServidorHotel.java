@@ -3,10 +3,13 @@ package br.com.tbdc.server;
 import br.com.tbdc.controller.ControladorHotel;
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.hotel.InfoHotelRet;
+import br.com.tbdc.rmi.InterfaceCoordenador;
 import br.com.tbdc.rmi.InterfaceHospedagens;
 import br.com.tbdc.rmi.InterfaceTransacao;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,9 +21,23 @@ import java.util.ArrayList;
  */
 public class ServidorHotel extends UnicastRemoteObject implements InterfaceHospedagens {
 
+    private final Registry registry;
+
     /** Construtor em branco. */
-    public ServidorHotel() throws RemoteException {
+    public ServidorHotel(Registry registry) throws RemoteException {
         super();
+
+        this.registry = registry;
+        InterfaceCoordenador coordStatus = null;
+        try {
+            coordStatus = (InterfaceCoordenador) registry.lookup("servidor_coordenador");
+        }
+        catch (NotBoundException e) {
+            e.printStackTrace();
+        }
+
+        // Abrir o arquivo de Log e setar o coordenador
+        TransactionController.getInstance().setCoordStatus(coordStatus);
     }
 
     /*------------------------------------------------------------------------*/

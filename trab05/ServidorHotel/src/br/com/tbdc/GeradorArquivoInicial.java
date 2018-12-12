@@ -45,15 +45,15 @@ public class GeradorArquivoInicial {
      * @throws RecordsFileException caso o método adicionarHotel jogue essa exceção
      */
     private static void popularServidor() throws IOException, RecordsFileException {
-        adicionarHotel("Hotel Peru", Cidade.FLORIANOPOLIS, 20, 100.00, LocalDate.of(2018, 10, 16), LocalDate.of(2018, 10, 20));
-        adicionarHotel("Hotel Pato", Cidade.FLORIANOPOLIS, 30, 100.00, LocalDate.of(2018, 10, 16), LocalDate.of(2018, 10, 20));
-        adicionarHotel("Hotel Galinha", Cidade.FLORIANOPOLIS, 15, 100.00, LocalDate.of(2018, 10, 16), LocalDate.of(2018, 10, 20));
-        adicionarHotel("Hotel Weeb", Cidade.CURITIBA, 20, 100.00, LocalDate.of(2018, 10, 16), LocalDate.of(2018, 10, 20));
-        adicionarHotel("Hotel Noob", Cidade.CURITIBA, 30, 100.00, LocalDate.of(2018, 10, 16), LocalDate.of(2018, 10, 20));
-        adicionarHotel("Hotel Bispo", Cidade.CURITIBA, 15, 100.00, LocalDate.of(2018, 10, 16), LocalDate.of(2018, 10, 20));
-        adicionarHotel("Hotel Pereira", Cidade.SAO_PAULO, 20, 100.00, LocalDate.of(2018, 10, 16), LocalDate.of(2018, 10, 20));
-        adicionarHotel("Hotel Madoka", Cidade.SAO_PAULO, 30, 100.00, LocalDate.of(2018, 10, 16), LocalDate.of(2018, 10, 20));
-        adicionarHotel("Hotel Homura", Cidade.SAO_PAULO, 15, 100.00, LocalDate.of(2018, 10, 16), LocalDate.of(2018, 10, 20));
+        adicionarHotel("Hotel Peru", Cidade.FLORIANOPOLIS, 20, 100.00, LocalDate.of(2018, 12, 16), LocalDate.of(2018, 12, 20));
+        adicionarHotel("Hotel Pato", Cidade.FLORIANOPOLIS, 30, 100.00, LocalDate.of(2018, 12, 16), LocalDate.of(2018, 12, 20));
+        adicionarHotel("Hotel Galinha", Cidade.FLORIANOPOLIS, 15, 100.00, LocalDate.of(2018, 12, 16), LocalDate.of(2018, 12, 20));
+        adicionarHotel("Hotel Weeb", Cidade.CURITIBA, 20, 100.00, LocalDate.of(2018, 12, 16), LocalDate.of(2018, 12, 20));
+        adicionarHotel("Hotel Noob", Cidade.CURITIBA, 30, 100.00, LocalDate.of(2018, 12, 16), LocalDate.of(2018, 12, 20));
+        adicionarHotel("Hotel Bispo", Cidade.CURITIBA, 15, 100.00, LocalDate.of(2018, 12, 16), LocalDate.of(2018, 12, 20));
+        adicionarHotel("Hotel Pereira", Cidade.SAO_PAULO, 20, 100.00, LocalDate.of(2018, 12, 16), LocalDate.of(2018, 12, 20));
+        adicionarHotel("Hotel Madoka", Cidade.SAO_PAULO, 30, 100.00, LocalDate.of(2018, 12, 16), LocalDate.of(2018, 12, 20));
+        adicionarHotel("Hotel Homura", Cidade.SAO_PAULO, 15, 100.00, LocalDate.of(2018, 12, 16), LocalDate.of(2018, 12, 20));
     }
 
     /** Cria um novo hotel com os parâmetros especificados e escreve no arquivo.

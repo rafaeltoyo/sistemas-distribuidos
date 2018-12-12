@@ -4,10 +4,13 @@ import br.com.tbdc.controller.ControladorVoo;
 import br.com.tbdc.model.cidade.Cidade;
 import br.com.tbdc.model.voo.InfoVoo;
 import br.com.tbdc.model.voo.TipoPassagem;
+import br.com.tbdc.rmi.InterfaceCoordenador;
 import br.com.tbdc.rmi.InterfacePassagens;
 import br.com.tbdc.rmi.InterfaceTransacao;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,11 +22,22 @@ import java.util.ArrayList;
  */
 public class ServidorCompAerea extends UnicastRemoteObject implements InterfacePassagens {
 
-    public ServidorCompAerea() throws RemoteException {
+    private Registry registry;
+
+    public ServidorCompAerea(Registry registry) throws RemoteException {
         super();
 
-        // Abrir o arquivo de Log
-        TransactionController.getInstance();
+        this.registry = registry;
+        InterfaceCoordenador coordStatus = null;
+        try {
+            coordStatus = (InterfaceCoordenador) registry.lookup("servidor_coordenador");
+        }
+        catch (NotBoundException e) {
+            e.printStackTrace();
+        }
+
+        // Abrir o arquivo de Log e setar o coordenador
+        TransactionController.getInstance().setCoordStatus(coordStatus);
     }
 
     /*------------------------------------------------------------------------*/
